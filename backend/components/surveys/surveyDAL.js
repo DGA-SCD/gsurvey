@@ -1,6 +1,6 @@
 const Promise = require('promise');
 const MongoClient = require('mongodb').MongoClient
-const appConf = require('../../config/production');
+const appConf = require('../../config/production.conf');
 const winston = require('../../commons/logger');
 const logger = winston.logger;
 
