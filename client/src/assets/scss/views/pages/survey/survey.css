@@ -1,0 +1,81 @@
+@import url('https://fonts.googleapis.com/css?family=Athiti&display=swap');
+body{
+  font-family: 'Athiti', sans-serif!important;
+  
+}
+.App {
+  font-family: 'Athiti', sans-serif!important;
+  
+ 
+}
+.sv_main .sv_container .sv_body .sv_p_root .sv_q_title{
+  font-family: 'Athiti', sans-serif!important;
+}
+.sv_main .sv_container .sv_body .sv_p_root .sv_p_title{
+  font-family: 'Athiti', sans-serif!important;
+}
+
+.sv_main {
+  font-family: 'Athiti', sans-serif!important;
+  font-size: 1.30em !important;
+
+}
+.por_label{
+  font-size: 0.90em;
+}
+.sv_q_checkbox_inline, .sv_q_radiogroup_inline, .sv_q_imagepicker_inline{
+  width:300px;
+}
+
+/* .sv_main, .sv_default_css, .por_root [value~=Remove] {
+  background-color :rgb(251, 36, 36) !important;
+} */
+
+
+/* .sv_q_title{
+  font-size: 1.35em !important;
+} */
+.panel-footer, .card-footer {
+  text-align: right;
+}
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 80px;
+}
+
+.App-header {
+  background-color: #222;
+  height: 150px;
+  padding: 20px;
+  color: white;
+}
+
+.App-title {
+  font-size: 1.5em;
+}
+
+  .sv_main input[type="button"], .sv_main button {
+    font-size: 0.75em;
+    font-weight: bold;
+    line-height: 2em;
+    border: 1px solid;
+    min-width: 100px;
+    cursor: pointer;
+    padding: 0 2em;
+    border-radius: 4px;
+    padding: 6px 12px;
+}
+
+.App-intro {
+  font-size: large;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
