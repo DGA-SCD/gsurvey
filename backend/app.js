@@ -6,7 +6,7 @@ const path = require('path')
 global.appRoot = path.resolve(__dirname);
 const user = require('./components/users/index.js');
 const survey = require('./components/surveys/index.js');
-const conf = require('./config/production');
+const conf = require('./config/production.conf');
 const app = express();
 
 

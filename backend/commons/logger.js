@@ -1,4 +1,4 @@
-const config = require('../config/production');
+const config = require('../config/production.conf');
 const path = require('path');
 const winston = require('winston');
 
