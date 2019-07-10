@@ -140,7 +140,7 @@ class survey extends Component {
     
               {
                 type: "radiogroup",
-                name: "barrating1",
+                name: "howtogo",
                 "isRequired": false,
                 title: "ไปกันยังไง",
                 visibleIf: "{readytogo}='Yes'",
@@ -155,13 +155,13 @@ class survey extends Component {
                 "isRequired": false,
                 choices: [
                   {
-                      value: '1',
+                      value: '0111019',
                       text: "01 พฤศจิกายน 2019"
                   }, {
-                    value: '2',
+                    value: '0211019',
                     text: "02 พฤศจิกายน 2019"
                   }, {
-                    value: '3',
+                    value: '0311019',
                     text: "03 พฤศจิกายน 2019"
                   }
               ]
@@ -178,19 +178,20 @@ class survey extends Component {
               "startWithNewLine": false,
               choices: [
                 {
-                  value: '1',
+                  value: '0111019',
                   text: "01 พฤศจิกายน 2019"
               }, {
-                value: '2',
+                value: '0211019',
                 text: "02 พฤศจิกายน 2019"
               }, {
-                value: '3',
+                value: '0311019',
                 text: "03 พฤศจิกายน 2019"
               }
             ]
           },
               {
                 type: "dropdown",
+                name:"roommate",
                 visibleIf: "{readytogo}='Yes'",
                 renderAs: "select2",
                 choicesByUrl: {
@@ -224,7 +225,7 @@ class survey extends Component {
                         "choices": ["1|ไม่แพ้อะไรเลยชนะทุกอย่าง", "2|แพ้เป็นบางอย่าง"]
                     }, {
                         "type": "text",
-                        "name": "employer_income_frequency",
+                        "name": "foodallergy_detail",
                         "title": "แพ้อะไรบ้าง บอกเราหน่อย",
                         visibleIf: "{foodallergy}='2'",
                         "startWithNewLine": false,
@@ -255,7 +256,7 @@ class survey extends Component {
             
     
             {
-              name: "follwer-insurance",
+              name: "insurance_benefit",
               visibleIf: "{readytogo}='Yes'",
               "title": "ใครเป็นผู้รับผลประโยชน์กรมธรรม์",
               "type": "text",
@@ -267,7 +268,7 @@ class survey extends Component {
             {
               "type": "dropdown",
               visibleIf: "{readytogo}='Yes'",
-              "name": "follwer-foodallergy",
+              "name": "insurance_benefit_relation",
               "isRequired": false,
                "title": "มีความสัมพันธ์เป็น",
                "isRequired": true,
@@ -304,6 +305,7 @@ class survey extends Component {
                     "validators": [
                         {
                             "type": "expression",
+                            "name": "follwer_id",
                             "text": "กรอกเลขบัตรประชาชนให้ถูกด้วยจ้า",
                             "expression": "CheckIDCard({panel.follwerid}) > 0"
                         }
@@ -311,8 +313,8 @@ class survey extends Component {
                 
                   
                 }, 
-                  { type: "text",  name: "follwer-name", inputType: "text", title: "ชื่อ สกุล", isRequired: true, startWithNewLine: false},
-                  { type: "text",  name: "follwer-age", inputType: "text", title: "อายุ", isRequired: true, startWithNewLine: false},
+                  { type: "text",  name: "follwer_name", inputType: "text", title: "ชื่อ สกุล", isRequired: true, startWithNewLine: false},
+                  { type: "text",  name: "follwer_age", inputType: "text", title: "อายุ", isRequired: true, startWithNewLine: false},
                   
                   {
                     name: "follwer_jointoeat",
@@ -337,7 +339,7 @@ class survey extends Component {
                 },
                   {
                     "type": "radiogroup",
-                    "name": "follwer-foodallergy",
+                    "name": "follwer_foodallergy",
                     "isRequired": false,
                      "title": "แพ้อาหารอะไรบ้างรึเปล่า",
                      visibleIf: "{panel.follwer_jointoeat}=1",
@@ -346,7 +348,7 @@ class survey extends Component {
                 },
                 
                 {
-                  name: "follwer-foodallergy-detail",
+                  name: "follwer_foodallergy_detail",
                   "title": "แพ้อะไรบ้าง บอกเราหน่อย",
                   "type": "text",
                   "visibleIf": "{panel.follwer-foodallergy} = '2'",
@@ -364,7 +366,7 @@ class survey extends Component {
                 "choices": ["1|ทำสิจ๊ะ รอไร", "2|ไม่ทำจ้า ดูแลตัวเองได้"]
             },
               {
-                name: "follwer-insurance",
+                name: "follwer_insurance",
                 "title": "ใครเป็นผู้รับผลประโยชน์กรมธรรม์",
                 "type": "text",
                 visibleIf: "{panel.follwermakeinsurance}=1",
@@ -374,7 +376,7 @@ class survey extends Component {
              },
               {
                 "type": "dropdown",
-                "name": "follwer-foodallergy",
+                "name": "follwer_insurance_relation",
                 visibleIf: "{panel.follwermakeinsurance}=1",
                 "isRequired": false,
                  "title": "มีความสัมพันธ์เปน",
@@ -405,7 +407,7 @@ class survey extends Component {
             questions: [
                 {
                     "type": "matrixdynamic",
-                    "name": "ใส่เสื้อไซส์ไรจ๊ะ",
+                    "name": "shirt",
                     "columns": [
                      {
                       "name": "shirtsize",
@@ -471,9 +473,9 @@ class survey extends Component {
               },
               {
                 type: "checkbox",
-                name: "barrating1",
+                name: "condition",
                 "isRequired": true,
-                title: "ไปกันยังไง",
+                title: "เงื่อนไขและข้อตกลง",
              
                 "choices": ["1|Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."]
               },
@@ -523,25 +525,24 @@ class survey extends Component {
           //saveState(survey);
           var data = { postId: 'someID', surveyResult: JSON.stringify(survey.data) }; 
           console.log(data);
-          $.ajax({
-            type: "POST",
-            url: "http://demo4393909.mockable.io/survey",
-            data: data,  //no further stringification
-            success: function(data){
+          // $.ajax({
+          //   type: "POST",
+          //   url: "http://demo4393909.mockable.io/survey",
+          //   data: data,  //no further stringification
+          //   success: function(data){
            
-              console.log(data);
-              $.removeCookie("cookiesurvey");
-              $.removeCookie('cookiesurvey', { path: '/pages' });
+          //     console.log(data);
+            
 
-            }
-          });
+          //   }
+          // });
     });
 
     function loadState(survey) {
     
         const cookies = new Cookies();
 
-        cookies.remove('cookiesurvey');
+     //   cookies.remove('cookiesurvey');
    // $.removeCookie('cookiesurvey', { path: '/pages' });
         localStorage.clear();
       
