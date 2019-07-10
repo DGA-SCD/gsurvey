@@ -80,33 +80,7 @@ function CheckIDCard(idNumber){
  
  return false; return true;
 }
-function rowsWithValue(params) {
-    if (!params) return false; 
-     var i,sum;
-    var params = params[0];
-    params= params.toString();
-     console.log(params);
-   console.log(params.length);
-    if(params.length !== 13) return false;
-   for(i=0, sum=0; i < 12; i++)
-   sum += parseFloat(params.charAt(i))*(13-i);
-   console.log(sum);
-    if((11-sum%11)%10!=parseFloat(params.charAt(12)))
-  
-  return false; return true;
-//    if (!params && params.length < 2) 
-//        return false;
-//    var matrixValue = params[0];
-//    var value = params[1];
-//    var rowCount = 0;
-//    for (var key in matrixValue) {
-//        if (matrixValue[key] == value) 
-//            rowCount++;
-//        }
-//        console.log(rowCount);
-//    return rowCount;
- }
- 
+
 function getPreviousName(currentName) {
   var value = currentName[0];
   console.log(value);
@@ -116,10 +90,7 @@ function MyTextValidator(paramsd) {
     console.log(value);
     return value.indexOf("survey");
 }
-Survey
-  .FunctionFactory
-  .Instance
-  .register("rowsWithValue", rowsWithValue);
+
 Survey
     .FunctionFactory
     .Instance
@@ -298,7 +269,7 @@ class survey extends Component {
               visibleIf: "{readytogo}='Yes'",
               "name": "follwer-foodallergy",
               "isRequired": false,
-               "title": "มีความสัมพันธ์เปน",
+               "title": "มีความสัมพันธ์เป็น",
                "isRequired": true,
                "startWithNewLine": false,
                "choices": ["พ่อ|พ่อ", "แม่|แม่", "พี่สาว/น้องสาว|พี่สาว/น้องสาว","พี่ชาย/น้องชาย|พี่ชาย/น้องชาย","ลูกชาย/ลูกสาว|ลูกชาย/ลูกสาว","คู่สมรส|คู่สมรส","เพื่อน|เพื่อน","ปู่/ตา/ลุง|ปู่/ตา/ลุง","ย่า/ยาย/ป้า|ย่า/ยาย/ป้า","น้า/อา|น้า/อา"]
@@ -322,7 +293,7 @@ class survey extends Component {
                title: "รายละเอียดผู้ติดตาม", 
            
               showQuestionNumbers: "none", 
-              visibleIf: "{readytogo}='Yes'",
+              visibleIf: "{follower}='Yes'",
               templateTitle: "ผู้ติดตามคนที่ #{panelIndex}", 
               templateElements: [
                   { 
@@ -491,33 +462,7 @@ class survey extends Component {
                     "rowCount": 1
                 },
             
-            //   {
-            //     "type": "matrixdropdown",
-            //     "name": "ใส่เสื้อสัมมนาไซส์ไรจ๊ะ",
-            //     "isRequired": true,
-               
-            //     "columns": [
-            //      {
-            //       "name": "เอากี่ตัวดี",
-                 
-            //      }
-            //     ],
-            //     "choices": [
-            //      "1",
-            //      "2",
-            //      "3",
-            //      "4",
-            //      "5"
-            //     ],
-            //     "rows": [
-            //      "ไซส์ XS (อก 34)",
-            //      "ไซส์ S (อก 36)",
-            //      "ไซส์ M (อก 38)",
-            //      "ไซส์ L (อก 40)",
-            //      "ไซส์ XL (อก 42)",
-            //      "ไซส์ XXL (อก 44)"
-            //     ]
-            //    },
+        
                 
               {
                 type: "comment",
@@ -540,6 +485,7 @@ class survey extends Component {
           }
          
         ],
+        "completeText": "ส่งคำตอบ"
        
       };
       onValueChanged(result) {
