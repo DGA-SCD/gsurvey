@@ -51,4 +51,49 @@ Model.prototype.setQuestions = async function(ctx){
     return {success: true, data: "", err: ""};
 }
 
+Model.prototype.getAnswer = async function(ctx){
+    var data;
+    await MongoClient.connect(appConf.mongoDB, { useNewUrlParser: true })
+    .then(  async function(db){
+            logger.info("successfully connected MongoDB");
+            await db.db('seminar').collection('answer').findOne(ctx, function (error, response) {
+                if(error) {
+                    console.log('Error occurred while inserting');
+                } else {
+                   console.log('response: ', response);
+                   data = response;
+                }
+                
+            });
+            await db.close();
+    }).catch( function(err){
+        logger.error("Failed to connection MongoDB");
+    });
+    console.log(data);
+    return data;
+}
+
+Model.prototype.setAnswer = async function(ctx){
+    var res;
+    await MongoClient.connect(appConf.mongoDB, { useNewUrlParser: true })
+    .then( async function(db){
+            logger.info("successfully connected MongoDB");
+            db.db('seminar').collection('answer').findOneAndReplace({name: ctx.name
+                ,emplyeeId: ctx.employeeId
+                ,version: ctx.version
+            }, ctx, {upsert: true}, function (error, response) {
+                if(error) {
+                    console.log('Error occurred while inserting');
+                } else {
+                   console.log('inserted record', response);
+                   res = response;
+                }
+            });
+            await db.close();
+    }).catch( function(err){
+        logger.error("Failed to connection MongoDB:" + err);
+    });
+    return {success: true, data: "", err: ""};
+}
+
 module.exports = Model;
