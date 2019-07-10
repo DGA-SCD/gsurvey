@@ -48,7 +48,7 @@ Model.prototype.setQuestions = async function(ctx){
     }).catch( function(err){
         logger.error("Failed to connection MongoDB:" + err);
     });
-    return {success: true, data: {_id: res.value._id, name: res.value.name}, err: ""};
+    return {success: true, data: "", err: ""};
 }
 
 module.exports = Model;
