@@ -542,8 +542,8 @@ class survey extends Component {
     
         const cookies = new Cookies();
 
-     //   cookies.remove('cookiesurvey');
-   // $.removeCookie('cookiesurvey', { path: '/pages' });
+       cookies.remove('cookiesurvey');
+   //$.removeCookie('cookiesurvey', { path: '/pages' });
         localStorage.clear();
       
 
