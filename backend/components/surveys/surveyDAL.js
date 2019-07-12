@@ -83,7 +83,7 @@ Model.prototype.setAnswer = async function(ctx){
                 ,version: ctx.version
             };
             logger.debug("filter: " + JSON.stringify(filters));
-            db.db('seminar').collection('answer').findOneAndReplace(filters, ctx, {upsert: false}, function (error, response) {
+            db.db('seminar').collection('answer').findOneAndReplace(filters, ctx, {upsert: true}, function (error, response) {
                 if(error) {
                     console.log('Error occurred while inserting');
                 } else {
