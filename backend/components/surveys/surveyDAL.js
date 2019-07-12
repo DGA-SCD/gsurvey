@@ -78,10 +78,12 @@ Model.prototype.setAnswer = async function(ctx){
     await MongoClient.connect(appConf.mongoDB, { useNewUrlParser: true })
     .then( async function(db){
             logger.info("successfully connected MongoDB");
-            db.db('seminar').collection('answer').findOneAndReplace({name: ctx.name
-                ,emplyeeId: ctx.employeeId
+            var filters = {name: ctx.name
+                ,employeeId: ctx.employeeId
                 ,version: ctx.version
-            }, ctx, {upsert: true}, function (error, response) {
+            };
+            logger.debug("filter: " + JSON.stringify(filters));
+            db.db('seminar').collection('answer').findOneAndReplace(filters, ctx, {upsert: false}, function (error, response) {
                 if(error) {
                     console.log('Error occurred while inserting');
                 } else {
