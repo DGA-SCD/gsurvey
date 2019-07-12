@@ -22,6 +22,9 @@ exports.logger =  winston.createLogger({
       new winston.transports.File({
         filename: path.join(global.appRoot, config.applicationLog),
         timestamp: true,
+        level: 'debug',
+        colorize: 'true',
+        label: 'development'
       })
     ]
   });
