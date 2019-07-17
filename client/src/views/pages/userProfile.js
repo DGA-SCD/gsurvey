@@ -93,22 +93,25 @@ class UserProfile extends Component {
       else{
        this.setState({redirectToReferrer: true});
       }
-      
+     
    
      }
      getUserFeed() {
 
        let dataList = JSON.parse(sessionStorage.getItem("userData"));
+       console.log('dd');
+       console.log(JSON.parse(sessionStorage.getItem("session_userid")));
+       console.log(dataList);
        this.setState({
-          name:dataList.userData.name,
-          gender:dataList.userData.gender,
-          birthday:dataList.userData.birthday,
-          email:dataList.userData.email,
-          telephone:dataList.userData.telephone,
-          position:dataList.userData.positon,
-          department:dataList.userData.department,
-          section:dataList.userData.section,
-          userid:dataList.userData.userid
+          name:dataList.name,
+          gender:dataList.gender,
+          birthday:dataList.birthday,
+          email:dataList.email,
+          telephone:dataList.telephone,
+          position:dataList.positon,
+          department:dataList.department,
+          section:dataList.section,
+          userid:dataList.userid
        });
       
     }
