@@ -3,6 +3,7 @@ import React, { Component, Fragment } from "react";
 import ContentHeader from "../../components/contentHead/contentHeader";
 import ContentSubHeader from "../../components/contentHead/contentSubHeader";
 import { Row, Col, Card, CardBody, CardTitle, Badge } from "reactstrap";
+import { Link } from "react-router-dom";
 import Cookies from 'universal-cookie';
 import ReactDOM from 'react-dom';
 
@@ -46,13 +47,7 @@ widgets.sortablejs(Survey);
 widgets.ckeditor(Survey);
 widgets.autocomplete(Survey, $);
 widgets.bootstrapslider(Survey);
-Survey.JsonObject.metaData.addProperty("question", "popupdescription:text");
 
-   function showDescription(element) {
-       document.getElementById("questionDescriptionText").innerHTML = element.popupdescription;
-       $("#questionDescriptionPopup").modal();
-   }
-   
 
 function PhoneValidator(params) {
   var value = params[0];
@@ -81,24 +76,7 @@ function CheckIDCard(idNumber){
  return false; return true;
 }
 
-function getPreviousName(currentName) {
-  var value = currentName[0];
-  console.log(value);
-  }
-function MyTextValidator(paramsd) {
-    var value = paramsd[0];
-    console.log(value);
-    return value.indexOf("survey");
-}
 
-Survey
-    .FunctionFactory
-    .Instance
-    .register("MyTextValidator", MyTextValidator);
-Survey
-  .FunctionFactory
-  .Instance
-  .register("getPreviousName", getPreviousName);
 
 
 
@@ -114,17 +92,44 @@ Survey
   .register("CheckIDCard",CheckIDCard);
 
 class survey extends Component {
+  constructor(props) {
+    super(props);
+    //console.log('load');
+    this.state = {
+      session_userid:"",
+      json: ""
+    };
+    
+
+
+    }
+
+    componentDidMount() {
+      console.log("componentDidMount 1");
+      $.ajax({
+          method:'get',
+          crossDomain: true,
+       url: "http://164.115.17.163:8082/v1/survey/questions/seminar-01"
+      }).done((res) => {
+          console.log(res);
+          console.log("sccess==="+res.success);
+      
+          this.setState({json:(res.data)});
+          console.log("componentDidMount 2");
+
+      })
+    }
+    
     json = {
     
-        "completedHtml": "mmmm",
         showProgressBar: "top",
         "cookieName": "cookiesurvey",
        
         "pagePrevText": "ย้อนกลับ",
         "pageNextText": "ถัดไป",
         pages: [
-          {
-            questions: [
+          { "name": "page1",
+            "elements": [
               
            
               {
@@ -279,7 +284,8 @@ class survey extends Component {
             ]
           },
           {
-            questions: [
+            "name": "page2",
+            "elements": [
               {
                 type: "radiogroup",
                 name: "follower",
@@ -294,7 +300,7 @@ class survey extends Component {
                title: "รายละเอียดผู้ติดตาม", 
            
               showQuestionNumbers: "none", 
-              visibleIf: "{follower}='Yes'",
+              visibleIf: "{follower}='Yes' && {readytogo}='Yes' ",
               templateTitle: "ผู้ติดตามคนที่ #{panelIndex}", 
               templateElements: [
                   { 
@@ -305,7 +311,7 @@ class survey extends Component {
                     "validators": [
                         {
                             "type": "expression",
-                            "name": "follwer_id",
+                            "name": "follwerid",
                             "text": "กรอกเลขบัตรประชาชนให้ถูกด้วยจ้า",
                             "expression": "CheckIDCard({panel.follwerid}) > 0"
                         }
@@ -403,8 +409,8 @@ class survey extends Component {
             "panelRemoveText": "Remove the relative"
           },
           {
-           
-            questions: [
+            "name": "page3",
+            "elements": [
                 {
                     "type": "matrixdynamic",
                     "name": "shirt",
@@ -490,12 +496,40 @@ class survey extends Component {
         "completeText": "ส่งคำตอบ"
        
       };
+
+     
+      
       onValueChanged(result) {
         console.log("value changed!");
+       
       }
-    
+   
       onComplete(result) {
-        console.log("Complete! " + result);
+        const cookies = new Cookies();
+        cookies.remove('cookiesurvey');
+        console.log("Complete! " + JSON.stringify(result));
+        
+        var data = { name: 'seminar-01', 
+                    employeeId : JSON.parse(sessionStorage.getItem("session_userid")), 
+                      version : "1",
+                      surveyresult: result.data
+                    }; 
+       
+        console.log(JSON.stringify(data));
+
+          $.ajax({
+          type: "POST",
+           url: "http://164.115.17.163:8082/v1/survey/answers",
+           contentType: "application/json",
+            data: JSON.stringify(data),  //no further stringification
+            success: function(response){
+              localStorage.clear();
+              console.log(response);
+             
+            //  return <Link to='/login'  />
+
+            }
+          });
       }
       
        
@@ -507,120 +541,86 @@ class survey extends Component {
     .StylesManager
     .applyTheme("orange");
 
+    console.log("render")
 
+    console.log(this.state.json);
 
-    
-    var survey = new Survey.Model(this.json);
-    
-
-    survey
-    .onComplete
-    .add(function (result) {
-        // document
-        //     .querySelector('#surveyResult')
-        //     .textContent = "Result JSON:\n" + JSON.stringify(result.data, null, 3);
-
-            clearInterval(timerId);
-          //save the data on survey complete. You may call another function to store the final results
-          //saveState(survey);
-          var data = { postId: 'someID', surveyResult: JSON.stringify(survey.data) }; 
-          console.log(data);
-          // $.ajax({
-          //   type: "POST",
-          //   url: "http://demo4393909.mockable.io/survey",
-          //   data: data,  //no further stringification
-          //   success: function(data){
-           
-          //     console.log(data);
-            
-
-          //   }
-          // });
-    });
-
-    function loadState(survey) {
-    
-        const cookies = new Cookies();
-
-       cookies.remove('cookiesurvey');
-   //$.removeCookie('cookiesurvey', { path: '/pages' });
-        localStorage.clear();
-      
-
-        // $.ajax({
-        //     type:"GET",
-        //     url: "http://demo4393909.mockable.io/getsurvey",
-        //     crossDomain: true,
-        //     success: function (data) {
-             
-        //       console.log("received: " + JSON.stringify(data));
-              
-        //        var loaddata = (JSON.stringify(data));
-        //        console.log(survey);
-        //        survey.data = loaddata;
-        //       survey
-        //           .onComplete
-        //           .add(function (result) {
-        //               document
-        //                   .querySelector('#surveyResult')
-        //                   .innerHTML = "result: " + JSON.stringify(result.data);
-        //           });
-      
-        //      $("#surveyElement").Survey({model: loaddata});
-            
-        //     }
-        //   });
-          
-        //   survey.data =    
-        //     {"readytogo":"No","readytogoกกด":"No","shirtsize":[{"shirtsize_detail":"femalel"},{"shirtsize_detail":"femalexl"}],"suggestions":"dfsfsfsfsfsfsfdfdfafdsdssfffsa3","condition":"ok"}
-            
-          
-          
-      }
-
-    //var q = model.getQuestionByName('detailfollower');
-
-    survey.onUpdateQuestionCssClasses.add(function(survey, options) {
+    if (this.state.json) {
    
-      var classes = options.cssClasses;
+      var survey = new Survey.Model(this.json);
       
-      classes.root = "por_root";
-      classes.item = "por_item";
-      classes.label = "por_label";
-      if (options.question.getType() === "button") {
-        classes.item = "sq-root sq-root-button";
-    }
-  
-    });
-    loadState(survey);
-    timerId = window.setInterval(function () {
-       // saveState(survey);
-      }, 10000);
+    
 
-      return (
-        <Fragment>
-       <Row>
-       <Col xs="12">
-            <div className = "App">
-                
-            <Card>
-                     <CardBody>
-                        <CardTitle>แบบสำรวจงานสัมมนา</CardTitle>
+      function loadState(survey) {
+      
+        //console.log(JSON.parse(sessionStorage.getItem("session_userid")));
+          const cookies = new Cookies();
+
+        cookies.remove('cookiesurvey');
+
+          localStorage.clear();
+        
+          var giturl = "http://164.115.17.163:8082/v1/survey/answers/"+JSON.parse(sessionStorage.getItem("session_userid"))+"/seminar-01/1";
+
+          $.ajax({
+            type:"GET",
+            url: giturl,
+            crossDomain: true,
+            success: function (data) {
+              console.log("received: " + JSON.stringify(data));
+            
+              if(data.data){
+                survey.data = data.data.surveyresult;
+                console.log("received load data: " + JSON.stringify(data.data.surveyresult));
+              }
+            
+            }
+          });
+            
+            
+        }
+
+      //var q = model.getQuestionByName('detailfollower');
+
+      survey.onUpdateQuestionCssClasses.add(function(survey, options) {
+    
+        var classes = options.cssClasses;
+        
+        classes.root = "por_root";
+        classes.item = "por_item";
+        classes.label = "por_label";
+      
+    
+      });
+      loadState(survey);
+      
+        return (
+          <Fragment>
+        <Row>
+        <Col xs="12">
+              <div className = "App">
+                  
+              <Card>
+                      <CardBody>
+                          <CardTitle>แบบสำรวจงานสัมมนา</CardTitle>
+                          
+                              <Survey.Survey
+                                  model={survey}
+                                  
+                                  onComplete={this.onComplete}
+                                  onValueChanged={this.onValueChanged}
+                                  />
                         
-                            <Survey.Survey
-                                model={survey}
-                                onComplete={this.onComplete}
-                                onValueChanged={this.onValueChanged}
-                                />
-                       
-                        </CardBody>
-               </Card>
-            </div>
-       </Col>
-       </Row>
-       
-       </Fragment>
-      );
+                          </CardBody>
+                </Card>
+              </div>
+        </Col>
+        </Row>
+        
+        </Fragment>
+        );
+      }
+      return <div>Loading...</div>;
    }
 }
 
