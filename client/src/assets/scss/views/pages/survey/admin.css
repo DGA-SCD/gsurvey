@@ -1,0 +1,43 @@
+@import url('https://fonts.googleapis.com/css?family=Athiti&display=swap');
+body{
+  font-family: 'Athiti', sans-serif!important;
+  
+}
+.App {
+  font-family: 'Athiti', sans-serif!important;
+  
+ 
+}
+.admin .svd_container .svd-dark-bg-color{
+    font-size: 0.6rem !important;
+}
+
+
+/* .card ,.sv_container{
+    font-size: 0.6rem;
+    font-weight: 300;
+} */
+
+/* .svd_container *{
+    font-size: 1em;
+} */
+  /* .sv_main input[type="button"], .sv_main button {
+    font-size: 0.5em;
+    font-weight: bold;
+    line-height: 2em;
+    border: 1px solid;
+    min-width: 100px;
+    cursor: pointer;
+    padding: 0 2em;
+    border-radius: 4px;
+    padding: 6px 12px;
+} */
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
