@@ -58,6 +58,14 @@ class SideMenuContent extends Component {
                </NavLink>
             </SideMenu.MenuSingleItem>
             
+            <SideMenu.MenuSingleItem>
+               <NavLink to="/pages/SurveyCreator" activeClassName="active">
+                  <i className="menu-icon">
+                     <MessageSquare size={18} />
+                  </i>
+                  <span className="menu-item-text">Admin</span>
+               </NavLink>
+            </SideMenu.MenuSingleItem>
            
             
 

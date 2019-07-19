@@ -77,6 +77,7 @@ const LazyKnowledgeBase = lazy(() => import("../views/pages/knowledgeBase"));
 const LazySearch = lazy(() => import("../views/pages/search"));
 const LazyBlankPage = lazy(() => import("../views/pages/blankPage"));
 const LazySurvey = lazy(() => import("../views/pages/survey"));
+const LazySurveyCreator = lazy(() => import("../views/pages/SurveyCreator"));
 const LazyChangeLogPage = lazy(() => import("../views/pages/changeLogPage"));
 
 // Full Layout
@@ -720,7 +721,15 @@ class Router extends Component {
                      </Suspense>
                   )}
                />
-
+               <MainLayoutRoutes
+                  exact
+                  path="/pages/SurveyCreator"
+                  render={matchprops => (
+                     <Suspense fallback={<Spinner />}>
+                        <LazySurveyCreator {...matchprops} />
+                     </Suspense>
+                  )}
+               />
 
                <MainLayoutRoutes
                   exact
