@@ -108,7 +108,7 @@ class Login extends Component {
       e.preventDefault();
       if (this.validateForm()) {
          
-          alert("Form submitted");
+         
           console.log(this.state.userid);
           console.log(this.state.password);
          PostData('login',this.state).then((result) => {
