@@ -27,6 +27,7 @@ const redis = require("redis"),redisCli = redis.createClient();;
 const mysql = require('mysql');
 const winston = require('../../commons/logger');
 const http = require('../../commons/http');
+const appConf = require('../../config/production.conf');
 const logger = winston.logger;
 const router = express.Router();
 
@@ -47,11 +48,11 @@ router.post('/login',function(req, res) {
     var userName = userid.substring(0,2) + '-' +  userid.substring(2);
     
     var conn = mysql.createConnection({
-        host: "127.0.0.1",
-        port: 3306,
-        user: "root",
-        password: "Acho20mkr",
-        database: "seminar_stag"
+        host: appConf.MYSQL_host,
+        port: appConf.MYSQL_port,
+        user: appConf.MYSQL_user,
+        password: appConf.MYSQL_password,
+        database: appConf.MYSQL_database
     });
 
     conn.connect(function(err) {
