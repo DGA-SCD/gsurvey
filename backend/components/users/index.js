@@ -45,7 +45,7 @@ router.post('/login',function(req, res) {
     logger.debug('user: ' + userid);
     logger.debug('password: ' + password);
 
-    var userName = userid.substring(0,2) + '-' +  userid.substring(2);
+    var userName = userid;
     
     var conn = mysql.createConnection({
         host: appConf.MYSQL_host,
