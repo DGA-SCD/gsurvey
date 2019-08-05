@@ -19,7 +19,7 @@ app.use(morgan('combined', { stream: accessLogStream }))
 
 app.use(express.json())
 
-app.use('/v1/user', user);
+app.use('/v1/users', user);
 app.use('/v1/survey', survey);
 
 module.exports = app;
