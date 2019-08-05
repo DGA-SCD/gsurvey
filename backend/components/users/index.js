@@ -104,7 +104,7 @@ router.post('/login',function(req, res) {
                                 })
                             } else {
                                 logger.error("invalid user or password");
-                                http.error(401, 401000, );
+                                http.error(res, 401, 401000, "invalid user or password");
                             }
                         }
                     });
