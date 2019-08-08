@@ -37,7 +37,80 @@ router.use(function(req, res, next){
     next();
 });
 
-router.post('/login',function(req, res) {
+router.use(function(req, res, next){
+    // Website you wish to allow to connect
+    res.setHeader('Access-Control-Allow-Origin', '*');
+
+    // Request methods you wish to allow
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+
+    // Request headers you wish to allow
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+
+    // Set to true if you need the website to include cookies in the requests sent
+    // to the API (e.g. in case you use sessions)
+    res.setHeader('Access-Control-Allow-Credentials', true);
+
+
+    next();
+});
+
+router.get('/roommates', function(req, res){
+    var conn = mysql.createConnection({
+        host: appConf.MYSQL_host,
+        port: appConf.MYSQL_port,
+        user: appConf.MYSQL_user,
+        password: appConf.MYSQL_password,
+        database: appConf.MYSQL_database
+    });
+
+    conn.connect(function(err) {
+        if ( err ) {
+            logger.error("Cannot connect to database");
+            http.error(res, 500, 50000, "Cannot connect to database");
+            return;
+        } else {
+            logger.debug("Database connected!");
+
+            const qstr = "SELECT user_details.UserID,\
+             user_details.Name, \
+             user_details.Surname, \
+             user_details.Position, \
+             user_details.Department, \
+             user_details.Segment \
+             FROM user_details \
+            INNER JOIN roommates on user_details.UserId = roommates.UserId \
+            WHERE roommates.FriendID is null";
+
+            conn.query(qstr, function(err, result, fields) {
+                if ( err ) {
+                    logger.error( err );
+                    http.error(res, 404, 404000, "not found user or password");
+                    return; 
+                } else {
+                    var frientLists = [];
+                    for ( i = 0 ;i < result.length; i++ ){
+                        frientLists.push({
+                            userId: result[i].UserID,
+                            name: result[i].Name,
+                            surname: result[i].Surname,
+                            position: result[i].Position,
+                            department: result[i].Department,
+                            devision: result[i].Segment
+                        });
+                    }
+                    http.success(res, {frientLists});
+                }
+            });
+        }
+    });
+});
+
+router.post('/roommates', function(req, res){
+
+});
+
+router.post('/login', function(req, res) {
     var ctx = req.body;
     const userid = ctx.userId;
     const password = ctx.password;
