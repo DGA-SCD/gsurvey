@@ -173,6 +173,7 @@ router.post('/login', function(req, res) {
                                     position: userDetails.Position,
                                     department: userDetails.Department,
                                     devision: userDetails.Segment,
+                                    level: userDetails.Level,
                                     token: token
                                 })
                             } else {
