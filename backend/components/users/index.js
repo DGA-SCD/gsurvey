@@ -23,11 +23,11 @@
 const express = require('express');
 const crypto = require('crypto');
 const base64url = require('base64url')
-const redis = require("redis"),redisCli = redis.createClient();;
 const mysql = require('mysql');
 const winston = require('../../commons/logger');
 const http = require('../../commons/http');
 const appConf = require('../../config/production.conf');
+const redis = require("redis");
 const logger = winston.logger;
 const router = express.Router();
 
@@ -149,7 +149,7 @@ router.post('/login', function(req, res) {
                 } else {
                     logger.debug( "result " + JSON.stringify(result));
                     var token = base64url(crypto.randomBytes(48));
-
+                    const redisCli = redis.createClient();
                     redisCli.on("error", function (err) {
                         logger.error("redis: " + err);
                     });
