@@ -55,6 +55,7 @@ router.use(function(req, res, next){
     next();
 });
 
+// Get list of available friends
 router.get('/roommates', function(req, res){
     var conn = mysql.createConnection({
         host: appConf.MYSQL_host,
@@ -106,8 +107,140 @@ router.get('/roommates', function(req, res){
     });
 });
 
-router.post('/roommates', function(req, res){
+// Binding a friend with the same room.
+router.post('/roommates/:userid', function(req, res){
+    var ctx = req.body;
+    var newFriend = ctx.friendId;
+    
+    var userId = req.params.userid;
 
+    var conn = mysql.createConnection({
+        host: appConf.MYSQL_host,
+        port: appConf.MYSQL_port,
+        user: appConf.MYSQL_user,
+        password: appConf.MYSQL_password,
+        database: appConf.MYSQL_database
+    });
+
+    try {
+        conn.connect(function(err) {
+            if ( err ) {
+                logger.error("Cannot connect to database");
+                http.error(res, 500, 50000, "Cannot connect to database");
+                return;
+            } else {
+                logger.debug("Database connected!");
+                // user and friend should be available.
+                var qstr = "SELECT * FROM roommates"
+                + " WHERE  (UserID =  " + userId + " AND friendID is null )"
+                + " OR (UserId = " + newFriend + " AND friendID is null)";
+                
+                conn.query(qstr, function(err, result, fields) {
+                    if ( err ) {
+                        http.error(res, 500, 50000, err);
+                    } else {
+                       
+                        if( result.length == 2 ){ 
+                            //The both of you are available
+                            qstr = "UPDATE roommates \
+                                        SET FriendID = " + newFriend
+                                        + " WHERE UserID = " + userId + " and FriendID is null";
+                            conn.query(qstr, function(err, result, fields) {
+                                if( err ) {
+                                    http.error(res, 500, 50000, err);
+                                } else {
+                                    qstr = "UPDATE roommates \
+                                        SET FriendID = " + userId
+                                        + " WHERE UserID = " + newFriend;
+                                    conn.query(qstr, function(err, result, fields) {
+                                        if( err ) {
+                                            http.error(res, 500, 50000, err);
+                                        } else {
+                                            http.success(res);
+                                        }
+                                    });
+                                }
+                            });
+                        } else { 
+                            //Someone is not available
+                            http.error(res, 403, 403000, "Someone is not available");
+                        }
+                    
+                    }
+                });
+            }
+        });
+    } catch( ex ) {
+        http.error(res, 500, 50000, ex);
+    }
+
+});
+
+// Unbinding a friend
+router.delete('/roommates/:userid', function(req, res){
+
+    var userId = req.params.userid;
+
+    var conn = mysql.createConnection({
+        host: appConf.MYSQL_host,
+        port: appConf.MYSQL_port,
+        user: appConf.MYSQL_user,
+        password: appConf.MYSQL_password,
+        database: appConf.MYSQL_database
+    });
+
+    conn.connect(function(err) {
+        if ( err ) {
+            logger.error("Cannot connect to database");
+            http.error(res, 500, 50000, "Cannot connect to database");
+            return;
+        } else {
+            logger.debug("Database connected!");
+            // user and friend should be available.
+            var qstr = "SELECT * FROM roommates"
+            + " WHERE  (UserID =  " + userId + " AND friendID is not null )";
+            
+            conn.query(qstr, function(err, result, fields) {
+                if ( err ) {
+                    http.error(res, 500, 50000, err);
+                    return;
+                } else {
+                    console.log(result);
+                    if( result[0] != null && result[0].UserID != 'undefined' && result[0].FriendID != 'undefined' ){ 
+                        userId = result[0].UserID;
+                        friendId = result[0].FriendID;
+
+                        //The both of you are available
+                        qstr = "UPDATE roommates \
+                                    SET FriendID = null"
+                                    + " WHERE UserID = " + userId;
+                        conn.query(qstr, function(err, result, fields) {
+                            if( err ) {
+                                http.error(res, 500, 50000, err);
+                                return;
+                            } else {
+                                qstr = "UPDATE roommates \
+                                    SET FriendID = null"
+                                    + " WHERE UserID = " + friendId;
+                                conn.query(qstr, function(err, result, fields) {
+                                    if( err ) {
+                                        http.error(res, 500, 50000, err);
+                                        return;
+                                    } else {
+                                        http.success(res);
+                                        return;
+                                    }
+                                });
+                            }
+                        });
+                    } else { 
+                        http.error(res, 404, 40400, "Cannot found an user");
+                        return;
+                    }
+                }
+            });
+        }
+    });
 });
 
 router.post('/login', function(req, res) {
