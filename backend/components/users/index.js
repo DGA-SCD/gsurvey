@@ -282,7 +282,10 @@ router.post('/login', function(req, res) {
                 } else {
                     logger.debug( "result " + JSON.stringify(result));
                     var token = base64url(crypto.randomBytes(48));
-                    const redisCli = redis.createClient();
+                    const redisCli = redis.createClient({
+                        port      : appConf.REDIS_port,               // replace with your port
+                        host      : appConf.REDIS_host,        // replace with your hostanme or IP address
+                    });
                     redisCli.on("error", function (err) {
                         logger.error("redis: " + err);
                     });
