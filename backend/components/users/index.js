@@ -55,6 +55,64 @@ router.use(function(req, res, next){
     next();
 });
 
+router.get('/roommates/:userid', function(req, res){
+
+    var userId = req.params.userid;
+
+    var conn = mysql.createConnection({
+        host: appConf.MYSQL_host,
+        port: appConf.MYSQL_port,
+        user: appConf.MYSQL_user,
+        password: appConf.MYSQL_password,
+        database: appConf.MYSQL_database
+    });
+
+    conn.connect(function(err) {
+        if ( err ) {
+            logger.error("Cannot connect to database");
+            http.error(res, 500, 50000, "Cannot connect to database");
+            return;
+        } else {
+            logger.debug("Database connected!");
+
+            const qstr = "SELECT user_details.UserID,\
+             user_details.Name, \
+             user_details.Surname, \
+             user_details.Position, \
+             user_details.Department, \
+             user_details.Segment \
+             FROM user_details \
+            INNER JOIN roommates on user_details.UserId = roommates.UserId \
+            WHERE roommates.FriendID = " + userId;
+
+            conn.query(qstr, function(err, result, fields) {
+                if ( err ) {
+                    logger.error( err );
+                    http.error(res, 404, 404000, "not found user or password");
+                    return; 
+                } else {
+                    var frientLists = [];
+                    for ( i = 0 ;i < result.length; i++ ){
+                        frientLists.push({
+                            userId: result[i].UserID,
+                            name: result[i].Name,
+                            surname: result[i].Surname,
+                            position: result[i].Position,
+                            department: result[i].Department,
+                            devision: result[i].Segment,
+                            displayName: result[i].Name + " " 
+                            + result[i].Surname + " / " 
+                            + result[i].UserID + " / "
+                            + result[i].Segment
+                        });
+                    }
+                    http.success(res, {frientLists});
+                }
+            });
+        }
+    });
+});
+
 // Get list of available friends
 router.get('/roommates', function(req, res){
     var conn = mysql.createConnection({
@@ -97,7 +155,11 @@ router.get('/roommates', function(req, res){
                             surname: result[i].Surname,
                             position: result[i].Position,
                             department: result[i].Department,
-                            devision: result[i].Segment
+                            devision: result[i].Segment,
+                            displayName: result[i].Name + " " 
+                            + result[i].Surname + " / " 
+                            + result[i].UserID + " / "
+                            + result[i].Segment
                         });
                     }
                     http.success(res, {frientLists});
@@ -243,6 +305,8 @@ router.delete('/roommates/:userid', function(req, res){
     });
 });
 
+// Login 
+// require username and password
 router.post('/login', function(req, res) {
     var ctx = req.body;
     const userid = ctx.userId;
