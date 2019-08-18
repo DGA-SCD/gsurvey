@@ -69,8 +69,9 @@ router.get('/roommates/:userid', function(req, res){
 
     conn.connect(function(err) {
         if ( err ) {
-            logger.error("Cannot connect to database");
-            http.error(res, 500, 50000, "Cannot connect to database");
+            logger.error("Cannot connect to mariadb");
+            http.error(res, 500, 50000, "Cannot connect to mariadb");
+            conn.end();
             return;
         } else {
             logger.debug("Database connected!");
@@ -89,6 +90,7 @@ router.get('/roommates/:userid', function(req, res){
                 if ( err ) {
                     logger.error( err );
                     http.error(res, 404, 404000, "not found user or password");
+                    conn.end();
                     return; 
                 } else {
                     var frientLists = [];
@@ -107,6 +109,7 @@ router.get('/roommates/:userid', function(req, res){
                         });
                     }
                     http.success(res, {frientLists});
+                    conn.end();
                 }
             });
         }
@@ -115,6 +118,7 @@ router.get('/roommates/:userid', function(req, res){
 
 // Get list of available friends
 router.get('/roommates', function(req, res){
+
     var conn = mysql.createConnection({
         host: appConf.MYSQL_host,
         port: appConf.MYSQL_port,
@@ -125,8 +129,9 @@ router.get('/roommates', function(req, res){
 
     conn.connect(function(err) {
         if ( err ) {
-            logger.error("Cannot connect to database");
-            http.error(res, 500, 50000, "Cannot connect to database");
+            logger.error("Cannot connect to mariadb");
+            http.error(res, 500, 50000, "Cannot connect to mariadb");
+            conn.end();
             return;
         } else {
             logger.debug("Database connected!");
@@ -145,7 +150,7 @@ router.get('/roommates', function(req, res){
                 if ( err ) {
                     logger.error( err );
                     http.error(res, 404, 404000, "not found user or password");
-                    return; 
+                    conn.end();
                 } else {
                     var frientLists = [];
                     for ( i = 0 ;i < result.length; i++ ){
@@ -163,6 +168,7 @@ router.get('/roommates', function(req, res){
                         });
                     }
                     http.success(res, {frientLists});
+                    conn.end();
                 }
             });
         }
@@ -171,9 +177,9 @@ router.get('/roommates', function(req, res){
 
 // Binding a friend with the same room.
 router.post('/roommates/:userid', function(req, res){
+
     var ctx = req.body;
     var newFriend = ctx.friendId;
-    
     var userId = req.params.userid;
 
     var conn = mysql.createConnection({
@@ -187,8 +193,8 @@ router.post('/roommates/:userid', function(req, res){
     try {
         conn.connect(function(err) {
             if ( err ) {
-                logger.error("Cannot connect to database");
-                http.error(res, 500, 50000, "Cannot connect to database");
+                logger.error("Cannot connect to mariadb");
+                http.error(res, 500, 50000, "Cannot connect to mariadb");
                 return;
             } else {
                 logger.debug("Database connected!");
@@ -199,7 +205,9 @@ router.post('/roommates/:userid', function(req, res){
                 
                 conn.query(qstr, function(err, result, fields) {
                     if ( err ) {
+                        logger.error( err );
                         http.error(res, 500, 50000, err);
+                        conn.end();
                     } else {
                        
                         if( result.length == 2 ){ 
@@ -209,25 +217,31 @@ router.post('/roommates/:userid', function(req, res){
                                         + " WHERE UserID = " + userId + " and FriendID is null";
                             conn.query(qstr, function(err, result, fields) {
                                 if( err ) {
+                                    logger.error( err );
                                     http.error(res, 500, 50000, err);
+                                    conn.end();
                                 } else {
                                     qstr = "UPDATE roommates \
                                         SET FriendID = " + userId
                                         + " WHERE UserID = " + newFriend;
                                     conn.query(qstr, function(err, result, fields) {
                                         if( err ) {
+                                            logger.error( err );
                                             http.error(res, 500, 50000, err);
+                                            conn.end();
                                         } else {
                                             http.success(res);
+                                            conn.end();
                                         }
                                     });
                                 }
                             });
                         } else { 
                             //Someone is not available
+                            logger.error( "Someone is not available" );
                             http.error(res, 403, 403000, "Someone is not available");
+                            conn.end();
                         }
-                    
                     }
                 });
             }
@@ -253,8 +267,9 @@ router.delete('/roommates/:userid', function(req, res){
 
     conn.connect(function(err) {
         if ( err ) {
-            logger.error("Cannot connect to database");
-            http.error(res, 500, 50000, "Cannot connect to database");
+            logger.error("Cannot connect to mariadb");
+            http.error(res, 500, 50000, "Cannot connect to mariadb");
+            conn.end();
             return;
         } else {
             logger.debug("Database connected!");
@@ -264,7 +279,9 @@ router.delete('/roommates/:userid', function(req, res){
             
             conn.query(qstr, function(err, result, fields) {
                 if ( err ) {
+                    logger.error(err);
                     http.error(res, 500, 50000, err);
+                    conn.end();
                     return;
                 } else {
                     console.log(result);
@@ -278,7 +295,9 @@ router.delete('/roommates/:userid', function(req, res){
                                     + " WHERE UserID = " + userId;
                         conn.query(qstr, function(err, result, fields) {
                             if( err ) {
+                                logger.error(err);
                                 http.error(res, 500, 50000, err);
+                                conn.end();
                                 return;
                             } else {
                                 qstr = "UPDATE roommates \
@@ -286,17 +305,22 @@ router.delete('/roommates/:userid', function(req, res){
                                     + " WHERE UserID = " + friendId;
                                 conn.query(qstr, function(err, result, fields) {
                                     if( err ) {
+                                        logger.error(err);
                                         http.error(res, 500, 50000, err);
+                                        conn.end();
                                         return;
                                     } else {
                                         http.success(res);
+                                        conn.end();
                                         return;
                                     }
                                 });
                             }
                         });
                     } else { 
-                        http.error(res, 404, 40400, "Cannot found an user");
+                        logger.end("Not found an user");
+                        http.error(res, 404, 40400, "Not found an user");
+                        conn.end();
                         return;
                     }
                 }
@@ -327,8 +351,9 @@ router.post('/login', function(req, res) {
 
     conn.connect(function(err) {
         if ( err ) {
-            logger.error("Cannot connect to database");
-            http.error(res, 500, 50000, "Cannot connect to database");
+            logger.error("Cannot connect to mariadb");
+            http.error(res, 500, 50000, "Cannot connect to mariadb");
+            conn.end();
             return;
         }else{
             logger.debug("Database connected!");
@@ -341,7 +366,8 @@ router.post('/login', function(req, res) {
             conn.query(qstr, function(err, result, fields){
                 if ( err ) {
                     logger.error( err );
-                    http.error(res, 404, 404000, "not found user or password");
+                    http.error(res, 404, 404000, "Not found user or password");
+                    conn.end();
                     return; 
                 } else {
                     logger.debug( "result " + JSON.stringify(result));
@@ -357,6 +383,7 @@ router.post('/login', function(req, res) {
                     redisCli.set(userName, token, 'EX', 3600, function(err, reply){
                         if( err ) {
                             logger.error("redis: " + err);
+                            redisCli.end();
                         } else {
                             logger.debug("redis: " + reply);
                             var userDetails = result[0];
@@ -376,13 +403,16 @@ router.post('/login', function(req, res) {
                                     level: userDetails.Level,
                                     token: token
                                 })
+                                redisCli.end();
+                                conn.end();
                             } else {
                                 logger.error("invalid user or password");
                                 http.error(res, 401, 401000, "invalid user or password");
+                                redisCli.end();
+                                conn.end();
                             }
                         }
                     });
-                    conn.end();
                 }
             });
         }
