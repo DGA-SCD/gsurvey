@@ -1,0 +1,10 @@
+@import url('https://fonts.googleapis.com/css?family=Athiti&display=swap');
+body{
+  font-family: 'Athiti', sans-serif;
+ 
+}
+
+#surveyCreatorContainer{
+    font-size: 0.7rem !important;
+    font-weight: 300;
+}

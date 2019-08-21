@@ -66,7 +66,22 @@ class SideMenuContent extends Component {
                   <span className="menu-item-text">Admin</span>
                </NavLink>
             </SideMenu.MenuSingleItem>
-           
+            <SideMenu.MenuSingleItem>
+               <NavLink to="/pages/summary" activeClassName="active">
+                  <i className="menu-icon">
+                     <MessageSquare size={18} />
+                  </i>
+                  <span className="menu-item-text">Datatable</span>
+               </NavLink>
+            </SideMenu.MenuSingleItem>
+            <SideMenu.MenuSingleItem>
+               <NavLink to="/pages/surveyresult" activeClassName="active">
+                  <i className="menu-icon">
+                     <MessageSquare size={18} />
+                  </i>
+                  <span className="menu-item-text">Result</span>
+               </NavLink>
+            </SideMenu.MenuSingleItem>
             
 
             

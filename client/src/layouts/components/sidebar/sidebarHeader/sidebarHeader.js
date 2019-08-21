@@ -33,7 +33,7 @@ class SidebarHeader extends Component {
                               <img src={Logo} alt="logo" />
                            )}                           
                         </div>
-                        <span className="text align-middle">APEX</span>
+                        <span className="text align-middle">Survey</span>
                      </NavLink>
 
                      <span className="nav-toggle d-none d-sm-none d-md-none d-lg-block">

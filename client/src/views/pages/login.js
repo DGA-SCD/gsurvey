@@ -2,7 +2,7 @@
 //https://www.skptricks.com/2018/06/simple-form-validation-in-reactjs-example.html
 import React, { Component } from "react";
 import { NavLink,Redirect } from "react-router-dom";
-import {PostData} from '../../services/PostData';
+import AuthService from '../../services/AuthService';
 
 import {toastr} from 'react-redux-toastr';
 import {
@@ -46,7 +46,7 @@ class Login extends Component {
         }
       };
       this.handleSubmit = this.handleSubmit.bind(this);
-      
+      this.Auth = new AuthService();
     }
 
     onKeyPress(event) {
@@ -104,6 +104,8 @@ class Login extends Component {
 
     }
 
+   
+
     handleSubmit(e) {
       e.preventDefault();
       if (this.validateForm()) {
@@ -111,36 +113,57 @@ class Login extends Component {
          
           console.log(this.state.userid);
           console.log(this.state.password);
-         PostData('login',this.state).then((result) => {
+          this.Auth.login(this.state.userid,this.state.password)
+            .then((result) => {
             let responseJson = result;
-            console.log(responseJson.userData);
-            if(responseJson.userData){         
-              sessionStorage.setItem('userData',JSON.stringify(responseJson.userData));
-              sessionStorage.setItem('session_userid',JSON.stringify(responseJson.userData.userid));
-              
-              this.setState({redirectToReferrer: true});
+                  console.log("respon"+responseJson);
+            if(responseJson){         
+               localStorage.setItem('userData',JSON.stringify(responseJson.data));
+           
+             
+               localStorage.getItem('token_local',JSON.stringify(responseJson.data.token));
+               this.setState({redirectToReferrer: true});
+            }else{
+               toastr.error( 'Error','Cannot Login',toastrOptions)
             }
             
-         });
-      }else{
-         alert("cannot submitted");
-      }
+         })
+         .catch(err =>{
+             alert(err);
+         })
 
     }
-   
+   }
+   componentDidMount() {
+      console.log("componentDidMount"+this.state.redirectToReferrer);
+      if (this.Auth.loggedIn()) {
+        
+         this.setState({redirectToReferrer: true});
+         // return (<Redirect to={'user-profile'}/>)
+         }else{
+            this.setState({redirectToReferrer: false});
+         }
+   }
    
 
    
    render() {
-     
+     console.log(this.state.redirectToReferrer);
       const {errors} = this.state;
+      // if (this.Auth.loggedIn()) {
+      //   let chk = this.Auth.loggedIn();
+      //   console.log("cccc"+chk);
+      //   // return (<Redirect to={'user-profile'}/>)
+      //   }else{
+      //    return (<Redirect to={'login'}/>)
+      //   }
       if (this.state.redirectToReferrer) {
          return (<Redirect to={'user-profile'}/>)
        }
       
-       if(sessionStorage.getItem('userData')){
-         return (<Redirect to={'user-profile'}/>)
-       }
+      //  if(sessionStorage.getItem('userData')){
+      //    return (<Redirect to={'user-profile'}/>)
+      //  }
 
    
       return (
@@ -228,9 +251,7 @@ class Login extends Component {
                                  <Button type="submit" color="danger" block className="btn-pink btn-raised">
                                     Login
                                  </Button>
-                                 <Button type="button" color="secondary" block className="btn-raised">
-                                    Cancel
-                                 </Button>
+                                 
                               </Col>
                            </FormGroup>
                         </Form>

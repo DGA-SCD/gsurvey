@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css?family=Athiti&display=swap');
 body{
   font-family: 'Athiti', sans-serif;
-  background-color: red;
+ 
 }
 .App {
   font-family: 'Athiti', sans-serif;
@@ -11,9 +11,7 @@ body{
 /* .modal {
   display:block !important;
 } */
-.xxx{
-  background-color: red;
-}
+
 .sv_main {
   font-family: 'Athiti', sans-serif;
   font-size: 1.35em !important;
@@ -23,9 +21,7 @@ body{
   width:300px;
 }
 
-.sv_main, .sv_default_css, .por_root [value~=Remove] {
-  background-color :rgb(251, 36, 36) !important;
-}
+
 
 
 /* .sv_q_title{

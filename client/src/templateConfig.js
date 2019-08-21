@@ -4,7 +4,7 @@
 // You can customize the theme with the help of this file
 
 // Change menu background from here, you can place new image also and use it.
-import sidebarBGImage from "./assets/img/sidebar-bg/01.jpg";
+import sidebarBGImage from "./assets/img/sidebar-bg/redcarpet.jpg";
 
 //Template config options
 const templateConfig = {
