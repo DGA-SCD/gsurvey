@@ -1,6 +1,7 @@
 // import external modules
 import React, { Component } from "react";
 import { Link , Redirect} from "react-router-dom";
+import AuthService from '../../../services/AuthService';
 import {
    Form,
    Media,
@@ -48,8 +49,21 @@ class ThemeNavbar extends Component {
       this.toggle = this.toggle.bind(this);
       this.state = {
          isOpen: false,
-         redirectToReferrer: false
+         redirectToReferrer: false,
+         datauser:''
       };
+      this.Auth = new AuthService();
+   }
+   componentDidMount(){
+      if (this.Auth.loggedIn()) {
+         this.setState({redirectToReferrer: true});
+        
+       //  let datauser = this.Auth.getUserFeed();
+        
+        
+     }else{
+      return (<Redirect to={'login'}/>)
+     }
    }
    toggle() {
       this.setState({
@@ -57,16 +71,15 @@ class ThemeNavbar extends Component {
       });
    }
    logout(){
-      console.log('dd');
-      sessionStorage.setItem("userData",'');
-      console.log(sessionStorage.setItem('userData'));
-      sessionStorage.clear();
-      this.setState({redirectToReferrer: true});
+      
+      
+      localStorage.clear();
+      this.setState({redirectToReferrer: false});
     }
+
    render() {
-      if (this.state.redirectToReferrer) {
-         return (<Redirect to={'/login'}/>)
-       }
+      
+     
       return (
          <Navbar className="navbar navbar-expand-lg navbar-light bg-faded">
             <div className="container-fluid px-0">
@@ -91,26 +104,7 @@ class ThemeNavbar extends Component {
                <div className="navbar-container">
                   <Collapse isOpen={this.state.isOpen} navbar>
                      <Nav className="ml-auto float-right" navbar>
-                        <UncontrolledDropdown nav inNavbar className="pr-1">
-                           <DropdownToggle nav>
-                              <ReactCountryFlag code="us" svg /> EN
-                           </DropdownToggle>
-                           <DropdownMenu right>
-                              <DropdownItem>
-                                 <ReactCountryFlag code="us" svg /> English
-                              </DropdownItem>
-                              <DropdownItem>
-                                 <ReactCountryFlag code="fr" svg /> France
-                              </DropdownItem>
-                              <DropdownItem>
-                                 <ReactCountryFlag code="es" svg /> Spanish
-                              </DropdownItem>
-                              <DropdownItem>
-                                 <ReactCountryFlag code="cn" svg /> Chinese
-                              </DropdownItem>
-                           </DropdownMenu>
-                        </UncontrolledDropdown>
-                        
+                       
                        
 
                         <UncontrolledDropdown nav inNavbar className="pr-1">
@@ -120,7 +114,8 @@ class ThemeNavbar extends Component {
                            <DropdownMenu right>
                               <DropdownItem>
                                  <span className="font-small-3">
-                                    John Doe <span className="text-muted">(Guest)</span>
+                                 
+                                 {localStorage.getItem("userlogin")}<span className="text-muted">(Guest)</span>
                                  </span>
                               </DropdownItem>
                               <DropdownItem divider />
@@ -130,27 +125,9 @@ class ThemeNavbar extends Component {
                                     <User size={16} className="mr-1" /> My Profile
                                  </DropdownItem>
                               </Link>
-                              <Link to="/email" className="p-0">
-                                 <DropdownItem>
-                                    <Inbox size={16} className="mr-1" /> Email
-                                 </DropdownItem>
-                              </Link>
-                              <Link to="/contacts" className="p-0">
-                                 <DropdownItem>
-                                    <Phone size={16} className="mr-1" /> Contacts
-                                 </DropdownItem>
-                              </Link>
-                              <Link to="/calendar" className="p-0">
-                                 <DropdownItem>
-                                    <Calendar size={16} className="mr-1" /> Calendar
-                                 </DropdownItem>
-                              </Link>
+                              
                               <DropdownItem divider />
-                              <Link to="/pages/lockscreen" className="p-0">
-                                 <DropdownItem>
-                                    <Lock size={16} className="mr-1" /> Lock Screen
-                                 </DropdownItem>
-                              </Link>
+                              
                               <Link to="/pages/login" onClick={this.logout}  className="p-0">
                                  <DropdownItem>
                                     <LogOut size={16} className="mr-1"  /> Logout
