@@ -32,22 +32,7 @@ class SideMenuContent extends Component {
    render() {
       return (
          <SideMenu className="sidebar-content" toggleSidebarMenu={this.props.toggleSidebarMenu}>
-            <SideMenu.MenuMultiItems
-               name="Dashboard"
-               Icon={<Home size={18} />}
-               ArrowRight={<ChevronRight size={16} />}
-               collapsedSidebar={this.props.collapsedSidebar}
-            >
-               <NavLink to="/" exact className="item" activeclassname="active">
-                  <span className="menu-item-text">eCommerce</span>
-               </NavLink>
-               <NavLink to="/analytics-dashboard" exact className="item" activeclassname="active">
-                  <span className="menu-item-text">Analytics</span>
-               </NavLink>
-               <NavLink to="/sales-dashboard" exact className="item" activeclassname="active">
-                  <span className="menu-item-text">Sales</span>
-               </NavLink>
-            </SideMenu.MenuMultiItems>
+           
             
             <SideMenu.MenuSingleItem>
                <NavLink to="/pages/survey" activeClassName="active">

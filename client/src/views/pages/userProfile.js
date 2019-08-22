@@ -20,40 +20,11 @@ import {
 } from "reactstrap";
 import classnames from "classnames";
 
-// import internal(own) modules
-import gallery1 from "../../assets/img/gallery/1.jpg";
-import gallery2 from "../../assets/img/gallery/2.jpg";
-import gallery3 from "../../assets/img/gallery/3.jpg";
-import gallery4 from "../../assets/img/gallery/4.jpg";
-import gallery5 from "../../assets/img/gallery/5.jpg";
-import gallery6 from "../../assets/img/gallery/6.jpg";
-import gallery7 from "../../assets/img/gallery/7.jpg";
-import gallery8 from "../../assets/img/gallery/8.jpg";
-import gallery9 from "../../assets/img/gallery/9.jpg";
-import gallery10 from "../../assets/img/gallery/10.jpg";
-import gallery11 from "../../assets/img/gallery/11.jpg";
-import gallery12 from "../../assets/img/gallery/12.jpg";
-import gallery13 from "../../assets/img/gallery/13.jpg";
-import gallery14 from "../../assets/img/gallery/14.jpg";
-import gallery15 from "../../assets/img/gallery/15.jpg";
-import gallery16 from "../../assets/img/gallery/16.jpg";
 
+import avatar_dga from "../../assets/img/portrait/medium/avatar_dga1.png";
 import avatarm8 from "../../assets/img/portrait/medium/avatar-m-8.png";
-import avatarS3 from "../../assets/img/portrait/small/avatar-s-3.png";
-import avatarS5 from "../../assets/img/portrait/small/avatar-s-5.png";
-import avatarS6 from "../../assets/img/portrait/small/avatar-s-6.png";
-import avatarS9 from "../../assets/img/portrait/small/avatar-s-9.png";
-import avatarS11 from "../../assets/img/portrait/small/avatar-s-11.png";
-import avatarS12 from "../../assets/img/portrait/small/avatar-s-12.png";
-import avatarS14 from "../../assets/img/portrait/small/avatar-s-14.png";
-import avatarS16 from "../../assets/img/portrait/small/avatar-s-16.png";
-import avatarS18 from "../../assets/img/portrait/small/avatar-s-18.png";
-import photo6 from "../../assets/img/photos/06.jpg";
-import photo7 from "../../assets/img/photos/07.jpg";
-import photo8 from "../../assets/img/photos/08.jpg";
-import photo9 from "../../assets/img/photos/09.jpg";
-import photo14 from "../../assets/img/photos/14.jpg";
 
+import survey_bg from "../../assets/img/photos/intro2.jpg";
 class UserProfile extends Component {
 
    constructor(props) {
@@ -145,30 +116,39 @@ class UserProfile extends Component {
                   <Card className="profile-with-cover">
                      <div
                         className="card-img-top img-fluid bg-cover height-300"
-                        style={{ background: `url("${photo14}") 50%` }}
+                        style={{ background: `url("${survey_bg}") 50%` }}
                      />
                      <Row className="media profil-cover-details">
                         <Col xs="5">
                            <div className="align-self-start halfway-fab pl-3 pt-2">
-                              <div className="text-left">
+                              {/* <div className="text-right">
                                  <h3 className="card-title text-white">{this.state.name} {this.state.surname}</h3>
                                
-                              </div>
+                              </div> */}
                              
                            </div>
                         </Col>
+                        
                         <Col xs="2">
                            <div className="align-self-center halfway-fab text-center">
                               <Link to="/pages/user-profile" className="profile-image">
                                  <img
-                                    src={avatarm8}
+                                    src={avatar_dga}
                                     className="rounded-circle img-border gradient-summer width-100"
                                     alt="Card avatar"
                                  />
                               </Link>
                            </div>
                         </Col>
-                       
+                        <Col xs="5">
+                           <div className="align-self-start halfway-fab pl-3 pt-2">
+                              <div className="text-right" >
+                                 <h3 className="card-title text-white" style={{paddingRight:20}}>{this.state.name} {this.state.surname}</h3>
+                               
+                              </div>
+                             
+                           </div>
+                        </Col>
                      </Row>
                    
                   </Card>
