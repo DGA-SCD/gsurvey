@@ -383,7 +383,7 @@ router.post('/login', function(req, res) {
                     redisCli.set(userName, token, 'EX', 3600, function(err, reply){
                         if( err ) {
                             logger.error("redis: " + err);
-                            redisCli.end();
+                            redisCli.end(true);
                         } else {
                             logger.debug("redis: " + reply);
                             var userDetails = result[0];
@@ -403,12 +403,12 @@ router.post('/login', function(req, res) {
                                     level: userDetails.Level,
                                     token: token
                                 })
-                                redisCli.end();
+                                redisCli.end(true);
                                 conn.end();
                             } else {
                                 logger.error("invalid user or password");
                                 http.error(res, 401, 401000, "invalid user or password");
-                                redisCli.end();
+                                redisCli.end(true);
                                 conn.end();
                             }
                         }
