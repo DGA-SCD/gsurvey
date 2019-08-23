@@ -106,63 +106,63 @@ function shirtprice(params) {
   return;
 
   switch(params[0]) { 
-    case "femalexxs": { 
+    case "female-xxs": { 
       value = 300;
        break; 
     } 
-    case "femalexs": { 
+    case "female-xs": { 
       value = 330;
        break; 
     } 
-    case "females": { 
+    case "female-s": { 
       value = 330;
        break; 
     } 
-    case "femalem": { 
+    case "female-m": { 
       value = 330;
        break; 
     } 
-    case "femalel": { 
+    case "female-l": { 
       value = 330;
        break; 
     } 
-    case "femalexl": { 
+    case "female-xl": { 
       value = 300;
        break; 
     } 
-    case "femalexxl": { 
+    case "female-xxl": { 
       value = 300;
        break; 
     } 
-    case "malexs": { 
+    case "male-xs": { 
       value = 300;
        break; 
     } 
-    case "males": { 
+    case "male-s": { 
       value = 300;
        break; 
     } 
-    case "malem": { 
+    case "male-m": { 
       value = 300;
        break; 
     } 
-    case "malel": { 
+    case "male-l": { 
       value = 330;
        break; 
     } 
-    case "malexl": { 
+    case "male-xl": { 
       value = 400;
        break; 
     } 
-    case "malexxl": { 
+    case "male-xxl": { 
       value = 400;
        break; 
     } 
-    case "male3xl": { 
+    case "male-3xl": { 
       value = 450;
        break; 
     } 
-    case "male4xl": { 
+    case "male-4xl": { 
       value = 450;
        break; 
     } 
@@ -245,7 +245,7 @@ class survey extends Component {
           console.log(err);
       });
     }
- 
+   
 
       onComplete(result) {
         const cookies = new Cookies();
@@ -286,18 +286,28 @@ class survey extends Component {
     .StylesManager
     .applyTheme("orange");
 
-    //var t = this.state.answers;
-    if(this.state.answers) var t = this.state.answers.surveyresult;
+    var t = this.state.answers;
+    
+    if(this.state.answers) 
+    var t = this.state.answers.surveyresult;
+    
+
+    console.log("answer------>"+JSON.stringify(this.state.answers));
+    console.log("myfriend------>"+JSON.stringify(this.state.myfriend));
+    console.log("t------>"+JSON.stringify(t));
+    console.log('this.state.myfriend.displayName--->'+this.state.myfriend);
+
     if (this.state.question) {
    
       var survey = new Survey.Model(this.state.question);
-      
+      var oldfriend = (this.state.myfriend === undefined || this.state.myfriend === 'none') ? '':this.state.myfriend.displayName;
       if( t ){
         survey.data = t;
+        
         survey.setValue("partner", this.state.myfriend.displayName);
             
-      survey.myfriend = this.state.myfriend.displayName;
-       console.log("==== Set Answer =====");
+        survey.myfriend = this.state.myfriend.displayName;
+        console.log("==== Set Answer =====");
       }
 
 
@@ -353,12 +363,62 @@ class survey extends Component {
            
     });
 
-   
-
+    
+   // console.log("sender------>"+ sender);
     survey.onValueChanged.add(function(sender, options) {
-      console.log("เพื่อนนอน=="+sender.myfriend);
-      if(sender.myfriend !== "none" && options.name === "partner" && options.value !== sender.myfriend && (options.value)){
+     
+      console.log("เพื่อนนอนใหม่"+options.value);
+      console.log("เพื่อนนอนเก่า"+oldfriend);
+      if(sender.myfriend !== "none" && options.name === "partner" && options.value !== sender.myfriend && (options.value) && t !== null){
         console.log("Option: " + options.value + " value: "+ sender.myfriend);
+        fetch("http://164.115.17.163:8082/v1/users/roommates/"+localStorage.getItem("session_userid"))
+        .then(res => res.json())
+        .then((result)=>{
+          if( result.success = true && result.data.frientLists){
+           
+            const [name, uid, section] = options.value.split('/');
+            console.log(uid);
+            toastr.confirm('มีคู่นอนอยู่แล้วนะจ๊ะ จะเปลี่ยนคู่นอนเป็น.'+ name + 'หรอจ๊ะ', 
+            {onOk: () => { 
+              $.ajax({
+                method:'delete',
+                crossDomain: true,
+                url: "http://164.115.17.163:8082/v1/users/roommates/"+localStorage.getItem("session_userid"),
+                }).done((res) => {
+                    console.log(res);
+                    let opts = {
+                        friendId :uid.trim()
+                      };
+                    fetch('http://164.115.17.163:8082/v1/users/roommates/'+localStorage.getItem("session_userid"), {
+                      method: 'post',
+                      headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                      },
+                      body: JSON.stringify(opts)
+                    }).then(function(response) {
+                      return response.json();
+                    }).then(function(data) {
+                      if(data.success){
+                        toastr.success('เปลี่ยนให้แล้วจ้า',toastrOptions);
+                      }
+                    });
+                    
+
+                    
+                    
+                })
+            }, 
+            onCancel: () => { 
+              console.log('cancel')
+            }})
+         
+           
+          }
+        },(err)=>{});
+        
+      }
+      if(t === null &&  options.name === "partner" && options.value !== oldfriend && oldfriend !== ''){
         fetch("http://164.115.17.163:8082/v1/users/roommates/"+localStorage.getItem("session_userid"))
         .then(res => res.json())
         .then((result)=>{
@@ -406,7 +466,6 @@ class survey extends Component {
         },(err)=>{});
         
       }
-    
       });       
  
         return (
