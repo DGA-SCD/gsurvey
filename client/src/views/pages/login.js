@@ -197,7 +197,7 @@ class Login extends Component {
                                //onKeyDown={e => /[\+\-\.\,]$/.test(e.key) && e.preventDefault()}
                                className="form-control" 
                             
-                               placeholder="รหัสพนักงาน" 
+                               placeholder="รหัสพนักงาน(080xxx)" 
                               onInput={this.maxLengthCheck}   
                               value={this.state.userid}
                               //onBlur={this.handleChange}
@@ -216,7 +216,7 @@ class Login extends Component {
                                     className="form-control"
                                     name="password"
                                     id="password"
-                                    placeholder="xxAug19xx"
+                                    placeholder="02Aug19xx"
                                     value={this.state.password}
                                     onChange = {this.handlePassChange}
                                    // onBlur={this.handleChange}
@@ -229,22 +229,7 @@ class Login extends Component {
                           
                           
                            <FormGroup>
-                              <Row>
-                                 <Col md="12">
-                                    <div className="custom-control custom-checkbox mb-2 mr-sm-2 mb-sm-0 ml-3">
-                                       <Input
-                                          type="checkbox"
-                                          className="custom-control-input"
-                                          checked={this.state.isChecked}
-                                          onChange={this.handleChecked}
-                                          id="rememberme"
-                                       />
-                                       <Label className="custom-control-label float-left white" for="rememberme">
-                                          Remember Me
-                                       </Label>
-                                    </div>
-                                 </Col>
-                              </Row>
+                              
                            </FormGroup>
                            <FormGroup>
                               <Col md="12">

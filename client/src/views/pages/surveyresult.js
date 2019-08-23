@@ -42,7 +42,10 @@ class surveyresult extends Component {
         name:userList.name,
         surname:userList.surname,
         position:userList.position,
-        userid:userList.id
+        userid:userList.id,
+        section:userList.department+'/'+userList.devision,
+        totalcostshirt : 0,
+        totalcostfollow : 0
       };
       this.Auth = new AuthService();
     }
@@ -73,10 +76,18 @@ class surveyresult extends Component {
      }).done((res) => {
       console.log(res.data);
          if(res.data){
+            console.log('dfsfsfddddddddds-->'+res.data.surveyresult.totalQuantity);
             this.setState({
                   dataList:res.data.surveyresult,
                   isfollwer:res.data.surveyresult.detailfollower,
                   shirtmore:res.data.surveyresult.items,
+                  totalcostshirt:  res.data.surveyresult.totalCost === undefined ? '0':res.data.surveyresult.totalCost ,
+                  totalcostfollow : res.data.surveyresult.totalQuantity === undefined ? '0':res.data.surveyresult.totalQuantity ,
+
+
+                  //  number1 = parseInt(this.state.totalcostshirt , 10 ),
+                  //  number2 = parseInt(this.state.totalcostfollow , 10 ) ,
+                 // var num3 = number1 + number2;
                   issurvey:true
             });
          }else{
@@ -85,7 +96,17 @@ class surveyresult extends Component {
             
          });
          }
-       console.log(this.state.isfollwer);
+         // if (isNaN(this.state.dataList.totalCost) || this.state.dataList.totalCost === undefined)
+         // this.setState({
+            
+         //    totalcost:0
+         //  })
+        
+         // console.log(number1);
+         // console.log(number2);
+         // console.log(num3);
+       console.log('dfsfsfsiรวมมมม-->'+parseInt(this.state.totalcostshirt,10)+parseInt(this.state.totalcostfollow,10));
+       console.log('dfsfsfs-->'+this.state.totalcostfollow);
       //  console.log(this.state.dataList);
       //    console.log(this.state.shirtmore);
 
@@ -189,6 +210,7 @@ class surveyresult extends Component {
       Follwer(state,value) {
          console.log(state);
          console.log(value);
+         console.log('total--->'+this.state.totalcost);
          console.log('Notification');
          return (
           
@@ -256,7 +278,12 @@ class surveyresult extends Component {
        }
       renderSurvey(){
          if(this.state.issurvey) {
-         
+          
+             
+            var number1 = parseInt(this.state.totalcostshirt , 10 );
+            var number2 = parseInt(this.state.totalcostfollow , 10 ) ;
+            var totalall = number1 + number2;
+
         let input 
         return input = 
         <div>
@@ -340,7 +367,7 @@ class surveyresult extends Component {
          <FormGroup row>
             <Label  className = "summary_result_lable"  sm={3}> ค่าใช้จ่ายทั้งหมด</Label>
             <Col sm={9}>
-            {parseInt(this.state.dataList.totalQuantity)} +  {parseInt(this.state.dataList.totalCost)}  THB.
+            {(this.state.totalcostfollow)} +  {this.state.totalcostshirt} = {totalall} THB.
             </Col>
          </FormGroup>
       </div>
@@ -370,7 +397,7 @@ class surveyresult extends Component {
                                  <Row>
                                     <Col md="6">
                                        <FormGroup row>
-                                          <Label for="userinput1" sm={3}>ชื่อ สกุล:</Label>
+                                          <Label for="userinput1"  className = "summary_result_lable" sm={3}>ชื่อ สกุล:</Label>
                                           <Col sm={9}>
                                           {this.state.name} {this.state.surname}
                                           </Col>
@@ -378,7 +405,7 @@ class surveyresult extends Component {
                                     </Col>
                                     <Col md="6">
                                        <FormGroup row>
-                                          <Label for="userinput2" sm={3}>รหัส:</Label>
+                                          <Label for="userinput2"   className = "summary_result_lable" sm={3}>รหัส:</Label>
                                           <Col sm={9}>
                                           {this.state.userid}
                                           </Col>
@@ -388,20 +415,20 @@ class surveyresult extends Component {
                                  <Row>
                                     <Col md="6">
                                        <FormGroup row className="last">
-                                          <Label for="userinput3" sm={3}>ตำแหน่ง:</Label>
+                                          <Label for="userinput3"  className = "summary_result_lable" sm={3}>ตำแหน่ง:</Label>
                                           <Col sm={9}>
                                           {this.state.position}
                                           </Col>
                                        </FormGroup>
                                     </Col>
-                                    {/* <Col md="6">
+                                    <Col md="6">
                                        <FormGroup row className="last">
-                                          <Label for="userinput4" sm={3}>Nick Name:</Label>
+                                          <Label for="userinput4" className = "summary_result_lable" sm={3}>ฝ่าย/แผนก:</Label>
                                           <Col sm={9}>
-                                             <Input type="text" id="userinput4" className="border-primary"  name="nickname"/>
+                                          {this.state.section}
                                           </Col>
                                        </FormGroup>
-                                    </Col> */}
+                                    </Col>
                                  </Row>
 
                                 
