@@ -21,12 +21,14 @@
 // SOFTWARE.
 
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const crypto = require('crypto');
 const base64url = require('base64url')
 const mysql = require('mysql');
 const winston = require('../../commons/logger');
 const http = require('../../commons/http');
 const appConf = require('../../config/production.conf');
+const auth = require('../helpers/auth');
 const redis = require("redis");
 const logger = winston.logger;
 const router = express.Router();
@@ -36,6 +38,13 @@ router.use(function(req, res, next){
     logger.debug('request body: ' + JSON.stringify(req.body));
     next();
 });
+
+router.use(cookieParser(appConf.cookies.secreteKey,
+{
+    maxAge: 1000 * 60 * 15,         // would expire after 15 minutes
+    httpOnly: true,                 // The cookie only accessible by the web server
+    signed: appConf.cookies.signed  // Indicates if the cookie should be signed
+}));
 
 router.use(function(req, res, next){
     // Website you wish to allow to connect
@@ -49,10 +58,14 @@ router.use(function(req, res, next){
 
     // Set to true if you need the website to include cookies in the requests sent
     // to the API (e.g. in case you use sessions)
-    res.setHeader('Access-Control-Allow-Credentials', true);
 
-
-    next();
+    logger.debug('read cookies userid: ' + req.signedCookies['userid'] + ' token: ' + req.signedCookies['token']);
+    
+    if( auth.verifyToken( req.signedCookies['userid'], req.signedCookies['token']) ){
+        next();
+    }else{
+         http.error(res, 401, 401000, "Invalid token");
+    }
 });
 
 router.get('/roommates/:userid', function(req, res){
@@ -118,7 +131,6 @@ router.get('/roommates/:userid', function(req, res){
 
 // Get list of available friends
 router.get('/roommates', function(req, res){
-
     var conn = mysql.createConnection({
         host: appConf.MYSQL_host,
         port: appConf.MYSQL_port,

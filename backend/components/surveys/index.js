@@ -1,5 +1,8 @@
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const winston = require('../../commons/logger');
+const appConf = require('../../config/production.conf');
+const auth = require('../helpers/auth');
 const logger = winston.logger;
 const router = express.Router();
 const surveyDAL = require('./surveyDAL');
@@ -8,6 +11,13 @@ router.use(function(req, res, next){
     logger.info('calling survey api');
     next();
 });
+
+router.use(cookieParser(appConf.cookies.secreteKey,
+    {
+        maxAge: 1000 * 60 * 15,         // would expire after 15 minutes
+        httpOnly: true,                 // The cookie only accessible by the web server
+        signed: appConf.cookies.signed  // Indicates if the cookie should be signed
+    }));    
 
 router.use(function(req, res, next){
     // Website you wish to allow to connect
@@ -24,7 +34,14 @@ router.use(function(req, res, next){
     res.setHeader('Access-Control-Allow-Credentials', true);
 
 
-    next();
+    logger.debug('read cookies userid: ' + req.signedCookies['userid'] + ' token: ' + req.signedCookies['token']);
+    
+    if( auth.verifyToken( req.signedCookies['userid'], req.signedCookies['token']) ){
+        next();
+    }else{
+         http.error(res, 401, 401000, "Invalid token");
+    }
+
 });
 
 router.get('/questions/:name', async function(req, res) {
