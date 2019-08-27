@@ -102,14 +102,14 @@ class Sidebar extends Component {
                </div>
             )}
          </FoldedContentConsumer>
-         <Customizer 
+         {/* <Customizer 
             sidebarBgColor={this.props.sidebarBgColor} 
             sidebarImageUrl={this.props.sidebarImageUrl}
             sidebarCollapsed={this.props.sidebarCollapsed}
             handleSidebarSize={this.props.handleSidebarSize}
             handleLayout={this.props.handleLayout}
             handleCollapsedSidebar={this.handleCollapsedSidebar.bind(this)}
-         />
+         /> */}
         </Fragment>
     );
    }
