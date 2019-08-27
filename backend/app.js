@@ -6,6 +6,7 @@ const path = require('path')
 global.appRoot = path.resolve(__dirname);
 const user = require('./components/users/index.js');
 const survey = require('./components/surveys/index.js');
+const auth = require('./components/auth/index.js');
 const conf = require('./config/production.conf');
 const app = express();
 
@@ -19,6 +20,7 @@ app.use(morgan('combined', { stream: accessLogStream }))
 
 app.use(express.json())
 
+app.use('/v1/auth', auth);
 app.use('/v1/users', user);
 app.use('/v1/survey', survey);
 
