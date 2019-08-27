@@ -330,7 +330,7 @@ router.delete('/roommates/:userid', function(req, res){
                             }
                         });
                     } else { 
-                        logger.end("Not found an user");
+                        logger.error("Not found an user");
                         http.error(res, 404, 40400, "Not found an user");
                         conn.end();
                         return;
