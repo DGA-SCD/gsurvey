@@ -21,6 +21,9 @@
 // SOFTWARE.
 
 exports.success = function( res, data){
+    if( res == null ) {
+        return false;
+    }
     res.status(200).json(
         { 
         success: true,
@@ -28,13 +31,18 @@ exports.success = function( res, data){
         desc: null,
         data: data
     });
+    return true;
 }
 
 exports.error = function( res, httpCode, errorCode, desc){
+    if( res == null ) {
+        return false;
+    }
     res.status(httpCode).json({ 
         success: false,
         code: errorCode,
         desc: desc,
         data: null 
     });
+    return true;
 }
