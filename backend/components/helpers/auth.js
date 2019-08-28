@@ -8,8 +8,7 @@ function verifyToken(userId, token){
 
     if( userId == null || token == null )
     {
-        logger.error("Invalid parameters");
-        // http.error(res, 400, 400000, "Invalid parameter on userId or toke");
+        logger.error("Invalid parameters: not found userid or token");
         return false;
     }
 

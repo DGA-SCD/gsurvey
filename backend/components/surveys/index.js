@@ -1,6 +1,7 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const winston = require('../../commons/logger');
+const http = require('../../commons/http');
 const appConf = require('../../config/production.conf');
 const auth = require('../helpers/auth');
 const logger = winston.logger;
@@ -33,13 +34,29 @@ router.use(function(req, res, next){
     // to the API (e.g. in case you use sessions)
     res.setHeader('Access-Control-Allow-Credentials', true);
 
+    var userId, tokenId;
 
-    logger.debug('read cookies userid: ' + req.signedCookies['userid'] + ' token: ' + req.signedCookies['token']);
+    if ( req.signedCookies['userid'] !== undefined && req.signedCookies['token'] !== undefined ) {
+        userId = req.signedCookies['userid'];
+        tokenId = req.signedCookies['token'];
+        logger.info("Found token in cookies");
+    } else if ( req.headers['userid'] !== undefined && req.headers['token'] !== undefined ) {
+        logger.info("Not found token in cookies. Using the token on header, instead");
+        userId = req.headers['userid'];
+        tokenId = req.headers['token'];
+    } else {
+        logger.error("Not found token");
+        http.error(res, 401, 401000, "Invalid token");
+        return;
+    }
+
+    logger.debug('read cookies userid: ' + userId + ' token: ' + tokenId);
     
-    if( auth.verifyToken( req.signedCookies['userid'], req.signedCookies['token']) ){
+    if ( auth.verifyToken( userId, tokenId) === true ){
         next();
-    }else{
-         http.error(res, 401, 401000, "Invalid token");
+    } else {
+        logger.error('Invalid token');
+        http.error(res, 401, 401000, "Invalid token");
     }
 
 });
