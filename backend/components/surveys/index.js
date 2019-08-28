@@ -52,12 +52,13 @@ router.use(function(req, res, next){
 
     logger.debug('read cookies userid: ' + userId + ' token: ' + tokenId);
     
-    if ( auth.verifyToken( userId, tokenId) === true ){
-        next();
-    } else {
-        logger.error('Invalid token');
-        http.error(res, 401, 401000, "Invalid token");
-    }
+    auth.verifyToken( userId, tokenId, function (err) {
+        if( err ){
+            http.error(res, 401, 401000, "Invalid token");
+        }else{
+            next();
+        }
+    })
 
 });
 
