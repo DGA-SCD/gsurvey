@@ -206,39 +206,66 @@ class survey extends Component {
        allTimeInfo: ""
       
     };
-    
+    this.Auth = new AuthService();
 
 
     }
 
-   
       
     componentDidMount(){
-    
+      var data1 = { 
+       userid :  localStorage.getItem("session_userid"), 
+       token :  localStorage.getItem("token_local")
+       
+      }; 
+      const options = {
+        async: true,
+        mode: 'cors',
+        crossDomain: true,
+        cache: 'no-cache',
+        method: 'GET',
+        headers: {
+            "userid": localStorage.getItem("session_userid"),
+           "token": localStorage.getItem("token_local"),
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+           
+        }
+      };
     var url1 = "http://164.115.17.163:8082/v1/survey/questions/seminar-01";
     var url2 = "http://164.115.17.163:8082/v1/users/roommates/" + localStorage.getItem("session_userid");
     var url3 = "http://164.115.17.163:8082/v1/survey/answers/" + localStorage.getItem("session_userid") + "/seminar-01/1";
 
     Promise.all([
-      fetch(url1).then(value1 => value1.json()),
-      fetch(url2).then(value2 => value2.json()),
-      fetch(url3).then(value2 => value2.json())
+      fetch(url1,options).then(value1 => value1.json()),
+      fetch(url2,options).then(value2 => value2.json()),
+      fetch(url3,options).then(value3 => value3.json())
       ])
+      .then(this.handleErrors)
+      // .then(function(response) {
+      //   console.log(response);
+      //   return response;
+      // })
       .then(allResponses => {
-        const response1 = allResponses[0]
-        const response2 = allResponses[1]
-        const response3 = allResponses[2]
       
-        console.log(response1.data);
-        console.log(response2.data.frientLists[0]);
-        console.log(response3.data);
-        this.setState({
-          question:response1.data,
-         
-          myfriend : response2.data.frientLists[0],
-          answers:response3.data
-        })
-        
+          const response1 = allResponses[0]
+          const response2 = allResponses[1]
+          const response3 = allResponses[2]
+      //.then(this._checkResponse(response1))
+          console.log("response1.data");
+          console.log(response1.data);
+          console.log(response2);
+          console.log(response3.data);
+          
+          
+
+          this.setState({
+            question:response1.data,
+          
+            myfriend : response2.data.frientLists[0],
+            answers:response3.data
+          })
+     
        
       })
       .catch((err) => {
@@ -246,7 +273,22 @@ class survey extends Component {
       });
     }
    
+    handleErrors(response) {
+      console.log('response.statusmmmmmmmm');
+      console.log(response);
+     
+      // raises an error in case response status is not a success
+      if (response.code === 401000) { // Success status lies between 200 to 300
+        console.log('401000');
+        localStorage.clear();
+        this.setState({redirectToReferrer: false});
+        this.props.history.push('/pages/login');
+      } else{
+        return response;
+      }
 
+
+  }
       onComplete(result) {
         const cookies = new Cookies();
         cookies.remove('cookiesurvey');
@@ -257,29 +299,34 @@ class survey extends Component {
                       version : "1",
                       surveyresult: result.data
                     }; 
-       // var roommates = { friendId:}
-    
       
-       // console.log(JSON.stringify(data));
 
           $.ajax({
           type: "POST",
            url: "http://164.115.17.163:8082/v1/survey/answers",
            contentType: "application/json",
             data: JSON.stringify(data),  //no further stringification
+            headers:{
+              'userId':localStorage.getItem("session_userid"), 
+              'token':localStorage.getItem("token_local"),
+              'Content-Type': 'application/json',
+            'Accept': 'application/json'
+            },
             success: function(response){
-             // localStorage.clear();
+          
               console.log(response);
              
             
-              document.location = "surveyresult";
+             document.location = "surveyresult";
             }
           });
       }
       
        
    render() {
-    
+    if (!this.Auth.loggedIn()) {
+      return (<Redirect to={'login'}/>)
+   }
     var storageName = "SurveyJS_LoadState";
     var timerId = 0;
     Survey
@@ -298,16 +345,47 @@ class survey extends Component {
     console.log('this.state.myfriend.displayName--->'+this.state.myfriend);
 
     if (this.state.question) {
-   
+     $.ajax({
+            method:'get',
+              crossDomain: true,
+              url: "http://164.115.17.163:8082/v1/users/roommates",
+              headers: {
+                "Content-Type": "application/json",
+                "userid":  localStorage.getItem("session_userid"),
+                "token": localStorage.getItem("token_local")
+              }
+            }).done((res) => {
+         
+              console.log(res);
+    
+              var q = survey.getQuestionByName('partner');
+              var choices = [];
+              res.data.frientLists.forEach(e => {
+                // choices.push()
+               // console.log("Display name:  " + e.displayName);
+                choices.push(e.displayName);
+              });
+    
+              q.choices = choices;
+          
+            
+            });
+
+
+
       var survey = new Survey.Model(this.state.question);
       var oldfriend = (this.state.myfriend === undefined || this.state.myfriend === 'none') ? '':this.state.myfriend.displayName;
       if( t ){
         survey.data = t;
         
-        survey.setValue("partner", this.state.myfriend.displayName);
+        if(this.state.myfriend && this.state.myfriend.length > 0){
+            survey.setValue("partner", this.state.myfriend.displayName);
+            survey.myfriend = this.state.myfriend.displayName;
+            console.log("==== Set Answer =====" +survey.myfriend );
+        }
             
-        survey.myfriend = this.state.myfriend.displayName;
-        console.log("==== Set Answer =====");
+       
+     
       }
 
 
@@ -343,17 +421,21 @@ class survey extends Component {
            
             options.question.value = parseInt(300);
           }
-          // if (options.question.name === "userid") {
-           
-          //   options.question.value = "080496";
-          // }
+       
           let dataList = JSON.parse(localStorage.getItem("userData"));
         
           survey.setValue("level", dataList.level);
+
+        
           $.ajax({
             method:'get',
               crossDomain: true,
               url: "http://164.115.17.163:8082/v1/users/roommates/"+localStorage.getItem("session_userid"),
+              headers: {
+                "Content-Type": "application/json",
+                "userid": localStorage.getItem("session_userid"),
+                "token": localStorage.getItem("token_local")
+              }
             }).done((res) => {
               if(res.data.frientLists[0] != undefined){
               
@@ -366,15 +448,31 @@ class survey extends Component {
     
    // console.log("sender------>"+ sender);
     survey.onValueChanged.add(function(sender, options) {
-     
+      var opt = {
+        async: true,
+        mode: 'cors',
+        crossDomain: true,
+        cache: 'no-cache',
+        method: 'GET',
+        headers: {
+            "userid": localStorage.getItem("session_userid"),
+           "token": localStorage.getItem("token_local"),
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+           
+        }
+      };
       console.log("เพื่อนนอนใหม่"+options.value);
       console.log("เพื่อนนอนเก่า"+oldfriend);
-      if(sender.myfriend !== "none" && options.name === "partner" && options.value !== sender.myfriend && (options.value) && t !== null){
+      console.log("เพื่อนนอนเก่า"+sender.myfriend);
+      console.log("ะt"+t);
+      if(sender.myfriend !== "none" && options.name === "partner" && options.value !== oldfriend && (options.value) && t !== null){
+   //   if(sender.myfriend !== "none" && options.name === "partner" && options.value !== sender.myfriend && (options.value) && t !== null){
         console.log("Option: " + options.value + " value: "+ sender.myfriend);
-        fetch("http://164.115.17.163:8082/v1/users/roommates/"+localStorage.getItem("session_userid"))
+        fetch("http://164.115.17.163:8082/v1/users/roommates/"+localStorage.getItem("session_userid"),opt)
         .then(res => res.json())
         .then((result)=>{
-          if( result.success = true && result.data.frientLists){
+          if( result.success === true && result.data.frientLists){
            
             const [name, uid, section] = options.value.split('/');
             console.log(uid);
@@ -384,6 +482,11 @@ class survey extends Component {
                 method:'delete',
                 crossDomain: true,
                 url: "http://164.115.17.163:8082/v1/users/roommates/"+localStorage.getItem("session_userid"),
+                headers: {
+                  "Content-Type": "application/json",
+                  "userid": localStorage.getItem("session_userid"),
+                  "token": localStorage.getItem("token_local")
+                }
                 }).done((res) => {
                     console.log(res);
                     let opts = {
@@ -393,7 +496,9 @@ class survey extends Component {
                       method: 'post',
                       headers: {
                         'Accept': 'application/json',
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        "userid": localStorage.getItem("session_userid"),
+                        "token": localStorage.getItem("token_local")
                       },
                       body: JSON.stringify(opts)
                     }).then(function(response) {
@@ -418,54 +523,87 @@ class survey extends Component {
         },(err)=>{});
         
       }
-      if(t === null &&  options.name === "partner" && options.value !== oldfriend && oldfriend !== ''){
-        fetch("http://164.115.17.163:8082/v1/users/roommates/"+localStorage.getItem("session_userid"))
-        .then(res => res.json())
-        .then((result)=>{
-          if( result.success = true && result.data.frientLists){
-           
-            const [name, uid, section] = options.value.split('/');
-            console.log(uid);
-            toastr.confirm('มีคู่นอนอยู่แล้วนะจ๊ะ จะเปลี่ยนคู่นอนเป็น '+ name + 'หรอจ๊ะ', 
-            {onOk: () => { 
-              $.ajax({
-                method:'delete',
-                crossDomain: true,
-                url: "http://164.115.17.163:8082/v1/users/roommates/"+localStorage.getItem("session_userid"),
-                }).done((res) => {
-                    console.log(res);
-                    let opts = {
-                        friendId :uid.trim()
-                      };
-                    fetch('http://164.115.17.163:8082/v1/users/roommates/'+localStorage.getItem("session_userid"), {
-                      method: 'post',
-                      headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                      },
-                      body: JSON.stringify(opts)
-                    }).then(function(response) {
-                      return response.json();
-                    }).then(function(data) {
-                      if(data.success){
-                        toastr.success('เปลี่ยนให้แล้วจ้า',toastrOptions);
-                      }
-                    });
-                    
+        if(t === null &&  options.name === "partner" && options.value !== oldfriend && oldfriend !== ''){
+          fetch("http://164.115.17.163:8082/v1/users/roommates/"+localStorage.getItem("session_userid"),opt)
+          .then(res => res.json())
+          .then((result)=>{
+            if( result.success = true && result.data.frientLists){
+            
+              const [name, uid, section] = options.value.split('/');
+              console.log(uid);
+              toastr.confirm('มีคู่นอนอยู่แล้วนะจ๊ะ จะเปลี่ยนคู่นอนเป็น '+ name + 'หรอจ๊ะ', 
+              {onOk: () => { 
+                $.ajax({
+                  method:'delete',
+                  crossDomain: true,
+                  url: "http://164.115.17.163:8082/v1/users/roommates/"+localStorage.getItem("session_userid"),
+                  headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    "userid": localStorage.getItem("session_userid"),
+                    "token": localStorage.getItem("token_local")
+                  }
+                  }).done((res) => {
+                      console.log(res);
+                      let opts = {
+                          friendId :uid.trim()
+                        };
+                      fetch('http://164.115.17.163:8082/v1/users/roommates/'+localStorage.getItem("session_userid"), {
+                        method: 'post',
+                        headers: {
+                          'Accept': 'application/json',
+                          'Content-Type': 'application/json',
+                          "userid": localStorage.getItem("session_userid"),
+                          "token": localStorage.getItem("token_local")
+                        },
+                        body: JSON.stringify(opts)
+                      }).then(function(response) {
+                        return response.json();
+                      }).then(function(data) {
+                        if(data.success){
+                          toastr.success('เปลี่ยนให้แล้วจ้า',toastrOptions);
+                        }
+                      });
+                      
 
-                    
-                    
-                })
-            }, 
-            onCancel: () => { 
-              console.log('cancel')
-            }})
-         
-           
-          }
-        },(err)=>{});
-        
-      }
+                      
+                      
+                  })
+              }, 
+              onCancel: () => { 
+                console.log('cancel')
+              }})
+          
+            
+            }
+          },(err)=>{});
+          
+        }
+
+        if(sender.myfriend === 'undefined'  && (t)){ // ตอบมาแล้วแต่ยังไม่เลือกคู่นอน
+          const [name, uid, section] = options.value.split('/');
+          
+          let opts = {
+            friendId :uid.trim()
+          };
+          fetch('http://164.115.17.163:8082/v1/users/roommates/'+localStorage.getItem("session_userid"), {
+            method: 'post',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+              "userid": localStorage.getItem("session_userid"),
+              "token": localStorage.getItem("token_local")
+            },
+            body: JSON.stringify(opts)
+          }).then(function(response) {
+            return response.json();
+          }).then(function(data) {
+            if(data.success){
+              toastr.success('เพิ่มคู่นอนให้แล้วจ้า',toastrOptions);
+            }
+          });
+          
+        }
       });       
  
         return (

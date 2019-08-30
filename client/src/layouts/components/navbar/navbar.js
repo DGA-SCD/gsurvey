@@ -1,7 +1,8 @@
 // import external modules
-import React, { Component } from "react";
+import React, { Fragment, Component } from "react";
 import { Link , Redirect} from "react-router-dom";
 import AuthService from '../../../services/AuthService';
+// import { hashHistory } from 'react-router;'
 import {
    Form,
    Media,
@@ -34,12 +35,9 @@ import {
 import NavbarSearch from "../../../components/search/Search";
 import ReactCountryFlag from "react-country-flag";
 
-import userImage from "../../../assets/img/portrait/small/avatar-s-1.png";
-import userImage2 from "../../../assets/img/portrait/small/avatar-s-2.png";
-import userImage3 from "../../../assets/img/portrait/small/avatar-s-3.png";
-import userImage4 from "../../../assets/img/portrait/small/avatar-s-4.png";
 import userImagedga from "../../../assets/img/portrait/small/avatar-s-dga.png";
 class ThemeNavbar extends Component {
+   
    handleClick = e => {
       this.props.toggleSidebarMenu("open");
    };
@@ -49,21 +47,17 @@ class ThemeNavbar extends Component {
       this.toggle = this.toggle.bind(this);
       this.state = {
          isOpen: false,
-         redirectToReferrer: false,
+        // redirectToReferrer: false,
          datauser:''
       };
       this.Auth = new AuthService();
+   
    }
    componentDidMount(){
-      if (this.Auth.loggedIn()) {
-         this.setState({redirectToReferrer: true});
-        
-       //  let datauser = this.Auth.getUserFeed();
-        
-        
-     }else{
-      return (<Redirect to={'login'}/>)
-     }
+      console.log('navbar');
+      console.log(this.Auth.loggedIn());
+     
+     
    }
    toggle() {
       this.setState({
@@ -78,7 +72,9 @@ class ThemeNavbar extends Component {
     }
 
    render() {
-      
+      if (!this.Auth.loggedIn()) {
+         return (<Redirect to={'login'}/>)
+      }
      
       return (
          <Navbar className="navbar navbar-expand-lg navbar-light bg-faded">

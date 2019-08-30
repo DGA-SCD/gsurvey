@@ -38,7 +38,7 @@ class UserProfile extends Component {
          test :"ssss",
          user_id:"",
          activeTab: "2",
-         redirectToReferrer: false
+         //redirectToReferrer: false
       };
       const { history } = this.props;
 
@@ -56,57 +56,37 @@ class UserProfile extends Component {
       }
    };
 
-   componentDidMount(){
-      this.getUserFeed();
-    }
-   componentWillMount() {
-      console.log('componentwillount');
-      let chk = this.Auth.loggedIn();
-      console.log(chk);
-      if (this.Auth.loggedIn()) {
+   // componentDidMount(){
+   //    this.getUserFeed();
+   //  }
+   // componentDidMount() {
+   //    console.log('componentwillount');
+   //    let chk = this.Auth.loggedIn();
+   //    console.log(chk);
+   //    if (this.Auth.loggedIn()) {
         
-         this.setState({redirectToReferrer: true});
-         // return (<Redirect to={'user-profile'}/>)
-         }else{
-            this.props.history.push('/login')
-           // this.setState({redirectToReferrer: false});
-         }
+   //       this.setState({redirectToReferrer: true});
+   //       // return (<Redirect to={'user-profile'}/>)
+   //       }else{
+   //          this.props.history.push('/pages/login');
+   //       }
      
    
 
-     }
+   //   }
    
-     getUserFeed() {
-      console.log("getUserFeed");
-       let dataList = JSON.parse(localStorage.getItem("userData"));
-     
-       
-       console.log(dataList);
-       console.log(dataList);
-       this.setState({
-          name:dataList.name,
-          surname:dataList.surname,
-          nickname:dataList.nickName,
-          birthday:dataList.birthday,
-          email:dataList.email,
-          telephone:dataList.tel,
-          position:dataList.position,
-          department:dataList.department,
-          section:dataList.devision,
-          userid:dataList.id
-       });
-      
-    }
-
-
+    
    render() {
 
       console.log("render");
-      
-      if (!this.state.redirectToReferrer) {
+      let dataList = JSON.parse(localStorage.getItem("userData"));
+      if (!this.Auth.loggedIn()) {
          return (<Redirect to={'login'}/>)
-       }
-      else{
+      }
+
+    //  console.log('dfsfdfsfsfssfd--->'+this.Auth_checkStatus);
+     
+      // else{
 
 
       return (
@@ -143,7 +123,7 @@ class UserProfile extends Component {
                         <Col xs="5">
                            <div className="align-self-start halfway-fab pl-3 pt-2">
                               <div className="text-right" >
-                                 <h3 className="card-title text-white" style={{paddingRight:20}}>{this.state.name} {this.state.surname}</h3>
+                                 <h3 className="card-title text-white" style={{paddingRight:20}}>{dataList.name} {dataList.surname}</h3>
                                
                               </div>
                              
@@ -175,14 +155,14 @@ class UserProfile extends Component {
                                           <span className="text-bold-500 primary">
                                              <Link to="/pages/useer-profile">ชื่อเล่น:</Link>
                                           </span>
-                                          <span className="display-block overflow-hidden">{this.state.nickname}</span>
+                                          <span className="display-block overflow-hidden">{dataList.name}</span>
                                        </li>
                                        
                                        <li className="mb-2">
                                           <span className="text-bold-500 primary">
                                              <Link to="/pages/user-profile">ฝ่าย/ส่วน :</Link>
                                           </span>
-                                          <span className="display-block overflow-hidden">{this.state.department}/{this.state.section}</span>
+                                          <span className="display-block overflow-hidden">{dataList.department}/{dataList.section}</span>
                                        </li>
                                     </ul>
                                  </Col>
@@ -194,7 +174,7 @@ class UserProfile extends Component {
                                              <Link to="/pages/user-profile">อีเมล:</Link>
                                           </span>
                                           <Link to="/pages/user-profile" className="display-block overflow-hidden">
-                                          {this.state.email}
+                                          {dataList.email}
                                           </Link>
                                        </li>
                                        <li className="mb-2">
@@ -202,7 +182,7 @@ class UserProfile extends Component {
                                              <Link to="/pages/user-profile">รหัสพนักงาน:</Link>
                                           </span>
                                           <Link to="/pages/user-profile" className="display-block overflow-hidden">
-                                          {this.state.userid}
+                                          {dataList.userid}
                                           </Link>
                                        </li>
                                     </ul>
@@ -213,13 +193,13 @@ class UserProfile extends Component {
                                           <span className="text-bold-500 primary">
                                              <Link to="/pages/user-profile">เบอร์โทรศัพท์:</Link>
                                           </span>
-                                          <span className="display-block overflow-hidden"> {this.state.telephone}</span>
+                                          <span className="display-block overflow-hidden"> {dataList.telephone}</span>
                                        </li>
                                        <li className="mb-2">
                                           <span className="text-bold-500 primary">
                                              <Link to="/pages/user-profile">ตำแหน่ง:</Link>
                                           </span>
-                                          <span className="display-block overflow-hidden">{this.state.position}</span>
+                                          <span className="display-block overflow-hidden">{dataList.position}</span>
                                        </li>
                                        
                                     </ul>
@@ -241,7 +221,7 @@ class UserProfile extends Component {
          </Fragment>
       );
       }
-   }
+   //}
 }
 
 export default UserProfile;
