@@ -31,7 +31,7 @@ class surveyresult extends Component {
    
    constructor(props) {
       super(props);
-      let userList = JSON.parse(localStorage.getItem("userData"));
+     
       this.state = {
          isfollwer : [], 
         dataList: [],
@@ -39,81 +39,70 @@ class surveyresult extends Component {
         issurvey:null,
         shirtmore:[],
         redirectToReferrer: false,
-        name:userList.name,
-        surname:userList.surname,
-        position:userList.position,
-        userid:userList.id,
-        section:userList.department+'/'+userList.devision,
+       
         totalcostshirt : 0,
         totalcostfollow : 0
       };
       this.Auth = new AuthService();
     }
 
-    componentWillMount() {
-      console.log('componentwillount');
-      let chk = this.Auth.loggedIn();
-      console.log(chk);
-      if (this.Auth.loggedIn()) {
-        
-         this.setState({redirectToReferrer: true});
-         // return (<Redirect to={'user-profile'}/>)
-         }else{
-            return (<Redirect to={'login'}/>)
-           // this.setState({redirectToReferrer: false});
-         }
-     
    
-
-     }
-
+   
     componentDidMount() {
-      console.log('componentdinmount');
-      $.ajax({
-         method:'get',
-         crossDomain: true,
-         url: "http://164.115.17.163:8082/v1/survey/answers/"+ localStorage.getItem("session_userid")+ "/seminar-01/1"
-     }).done((res) => {
-      console.log(res.data);
+     
+       fetch("http://164.115.17.163:8082/v1/survey/answers/"+ localStorage.getItem("session_userid")+ "/seminar-01/1", {
+         method: 'get',
+         headers: {
+           'Accept': 'application/json',
+           'Content-Type': 'application/json',
+           "userid": localStorage.getItem("session_userid"),
+           "token": localStorage.getItem("token_local")
+         },
+       
+       })
+      
+       .then(function(response) {
+         return response.json();
+       })
+       .then(this.Auth.handleErrors)
+       .then(res => {
+     //  .then(function(res) {
+        if(res.code === 401000){
+            localStorage.clear();
+            
+            this.props.history.push('/pages/login');
+        }else{
          if(res.data){
-            console.log('dfsfsfddddddddds-->'+res.data.surveyresult.totalQuantity);
-            this.setState({
-                  dataList:res.data.surveyresult,
-                  isfollwer:res.data.surveyresult.detailfollower,
-                  shirtmore:res.data.surveyresult.items,
-                  totalcostshirt:  res.data.surveyresult.totalCost === undefined ? '0':res.data.surveyresult.totalCost ,
-                  totalcostfollow : res.data.surveyresult.totalQuantity === undefined ? '0':res.data.surveyresult.totalQuantity ,
-
-
-                  //  number1 = parseInt(this.state.totalcostshirt , 10 ),
-                  //  number2 = parseInt(this.state.totalcostfollow , 10 ) ,
-                 // var num3 = number1 + number2;
-                  issurvey:true
-            });
-         }else{
-            this.setState({
-               issurvey:false
+                    console.log('dfsfsfddddddddds-->'+res.data.surveyresult.totalQuantity);
+                        this.setState({
+                              dataList:res.data.surveyresult,
+                              isfollwer:res.data.surveyresult.detailfollower,
+                              shirtmore:res.data.surveyresult.items,
+                              totalcostshirt:  res.data.surveyresult.totalCost === undefined ? '0':res.data.surveyresult.totalCost ,
+                              totalcostfollow : res.data.surveyresult.totalQuantity === undefined ? '0':res.data.surveyresult.totalQuantity ,
             
-         });
-         }
-         // if (isNaN(this.state.dataList.totalCost) || this.state.dataList.totalCost === undefined)
-         // this.setState({
             
-         //    totalcost:0
-         //  })
-        
-         // console.log(number1);
-         // console.log(number2);
-         // console.log(num3);
-       console.log('dfsfsfsiรวมมมม-->'+parseInt(this.state.totalcostshirt,10)+parseInt(this.state.totalcostfollow,10));
-       console.log('dfsfsfs-->'+this.state.totalcostfollow);
-      //  console.log(this.state.dataList);
-      //    console.log(this.state.shirtmore);
+                              //  number1 = parseInt(this.state.totalcostshirt , 10 ),
+                              //  number2 = parseInt(this.state.totalcostfollow , 10 ) ,
+                           // var num3 = number1 + number2;
+                              issurvey:true
+                        });
+            }else{
+               this.setState({
+                                    issurvey:false
+                                 
+                              });
+            }
+        }
+       });
 
-     })
 
+   
+     
     
     }
+
+  
     renderUser(_render) {
 
       switch(_render){
@@ -378,8 +367,10 @@ class surveyresult extends Component {
        }
 
    render() {
-      
-      
+      let userList = JSON.parse(localStorage.getItem("userData"));
+      if (!this.Auth.loggedIn()) {
+         return (<Redirect to={'login'}/>)
+      }
       return (
 
          <Fragment>
@@ -399,7 +390,7 @@ class surveyresult extends Component {
                                        <FormGroup row>
                                           <Label for="userinput1"  className = "summary_result_lable" sm={3}>ชื่อ สกุล:</Label>
                                           <Col sm={9}>
-                                          {this.state.name} {this.state.surname}
+                                        {userList.name}  {userList.surname}
                                           </Col>
                                        </FormGroup>
                                     </Col>
@@ -407,7 +398,7 @@ class surveyresult extends Component {
                                        <FormGroup row>
                                           <Label for="userinput2"   className = "summary_result_lable" sm={3}>รหัส:</Label>
                                           <Col sm={9}>
-                                          {this.state.userid}
+                                          {userList.id}
                                           </Col>
                                        </FormGroup>
                                     </Col>
@@ -417,7 +408,7 @@ class surveyresult extends Component {
                                        <FormGroup row className="last">
                                           <Label for="userinput3"  className = "summary_result_lable" sm={3}>ตำแหน่ง:</Label>
                                           <Col sm={9}>
-                                          {this.state.position}
+                                          {userList.position}
                                           </Col>
                                        </FormGroup>
                                     </Col>
@@ -425,7 +416,7 @@ class surveyresult extends Component {
                                        <FormGroup row className="last">
                                           <Label for="userinput4" className = "summary_result_lable" sm={3}>ฝ่าย/แผนก:</Label>
                                           <Col sm={9}>
-                                          {this.state.section}
+                                          {userList.department}/ {userList.devision}
                                           </Col>
                                        </FormGroup>
                                     </Col>

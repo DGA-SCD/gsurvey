@@ -1,17 +1,17 @@
-import decode from 'jwt-decode';
+
 export default class AuthService {
     //let BaseURL = 'http://demo4393909.mockable.io/';
   
 
     constructor(domain) {
-      this.domain = domain || 'http://164.115.17.163:8082/v1/users' // API server domain
+      this.domain = domain || 'http://164.115.17.163:8082/v1/auth/login' // API server domain
     //  this.fetch = this.fetch.bind(this) // React binding stuff
       this.login = this.login.bind(this)
      // this.getProfile = this.getProfile.bind(this)
   }
 
     login(userId, password) {
-        let BaseURL = 'http://164.115.17.163:8082/v1/users/login';
+        let BaseURL = 'http://164.115.17.163:8082/v1/auth/login';
         console.log("login"+userId);
       return fetch(BaseURL, {
           method: 'POST',
@@ -24,15 +24,18 @@ export default class AuthService {
               password: password
           })
             })
-            .then(this._checkStatus)
+            .then(this.handleErrors)
             .then((response) => response.json())
           
             .then((res) => {
-                console.log("login"+res);
+                console.log("login--->"+res.data);
+                console.log("logincode--->"+res.code);
+                if(res.code === 20000){
                 this.setToken(res.data.token)
                 this.setUserLogin(res.data)
                 console.log("logindddddd");
                 return Promise.resolve(res);
+                }
             })
             
       
@@ -43,12 +46,27 @@ export default class AuthService {
         console.log("Request failed", error);
     });
     }
-
+    handleErrors(response) {
+        console.log('response.statusmmmmmmmm');
+        console.log(response);
+       
+        // raises an error in case response status is not a success
+        if (response.code === 401000) { // Success status lies between 200 to 300
+          console.log('401000');
+          localStorage.clear();
+          this.setState({redirectToReferrer: false});
+          this.props.history.push('/pages/login');
+        } else{
+          return response;
+        }
+  
+  
+    }
     loggedIn() {
         // Checks if there is a saved token and it's still valid
          const token = this.getToken() // GEtting token from localstorage
-        
-         return !!token 
+        console.log('loggedIn');
+         return token 
     }
 
     getUserFeed() {
@@ -74,7 +92,8 @@ export default class AuthService {
     }
   
     _checkStatus(response) {
-        console.log('response.status');
+        console.log('response.statusmmmmmmmm');
+        console.log(response);
         console.log(response.status);
         // raises an error in case response status is not a success
         if (response.status >= 200 && response.status < 300) { // Success status lies between 200 to 300

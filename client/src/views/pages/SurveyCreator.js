@@ -48,24 +48,76 @@ class SurveyCreator extends Component {
     this.surveyCreator.saveSurveyFunc = this.saveMySurvey;
 
 
-    $.ajax({
-      method:'get',
-      crossDomain: true,
-      url: "http://164.115.17.163:8082/v1/survey/questions/seminar-01"
-  }).done((res) => {
-      console.log(res);
-      console.log("sccess==="+res.success);
-      var question = JSON.stringify(res.data);
-      this.surveyCreator.text= question;;
-      this.setState({json:(res.data)});
-      console.log("componentDidMount 2");
+  //   $.ajax({
+  //     method:'get',
+  //     crossDomain: true,
+  //     url: "http://164.115.17.163:8082/v1/survey/questions/seminar-01",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       "userid": localStorage.getItem("session_userid"),
+  //       "token": localStorage.getItem("token_local")
+  //     }
+  // }).done((res) => {
+  //     console.log(res);
+  //     console.log("sccess==="+res.success);
+  //     var question = JSON.stringify(res.data);
+  //     this.surveyCreator.text= question;;
+  //     this.setState({json:(res.data)});
+  //     console.log("componentDidMount 2");
 
-  })
+  // })
+
+
+        fetch("http://164.115.17.163:8082/v1/survey/questions/seminar-01", {
+          method: 'get',
+          crossDomain: true,
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            "userid": localStorage.getItem("session_userid"),
+            "token": localStorage.getItem("token_local")
+          },
+        
+        })
+      
+        .then(function(response) {
+          return response.json();
+        })
+        .then(this.handleErrors)
+        .then(res => {
+        if(res.code === 401000){
+            localStorage.clear();
+            
+            this.props.history.push('/pages/login');
+        }else{
+          if(res.data){
+            var question = JSON.stringify(res.data);
+            this.surveyCreator.text= question;;
+            this.setState({json:(res.data)});
+            console.log("componentDidMount 2");
+            }
+        }
+        });
 
    
   }
 
-  
+  handleErrors(response) {
+    console.log('response.statusmmmmmmmm');
+    console.log(response);
+   
+    // raises an error in case response status is not a success
+    if (response.code === 401000) { // Success status lies between 200 to 300
+      console.log('401000');
+      localStorage.clear();
+      this.setState({redirectToReferrer: false});
+      this.props.history.push('/pages/login');
+    } else{
+      return response;
+    }
+
+
+}
 
   render() {
     
@@ -97,7 +149,12 @@ class SurveyCreator extends Component {
       contentType: "application/json",
       data: data1, 
     
-      url: "http://164.115.17.163:8082/v1/survey/questions"
+      url: "http://164.115.17.163:8082/v1/survey/questions",
+      headers: {
+        "Content-Type": "application/json",
+        "userid": localStorage.getItem("session_userid"),
+        "token": localStorage.getItem("token_local")
+      }
   }).done((res) => {
       console.log(res);
       if(res.success===true){
