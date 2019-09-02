@@ -50,26 +50,33 @@ class surveyresult extends Component {
    
     componentDidMount() {
      
-       fetch("http://164.115.17.163:8082/v1/survey/answers/"+ localStorage.getItem("session_userid")+ "/seminar-01/1", {
+       fetch("http://164.115.17.101:8082/v1/survey/answers/"+ localStorage.getItem("session_userid")+ "/seminar-01/1", {
          method: 'get',
          headers: {
            'Accept': 'application/json',
            'Content-Type': 'application/json',
            "userid": localStorage.getItem("session_userid"),
-           "token": localStorage.getItem("token_local")
+          "token": localStorage.getItem("token_local")
+         //  "token" : "3gUMtyWlKatfMk5aLi5PpgQxfTJcA91YlN6Nt8XyiR1CwLs6wGP69FSQs8EKHCsg",
          },
        
        })
       
-       .then(function(response) {
-         return response.json();
+       .then(response => {
+         console.log(response.status); 
+         if (response.status !== 200) {
+          this.setState({redirectToReferrer:false});
+         console.log('chkredirect==>'+this.state.redirectToReferrer);
+      
+       }
+           return response.json();
        })
-       .then(this.Auth.handleErrors)
+
        .then(res => {
      //  .then(function(res) {
         if(res.code === 401000){
             localStorage.clear();
-            
+            this.setState({redirectToReferrer: false});
             this.props.history.push('/pages/login');
         }else{
          if(res.data){

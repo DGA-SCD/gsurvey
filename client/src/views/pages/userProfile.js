@@ -35,7 +35,7 @@ class UserProfile extends Component {
          dataList:[],
          name:"",
          
-         test :"ssss",
+       
          user_id:"",
          activeTab: "2",
          //redirectToReferrer: false

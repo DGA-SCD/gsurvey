@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Link , Redirect} from "react-router-dom";
 import * as SurveyJSCreator from "survey-creator";
 import * as SurveyKo from "survey-knockout";
 import "survey-creator/survey-creator.css";
@@ -15,7 +16,7 @@ import $ from "jquery";
 import "jquery-ui/ui/widgets/datepicker.js";
 import "select2/dist/js/select2.js";
 import "jquery-bar-rating";
-
+//import AuthService from '../../services/AuthService';
 import "icheck/skins/square/blue.css";
 
 import * as widgets from "surveyjs-widgets";
@@ -38,7 +39,18 @@ widgets.bootstrapslider(SurveyKo);
 class SurveyCreator extends Component {
   surveyCreator;
 
+  constructor(props) {
+    super(props);
 
+   
+    this.state = {
+     
+      chktoken: false,
+      redirectToReferrer:''
+   };
+    
+    //this.Auth = new AuthService();
+ }
   componentDidMount() {
     let options = { showEmbededSurveyTab: true };
     this.surveyCreator = new SurveyJSCreator.SurveyCreator(
@@ -51,7 +63,7 @@ class SurveyCreator extends Component {
   //   $.ajax({
   //     method:'get',
   //     crossDomain: true,
-  //     url: "http://164.115.17.163:8082/v1/survey/questions/seminar-01",
+  //     url: "http://164.115.17.101:8082/v1/survey/questions/seminar-01",
   //     headers: {
   //       "Content-Type": "application/json",
   //       "userid": localStorage.getItem("session_userid"),
@@ -68,7 +80,7 @@ class SurveyCreator extends Component {
   // })
 
 
-        fetch("http://164.115.17.163:8082/v1/survey/questions/seminar-01", {
+        fetch("http://164.115.17.101:8082/v1/survey/questions/seminar-01", {
           method: 'get',
           crossDomain: true,
           headers: {
@@ -76,51 +88,43 @@ class SurveyCreator extends Component {
             'Content-Type': 'application/json',
             "userid": localStorage.getItem("session_userid"),
             "token": localStorage.getItem("token_local")
+          // "token" : "3gUMtyWlKatfMk5aLi5PpgQxfTJcA91YlN6Nt8XyiR1CwLs6wGP69FSQs8EKHCsg",
           },
         
         })
+
+        .then((response) => {
+          console.log(response.status); 
+              if (response.status !== 200) {
+               this.setState({redirectToReferrer:false});
+              console.log('chkredirect==>'+this.state.redirectToReferrer);
+           
+            }
+                return response.json();
+          })
       
-        .then(function(response) {
-          return response.json();
-        })
-        .then(this.handleErrors)
+    
         .then(res => {
-        if(res.code === 401000){
-            localStorage.clear();
-            
-            this.props.history.push('/pages/login');
-        }else{
+       
           if(res.data){
+            this.setState({redirectToReferrer:true});
             var question = JSON.stringify(res.data);
             this.surveyCreator.text= question;;
             this.setState({json:(res.data)});
             console.log("componentDidMount 2");
             }
-        }
-        });
+        })
+    
 
    
   }
 
-  handleErrors(response) {
-    console.log('response.statusmmmmmmmm');
-    console.log(response);
-   
-    // raises an error in case response status is not a success
-    if (response.code === 401000) { // Success status lies between 200 to 300
-      console.log('401000');
-      localStorage.clear();
-      this.setState({redirectToReferrer: false});
-      this.props.history.push('/pages/login');
-    } else{
-      return response;
-    }
-
-
-}
-
   render() {
-    
+    if (this.state.redirectToReferrer === false) {
+      localStorage.clear();
+      console.log("เข้า render surveycreateor"); 
+      return (<Redirect to={'login'}/>)
+   }
     return (
       
               <div class = "admin">
@@ -149,7 +153,7 @@ class SurveyCreator extends Component {
       contentType: "application/json",
       data: data1, 
     
-      url: "http://164.115.17.163:8082/v1/survey/questions",
+      url: "http://164.115.17.101:8082/v1/survey/questions",
       headers: {
         "Content-Type": "application/json",
         "userid": localStorage.getItem("session_userid"),
