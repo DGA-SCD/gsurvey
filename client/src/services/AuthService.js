@@ -1,17 +1,19 @@
 
+import React, { Fragment, Component } from "react";
+import { Link , Redirect} from "react-router-dom";
 export default class AuthService {
     //let BaseURL = 'http://demo4393909.mockable.io/';
   
 
     constructor(domain) {
-      this.domain = domain || 'http://164.115.17.163:8082/v1/auth/login' // API server domain
+      this.domain = domain || 'http://164.115.17.101:8082/v1/auth/login' // API server domain
     //  this.fetch = this.fetch.bind(this) // React binding stuff
       this.login = this.login.bind(this)
      // this.getProfile = this.getProfile.bind(this)
   }
 
     login(userId, password) {
-        let BaseURL = 'http://164.115.17.163:8082/v1/auth/login';
+        let BaseURL = 'http://164.115.17.101:8082/v1/auth/login';
         console.log("login"+userId);
       return fetch(BaseURL, {
           method: 'POST',
@@ -24,7 +26,7 @@ export default class AuthService {
               password: password
           })
             })
-            .then(this.handleErrors)
+          //  .then(this._checkStatus)
             .then((response) => response.json())
           
             .then((res) => {
@@ -47,15 +49,18 @@ export default class AuthService {
     });
     }
     handleErrors(response) {
-        console.log('response.statusmmmmmmmm');
+        console.log('response.statusmm9999');
         console.log(response);
-       
+        if (response.status >= 200 && response.status < 300) {
+            console.log('ddiii');
+        }
+
         // raises an error in case response status is not a success
         if (response.code === 401000) { // Success status lies between 200 to 300
           console.log('401000');
           localStorage.clear();
-          this.setState({redirectToReferrer: false});
-          this.props.history.push('/pages/login');
+          return (<Redirect to={'login'}/>)
+        //  this.props.history.push('/pages/login');
         } else{
           return response;
         }

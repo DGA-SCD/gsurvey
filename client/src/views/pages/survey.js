@@ -61,7 +61,7 @@ const toastrConfirmOptions = {
       $.ajax({
         method:'delete',
         crossDomain: true,
-        url: "http://164.115.17.163:8082/v1/users/roommates/"+localStorage.getItem("session_userid"),
+        url: "http://164.115.17.101:8082/v1/users/roommates/"+localStorage.getItem("session_userid"),
         }).done((res) => {
             console.log(res);
       
@@ -227,68 +227,83 @@ class survey extends Component {
         headers: {
             "userid": localStorage.getItem("session_userid"),
            "token": localStorage.getItem("token_local"),
+          // "token" : "3gUMtyWlKatfMk5aLi5PpgQxfTJcA91YlN6Nt8XyiR1CwLs6wGP69FSQs8EKHCsg",
             'Content-Type': 'application/json',
             'Accept': 'application/json'
            
         }
       };
-    var url1 = "http://164.115.17.163:8082/v1/survey/questions/seminar-01";
-    var url2 = "http://164.115.17.163:8082/v1/users/roommates/" + localStorage.getItem("session_userid");
-    var url3 = "http://164.115.17.163:8082/v1/survey/answers/" + localStorage.getItem("session_userid") + "/seminar-01/1";
+    var url1 = "http://164.115.17.101:8082/v1/survey/questions/seminar-01";
+    var url2 = "http://164.115.17.101:8082/v1/users/roommates/" + localStorage.getItem("session_userid");
+    var url3 = "http://164.115.17.101:8082/v1/survey/answers/" + localStorage.getItem("session_userid") + "/seminar-01/1";
 
-    Promise.all([
-      fetch(url1,options).then(value1 => value1.json()),
-      fetch(url2,options).then(value2 => value2.json()),
-      fetch(url3,options).then(value3 => value3.json())
-      ])
-      .then(this.handleErrors)
-      // .then(function(response) {
-      //   console.log(response);
-      //   return response;
-      // })
-      .then(allResponses => {
-      
-          const response1 = allResponses[0]
-          const response2 = allResponses[1]
-          const response3 = allResponses[2]
-      //.then(this._checkResponse(response1))
-          console.log("response1.data");
-          console.log(response1.data);
-          console.log(response2);
-          console.log(response3.data);
-          
-          
 
-          this.setState({
-            question:response1.data,
-          
-            myfriend : response2.data.frientLists[0],
-            answers:response3.data
-          })
-     
+
+
+
+
+
+      var apiRequest1 = fetch(url1,options).then((response) => {
+            console.log(response.status); 
+                if (response.status !== 200) {
+                this.setState({redirectToReferrer:false});
+                console.log('chkredirect==>'+this.state.redirectToReferrer);
+                localStorage.clear();
+             
+                this.props.history.push('/pages/login');
+              }
+                  return response.json();
+            })
+    
+      var apiRequest2 = fetch(url2,options).then(function(response){
+        if (response.status !== 200) {
+          this.setState({redirectToReferrer:false});
+          console.log('chkredirect==>'+this.state.redirectToReferrer);
+          localStorage.clear();
        
-      })
-      .catch((err) => {
-          console.log(err);
+          this.props.history.push('/pages/login');
+        }
+            return response.json();
       });
+      var apiRequest3 = fetch(url3,options).then(function(response){
+        if (response.status !== 200) {
+          this.setState({redirectToReferrer:false});
+          console.log('chkredirect==>'+this.state.redirectToReferrer);
+          localStorage.clear();
+       
+          this.props.history.push('/pages/login');
+        }
+            return response.json();
+     });
+      //var combinedData = {"apiRequest1":{},"apiRequest2":{},"apiRequest3":{}};
+      Promise.all([apiRequest1,apiRequest2,apiRequest3])
+            .then(allResponses => {
+              const response1 = allResponses[0]
+              const response2 = allResponses[1]
+              const response3 = allResponses[2]
+          //.then(this._checkResponse(response1))
+              console.log("response1.data");
+              console.log(response1.data);
+              console.log(response2);
+              console.log(response3.data);
+              
+              
+
+              this.setState({
+                question:response1.data,
+              
+                myfriend : response2.data.frientLists[0],
+                answers:response3.data
+              })
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+
+
     }
    
-    handleErrors(response) {
-      console.log('response.statusmmmmmmmm');
-      console.log(response);
-     
-      // raises an error in case response status is not a success
-      if (response.code === 401000) { // Success status lies between 200 to 300
-        console.log('401000');
-        localStorage.clear();
-        this.setState({redirectToReferrer: false});
-        this.props.history.push('/pages/login');
-      } else{
-        return response;
-      }
-
-
-  }
+    
       onComplete(result) {
         const cookies = new Cookies();
         cookies.remove('cookiesurvey');
@@ -303,7 +318,7 @@ class survey extends Component {
 
           $.ajax({
           type: "POST",
-           url: "http://164.115.17.163:8082/v1/survey/answers",
+           url: "http://164.115.17.101:8082/v1/survey/answers",
            contentType: "application/json",
             data: JSON.stringify(data),  //no further stringification
             headers:{
@@ -348,7 +363,7 @@ class survey extends Component {
      $.ajax({
             method:'get',
               crossDomain: true,
-              url: "http://164.115.17.163:8082/v1/users/roommates",
+              url: "http://164.115.17.101:8082/v1/users/roommates",
               headers: {
                 "Content-Type": "application/json",
                 "userid":  localStorage.getItem("session_userid"),
@@ -430,7 +445,7 @@ class survey extends Component {
           $.ajax({
             method:'get',
               crossDomain: true,
-              url: "http://164.115.17.163:8082/v1/users/roommates/"+localStorage.getItem("session_userid"),
+              url: "http://164.115.17.101:8082/v1/users/roommates/"+localStorage.getItem("session_userid"),
               headers: {
                 "Content-Type": "application/json",
                 "userid": localStorage.getItem("session_userid"),
@@ -469,7 +484,7 @@ class survey extends Component {
       if(sender.myfriend !== "none" && options.name === "partner" && options.value !== oldfriend && (options.value) && t !== null){
    //   if(sender.myfriend !== "none" && options.name === "partner" && options.value !== sender.myfriend && (options.value) && t !== null){
         console.log("Option: " + options.value + " value: "+ sender.myfriend);
-        fetch("http://164.115.17.163:8082/v1/users/roommates/"+localStorage.getItem("session_userid"),opt)
+        fetch("http://164.115.17.101:8082/v1/users/roommates/"+localStorage.getItem("session_userid"),opt)
         .then(res => res.json())
         .then((result)=>{
           if( result.success === true && result.data.frientLists){
@@ -481,7 +496,7 @@ class survey extends Component {
               $.ajax({
                 method:'delete',
                 crossDomain: true,
-                url: "http://164.115.17.163:8082/v1/users/roommates/"+localStorage.getItem("session_userid"),
+                url: "http://164.115.17.101:8082/v1/users/roommates/"+localStorage.getItem("session_userid"),
                 headers: {
                   "Content-Type": "application/json",
                   "userid": localStorage.getItem("session_userid"),
@@ -492,7 +507,7 @@ class survey extends Component {
                     let opts = {
                         friendId :uid.trim()
                       };
-                    fetch('http://164.115.17.163:8082/v1/users/roommates/'+localStorage.getItem("session_userid"), {
+                    fetch('http://164.115.17.101:8082/v1/users/roommates/'+localStorage.getItem("session_userid"), {
                       method: 'post',
                       headers: {
                         'Accept': 'application/json',
@@ -524,7 +539,7 @@ class survey extends Component {
         
       }
         if(t === null &&  options.name === "partner" && options.value !== oldfriend && oldfriend !== ''){
-          fetch("http://164.115.17.163:8082/v1/users/roommates/"+localStorage.getItem("session_userid"),opt)
+          fetch("http://164.115.17.101:8082/v1/users/roommates/"+localStorage.getItem("session_userid"),opt)
           .then(res => res.json())
           .then((result)=>{
             if( result.success = true && result.data.frientLists){
@@ -536,7 +551,7 @@ class survey extends Component {
                 $.ajax({
                   method:'delete',
                   crossDomain: true,
-                  url: "http://164.115.17.163:8082/v1/users/roommates/"+localStorage.getItem("session_userid"),
+                  url: "http://164.115.17.101:8082/v1/users/roommates/"+localStorage.getItem("session_userid"),
                   headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
@@ -548,7 +563,7 @@ class survey extends Component {
                       let opts = {
                           friendId :uid.trim()
                         };
-                      fetch('http://164.115.17.163:8082/v1/users/roommates/'+localStorage.getItem("session_userid"), {
+                      fetch('http://164.115.17.101:8082/v1/users/roommates/'+localStorage.getItem("session_userid"), {
                         method: 'post',
                         headers: {
                           'Accept': 'application/json',
@@ -586,7 +601,7 @@ class survey extends Component {
           let opts = {
             friendId :uid.trim()
           };
-          fetch('http://164.115.17.163:8082/v1/users/roommates/'+localStorage.getItem("session_userid"), {
+          fetch('http://164.115.17.101:8082/v1/users/roommates/'+localStorage.getItem("session_userid"), {
             method: 'post',
             headers: {
               'Accept': 'application/json',
