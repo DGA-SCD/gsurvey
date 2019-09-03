@@ -25,6 +25,7 @@ const cookieParser = require('cookie-parser');
 const crypto = require('crypto');
 const base64url = require('base64url')
 const mysql = require('mysql');
+const promise = require('promise');
 const winston = require('../../commons/logger');
 const http = require('../../commons/http');
 const appConf = require('../../config/production.conf');
@@ -118,6 +119,7 @@ function login(req, res) {
                                     department: userDetails.Department,
                                     devision: userDetails.Segment,
                                     level: userDetails.Level,
+                                    role: userDetails.Role,
                                     token: token
                                 })
                                 redisCli.end(true);
@@ -136,6 +138,46 @@ function login(req, res) {
     });
 }
 
+function getConnection(){
+    var conn = mysql.createConnection({
+        host: appConf.MYSQL_host,
+        port: appConf.MYSQL_port,
+        user: appConf.MYSQL_user,
+        password: appConf.MYSQL_password,
+        database: appConf.MYSQL_database
+    });
+    return new promise(function(resolve, reject){
+        conn.connect(function(err) {
+            if ( err ) {
+                reject( err );
+            } else {
+                resolve( conn );
+            }
+        })
+    });
+}
+
+function getUserDetails(conn, userName, password )
+{
+    const qstr = "SELECT * FROM user_details \
+    INNER JOIN passwords on user_details.UserId = passwords.Username \
+    WHERE passwords.username = '" + userName + "' and passwords.password = '"+ password +"'";
+
+    return new promise(function(resolve, reject) {
+        conn.query(qstr, function(err, result, fields){
+            if ( err ) {
+                reject( err );
+            }
+            else {
+                conn.end();
+                resolve( result );
+            }
+        });
+    });
+}
+
 module.exports = {
-    login
+    login,
+    getConnection,
+    getUserDetails
 }
