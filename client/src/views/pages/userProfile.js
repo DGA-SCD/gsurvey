@@ -38,7 +38,7 @@ class UserProfile extends Component {
        
          user_id:"",
          activeTab: "2",
-         //redirectToReferrer: false
+         redirectToReferrer: ''
       };
       const { history } = this.props;
 
@@ -56,24 +56,6 @@ class UserProfile extends Component {
       }
    };
 
-   // componentDidMount(){
-   //    this.getUserFeed();
-   //  }
-   // componentDidMount() {
-   //    console.log('componentwillount');
-   //    let chk = this.Auth.loggedIn();
-   //    console.log(chk);
-   //    if (this.Auth.loggedIn()) {
-        
-   //       this.setState({redirectToReferrer: true});
-   //       // return (<Redirect to={'user-profile'}/>)
-   //       }else{
-   //          this.props.history.push('/pages/login');
-   //       }
-     
-   
-
-   //   }
    
     
    render() {
@@ -162,7 +144,7 @@ class UserProfile extends Component {
                                           <span className="text-bold-500 primary">
                                              <Link to="/pages/user-profile">ฝ่าย/ส่วน :</Link>
                                           </span>
-                                          <span className="display-block overflow-hidden">{dataList.department}/{dataList.section}</span>
+                                          <span className="display-block overflow-hidden">{dataList.department}/{dataList.devision}</span>
                                        </li>
                                     </ul>
                                  </Col>
@@ -182,7 +164,7 @@ class UserProfile extends Component {
                                              <Link to="/pages/user-profile">รหัสพนักงาน:</Link>
                                           </span>
                                           <Link to="/pages/user-profile" className="display-block overflow-hidden">
-                                          {dataList.userid}
+                                          {dataList.id}
                                           </Link>
                                        </li>
                                     </ul>
@@ -193,7 +175,7 @@ class UserProfile extends Component {
                                           <span className="text-bold-500 primary">
                                              <Link to="/pages/user-profile">เบอร์โทรศัพท์:</Link>
                                           </span>
-                                          <span className="display-block overflow-hidden"> {dataList.telephone}</span>
+                                          <span className="display-block overflow-hidden"> {dataList.tel}</span>
                                        </li>
                                        <li className="mb-2">
                                           <span className="text-bold-500 primary">

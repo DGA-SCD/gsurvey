@@ -1,5 +1,6 @@
 // import external modules
 import React, { Component } from "react";
+import { Link,Redirect } from "react-router-dom";
 
 import {
    Home,
@@ -30,6 +31,11 @@ import SideMenu from "../sidemenuHelper";
 
 class SideMenuContent extends Component {
    render() {
+      if (localStorage.getItem('token_local') === null) {
+         return (<Redirect to={'login'}/>)
+      }
+      let dataList = JSON.parse(localStorage.getItem("userData"));
+      if(dataList.role === 'admin'){
       return (
          <SideMenu className="sidebar-content" toggleSidebarMenu={this.props.toggleSidebarMenu}>
            
@@ -37,7 +43,7 @@ class SideMenuContent extends Component {
             <SideMenu.MenuSingleItem>
                <NavLink to="/pages/survey" activeClassName="active">
                   <i className="menu-icon">
-                     <MessageSquare size={18} />
+                     <CheckSquare size={18} />
                   </i>
                   <span className="menu-item-text">แบบสำรวจ</span>
                </NavLink>
@@ -46,11 +52,12 @@ class SideMenuContent extends Component {
             <SideMenu.MenuSingleItem>
                <NavLink to="/pages/SurveyCreator" activeClassName="active">
                   <i className="menu-icon">
-                     <MessageSquare size={18} />
+                     <Layers size={18} />
                   </i>
-                  <span className="menu-item-text">Admin</span>
+                  <span className="menu-item-text">Create SurveyForm</span>
                </NavLink>
             </SideMenu.MenuSingleItem>
+            }
             <SideMenu.MenuSingleItem>
                <NavLink to="/pages/summary" activeClassName="active">
                   <i className="menu-icon">
@@ -62,9 +69,9 @@ class SideMenuContent extends Component {
             <SideMenu.MenuSingleItem>
                <NavLink to="/pages/surveyresult" activeClassName="active">
                   <i className="menu-icon">
-                     <MessageSquare size={18} />
+                     <Copy size={18} />
                   </i>
-                  <span className="menu-item-text">Result</span>
+                  <span className="menu-item-text">ผลสำรวจ</span>
                </NavLink>
             </SideMenu.MenuSingleItem>
             
@@ -73,6 +80,38 @@ class SideMenuContent extends Component {
            
          </SideMenu>
       );
+      }
+      if(dataList.role === 'user'){
+         return (
+            <SideMenu className="sidebar-content" toggleSidebarMenu={this.props.toggleSidebarMenu}>
+              
+               
+               <SideMenu.MenuSingleItem>
+                  <NavLink to="/pages/survey" activeClassName="active">
+                     <i className="menu-icon">
+                        <CheckSquare size={18} />
+                     </i>
+                     <span className="menu-item-text">แบบสำรวจ</span>
+                  </NavLink>
+               </SideMenu.MenuSingleItem>
+               
+              
+               
+               <SideMenu.MenuSingleItem>
+                  <NavLink to="/pages/surveyresult" activeClassName="active">
+                     <i className="menu-icon">
+                        <Copy size={18} />
+                     </i>
+                     <span className="menu-item-text">ผลสำรวจ</span>
+                  </NavLink>
+               </SideMenu.MenuSingleItem>
+               
+   
+               
+              
+            </SideMenu>
+         );
+         }
    }
 }
 
