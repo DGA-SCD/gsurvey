@@ -491,7 +491,7 @@ class survey extends Component {
            
             const [name, uid, section] = options.value.split('/');
             console.log(uid);
-            toastr.confirm('มีคู่นอนอยู่แล้วนะจ๊ะ จะเปลี่ยนคู่นอนเป็น.'+ name + 'หรอจ๊ะ', 
+            toastr.confirm('มีเพื่อนร่วมห้องอยู่แล้วนะจ๊ะ จะเปลี่ยนคู่นอนเป็น.'+ name + 'หรอ', 
             {onOk: () => { 
               $.ajax({
                 method:'delete',
@@ -546,7 +546,7 @@ class survey extends Component {
             
               const [name, uid, section] = options.value.split('/');
               console.log(uid);
-              toastr.confirm('มีคู่นอนอยู่แล้วนะจ๊ะ จะเปลี่ยนคู่นอนเป็น '+ name + 'หรอจ๊ะ', 
+              toastr.confirm('มีเพื่อนร่วมห้องอยู่แล้วนะจ๊ะ จะเปลี่ยนคู่นอนเป็น '+ name + 'หรอจ๊ะ', 
               {onOk: () => { 
                 $.ajax({
                   method:'delete',
