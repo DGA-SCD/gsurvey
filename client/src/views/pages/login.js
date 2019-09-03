@@ -150,13 +150,7 @@ class Login extends Component {
    render() {
      console.log(this.state.redirectToReferrer);
       const {errors} = this.state;
-      // if (this.Auth.loggedIn()) {
-      //   let chk = this.Auth.loggedIn();
-      //   console.log("cccc"+chk);
-      //   // return (<Redirect to={'user-profile'}/>)
-      //   }else{
-      //    return (<Redirect to={'login'}/>)
-      //   }
+    
       if (this.state.redirectToReferrer) {
          return (<Redirect to={'user-profile'}/>)
        }
@@ -176,7 +170,7 @@ class Login extends Component {
                   <Card className="gradient-indigo-purple text-center width-400">
                 
                      <CardBody>
-                        <h2 className="white py-4">Login</h2>
+                        <h2 className="white py-4">  เข้าสู่ระบบ</h2>
                         {/* <Alert
                               color="danger"
                               isOpen={this.state.visible}
@@ -234,7 +228,7 @@ class Login extends Component {
                            <FormGroup>
                               <Col md="12">
                                  <Button type="submit" color="danger" block className="btn-pink btn-raised">
-                                    Login
+                                    เข้าสู่ระบบ
                                  </Button>
                                  
                               </Col>

@@ -80,6 +80,7 @@ class surveyresult extends Component {
             this.props.history.push('/pages/login');
         }else{
          if(res.data){
+            console.log(res.data);
                     console.log('dfsfsfddddddddds-->'+res.data.surveyresult.totalQuantity);
                         this.setState({
                               dataList:res.data.surveyresult,
@@ -123,10 +124,10 @@ class surveyresult extends Component {
           
           break;
          case "howtogo":
-            if(this.state.dataList.readytogo === '1')
+            if(this.state.dataList.howtogo === '1')
                   return<div>รถบัส</div>;
             
-               else
+            if(this.state.dataList.howtogo === '2')
                   return<div>ขับรถไปเอง</div>;
 
             break;
@@ -159,21 +160,21 @@ class surveyresult extends Component {
             break;
          case "datetoback":
             if(this.state.dataList.datetoback === '1')
-                  return<div>01 พฤศจิกายน 2562</div>;
+                  return<div>12 ธันวาคม 2562</div>;
             
             if(this.state.dataList.datetoback === '2')
-                  return<div>02 พฤศจิกายน 2562</div>; 
+                  return<div>13 ธันวาคม 2562</div>; 
             if(this.state.dataList.datetoback === '3')
-                  return<div>03 พฤศจิกายน 2562</div>;
+                  return<div>14 ธันวาคม 2562</div>;
             break;
          case "datetogo":
             if(this.state.dataList.datetogo === '1')
-                  return<div>01 พฤศจิกายน 2562</div>;
+                  return<div>12 ธันวาคม 2562</div>;
             
             if(this.state.dataList.datetogo === '2')
-                  return<div>02 พฤศจิกายน 2562</div>; 
+                  return<div>13 ธันวาคม 2562</div>; 
             if(this.state.dataList.datetogo === '3')
-                  return<div>03 พฤศจิกายน 2562</div>;
+                  return<div>14 ธันวาคม 2562</div>;
             break;
 
 

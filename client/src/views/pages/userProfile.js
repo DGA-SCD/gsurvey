@@ -155,17 +155,17 @@ class UserProfile extends Component {
                                           <span className="text-bold-500 primary">
                                              <Link to="/pages/user-profile">อีเมล:</Link>
                                           </span>
-                                          <Link to="/pages/user-profile" className="display-block overflow-hidden">
-                                          {dataList.email}
-                                          </Link>
+                                         
+                                          <span className="display-block overflow-hidden">   {dataList.email}</span>
+                                          
                                        </li>
                                        <li className="mb-2">
                                           <span className="text-bold-500 primary">
                                              <Link to="/pages/user-profile">รหัสพนักงาน:</Link>
                                           </span>
-                                          <Link to="/pages/user-profile" className="display-block overflow-hidden">
-                                          {dataList.id}
-                                          </Link>
+                                         
+                                          <span className="display-block overflow-hidden">  {dataList.id}</span>
+                                          
                                        </li>
                                     </ul>
                                  </Col>
