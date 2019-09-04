@@ -309,7 +309,7 @@ class surveyresult extends Component {
             </Col>
          </FormGroup>
          <FormGroup row>
-            <Label  className = "summary_result_lable"  sm={3}> เลือก roomate เป็น</Label>
+            <Label  className = "summary_result_lable"  sm={3}> เลือกเพื่อนร่วมห้องเป็น</Label>
             <Col sm={9}>
             {this.state.dataList.partner}
             </Col>

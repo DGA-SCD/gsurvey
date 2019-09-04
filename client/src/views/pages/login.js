@@ -50,10 +50,9 @@ class Login extends Component {
     }
 
     onKeyPress(event) {
-      const keyCode = event.keyCode || event.which;
-      const keyValue = String.fromCharCode(keyCode);
-       if (/\+|-/.test(keyValue))
-         event.preventDefault();
+      var decimalvalidate = /^[0-9]*$/;
+      if (!decimalvalidate.test(event.key)) 
+        event.preventDefault();
      }
 
  
@@ -185,7 +184,7 @@ class Login extends Component {
                            </div>
                            <FormGroup>
                                <Col md="12">
-                               <input type="number"  
+                               <input type="textbox"  
                                name='userid'    
                                onKeyPress={this.onKeyPress.bind(this)}
                                //onKeyDown={e => /[\+\-\.\,]$/.test(e.key) && e.preventDefault()}
