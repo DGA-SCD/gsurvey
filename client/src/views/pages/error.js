@@ -47,8 +47,8 @@ const Error = props => {
                      <div className="error-footer bg-transparent">
                         <Row>
                            <p className="text-muted text-center col-12 py-1">
-                              © 2018 <Link to="/pages/error">Apex </Link>
-                              Crafted by <i className="ft-heart font-small-3" />
+                              © 2019 <Link to="/pages/error">DGA Seminar </Link>
+                               <i className="ft-heart font-small-3" />
                               
                               <a
                                  href="https://pixinvent.com/demo/apex-react-redux-bootstrap-admin-dashboard-template/landing-page/"
@@ -56,7 +56,7 @@ const Error = props => {
                                  target="_blank"
                               >
                                  {" "}
-                                 PIXINVENT
+                                 by SC
                               </a>
                            </p>
                            <Col xs="12" className="text-center">

@@ -28,10 +28,10 @@ const Footer = props => (
             >
                DGA Seminar {" "}
             </a>
-            Crafted by <i className="ft-heart font-small-3" />            
+           <i className="ft-heart font-small-3" />            
             <a href="https://pixinvent.com/" rel="noopener noreferrer" target="_blank">
                {" "}
-               Created by SC
+                by SC
             </a>
          </p>
       </div>
