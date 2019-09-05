@@ -36,107 +36,6 @@ const router = express.Router();
 
 // Login 
 // require username and password
-function login(req, res) {
-    var ctx = req.body;
-    const userid = ctx.userId;
-    const password = ctx.password;
-    
-    logger.debug('user: ' + userid);
-    logger.debug('password: ' + password);
-
-    var userName = userid;
-    
-    var conn = mysql.createConnection({
-        host: appConf.MYSQL_host,
-        port: appConf.MYSQL_port,
-        user: appConf.MYSQL_user,
-        password: appConf.MYSQL_password,
-        database: appConf.MYSQL_database
-    });
-    
-    conn.connect(function(err) {
-        
-        logger.debug("Trying...");
-
-        if ( err ) {
-            logger.error("Cannot connect to mariadb");
-            http.error(res, 500, 50000, "Cannot connect to mariadb");
-            conn.end();
-            return;
-        }else{
-            logger.debug("Database connected!");
-            logger.debug("Search user name: " + userName);
-
-            const qstr = "SELECT * FROM user_details \
-            INNER JOIN passwords on user_details.UserId = passwords.Username \
-            WHERE passwords.username = '" + userName + "' and passwords.password = '"+ password +"'";
-
-            conn.query(qstr, function(err, result, fields){
-                if ( err ) {
-                    logger.error( err );
-                    http.error(res, 404, 404000, "Not found user or password");
-                    conn.end();
-                    return; 
-                } else {
-                    logger.debug( "result " + JSON.stringify(result));
-                    var token = base64url(crypto.randomBytes(48));
-                    const redisCli = redis.createClient({
-                        port      : appConf.REDIS_port,               // replace with your port
-                        host      : appConf.REDIS_host,        // replace with your hostanme or IP address
-                    });
-                    redisCli.on("error", function (err) {
-                        logger.error("redis: " + err);
-                    });
-                    
-                    redisCli.set(userName, token, 'EX', 3600, function(err, reply){
-                        if( err ) {
-                            logger.error("redis: " + err);
-                            redisCli.end(true);
-                        } else {
-                            logger.debug("redis: " + reply);
-                            var userDetails = result[0];
-                            if ( result[0] != null ) {
-
-                                let options = {
-                                    maxAge: 1000 * 60 * 15,         // would expire after 15 minutes
-                                    httpOnly: true,                 // The cookie only accessible by the web server
-                                    signed: appConf.cookies.signed  // Indicates if the cookie should be signed
-                                }    
-                                
-                                res.cookie('userid', userDetails.UserID, options);
-                                res.cookie('token', token, options);
-
-                                http.success(res, { 
-                                    id: userDetails.UserID,
-                                    name: userDetails.Name,
-                                    surname: userDetails.Surname,
-                                    nameEN: userDetails.NameEn,
-                                    surnameEN: userDetails.SurnameEn,
-                                    nickName: userDetails.NickName,
-                                    tel: userDetails.Telephone,
-                                    email: userDetails.Email,
-                                    position: userDetails.Position,
-                                    department: userDetails.Department,
-                                    devision: userDetails.Segment,
-                                    level: userDetails.Level,
-                                    role: userDetails.Role,
-                                    token: token
-                                })
-                                redisCli.end(true);
-                                conn.end();
-                            } else {
-                                logger.error("invalid user or password");
-                                http.error(res, 401, 401000, "invalid user or password");
-                                redisCli.end(true);
-                                conn.end();
-                            }
-                        }
-                    });
-                }
-            });
-        }
-    });
-}
 
 function getConnection(){
     var conn = mysql.createConnection({
@@ -149,15 +48,17 @@ function getConnection(){
     return new promise(function(resolve, reject){
         conn.connect(function(err) {
             if ( err ) {
+                logger.error( "mysql connect failed" );
                 reject( err );
             } else {
+                logger.debug( "mysql connected" );
                 resolve( conn );
             }
         })
     });
 }
 
-function getUserDetails(conn, userName, password )
+function getUserDetails( conn, userName, password )
 {
     const qstr = "SELECT * FROM user_details \
     INNER JOIN passwords on user_details.UserId = passwords.Username \
@@ -166,12 +67,146 @@ function getUserDetails(conn, userName, password )
     return new promise(function(resolve, reject) {
         conn.query(qstr, function(err, result, fields){
             if ( err ) {
+                logger.error( "query failed: " + err );
                 reject( err );
             }
             else {
                 conn.end();
-                resolve( result );
+                logger.debug( "qeury result: " + JSON.stringify( result[0] ) );
+                resolve( result[0] );
             }
+        });
+    });
+}
+
+function getRedisConnection(){
+
+    const redisCli = redis.createClient({
+        port      : appConf.REDIS_port,               // replace with your port
+        host      : appConf.REDIS_host,        // replace with your hostanme or IP address
+    });
+
+    return new promise( function (resolve, reject) {
+        redisCli.on("error", function (err) {
+            if ( err ) {
+                logger.error("redis: " + err);
+                reject( err );
+            }
+        });
+
+        redisCli.on("connect", function() {
+            resolve( redisCli );
+        });
+    });
+}
+
+function redisSet( redisCli, key, value, exp ){
+    let expire = exp !== undefined ? exp : 3600;
+    logger.debug( "Begin to set value on redis " + "key=[" + key + "]" + "value=[" + value + "]" );
+    return new promise( function ( resolve, reject ){
+        redisCli.set(key, value, 'EX', expire, function(err, reply){
+            if( err ) {
+                logger.error("redis: " + err);
+                reject( err );
+            } else {
+                logger.debug("redis: " + reply);
+                resolve( reply );
+            }
+        });
+    });
+}
+
+function redisGet( redisCli, key ){
+    return new promise( function ( resolve, reject ){
+        redisCli.get( key, function( err, reply ){
+            if( err ) {
+                logger.error("redis: " + err);
+                reject( err );
+            } else {
+                logger.debug("redis: " + reply);
+                resolve( reply );
+            }
+        });
+    });
+}
+
+function login(req, res) {
+
+    var ctx = req.body;
+    const userid = ctx.userId;
+    const password = ctx.password;
+    var token = base64url(crypto.randomBytes(48));
+
+    let mysql = getConnection();
+    let redis;
+    var userDetails;
+
+    return new promise( function( resolve, reject ) {
+        mysql.catch( err => {
+            http.error(res, 500, 500100, "connect to mysql failed: " + err);
+            reject( err );
+        })
+        .then( (mysqlConn) => {
+                return getUserDetails(mysqlConn, userid, password);
+        })
+        .catch( err => {
+            http.error(res, 500, 500200, "query mysql failed: " + err);
+            reject( err );
+        })
+        .then( usrDetails => {
+            if ( usrDetails === undefined ) {
+                logger.error( "Not found " + userid );
+                http.error(res, 401, 401000, "invalid user or password");
+                reject( "Not found " + userid );
+            } else {
+                userDetails = usrDetails;
+                logger.debug( "User Details: " + JSON.stringify( usrDetails ) );
+                return getRedisConnection();
+            }
+        })
+        .catch( err => {
+            reject( err );
+            http.error(res, 500, 500100, "connect to redis failed: " + err);
+        })
+        .then( redisConn => {
+            return redisSet( redisConn, userid, token, 60 * 15 );
+        })
+        .catch( err => {
+            reject( err );
+            http.error(res, 500, 500200, "set value on redis failed: " + err);
+        })
+        .then( reply => {
+
+            let options = {
+                maxAge: 1000 * 60 * 15,         // would expire after 15 minutes
+                httpOnly: true,                 // The cookie only accessible by the web server
+                signed: appConf.cookies.signed  // Indicates if the cookie should be signed
+            }    
+            
+            res.cookie('userid', userDetails.UserID, options);
+            res.cookie('token', token, options);
+
+            http.success(res, { 
+                id: userDetails.UserID,
+                name: userDetails.Name,
+                surname: userDetails.Surname,
+                nameEN: userDetails.NameEn,
+                surnameEN: userDetails.SurnameEn,
+                nickName: userDetails.NickName,
+                tel: userDetails.Telephone,
+                email: userDetails.Email,
+                position: userDetails.Position,
+                department: userDetails.Department,
+                devision: userDetails.Segment,
+                level: userDetails.Level,
+                role: userDetails.Role,
+                token: token
+            });
+            resolve( true );
+        })
+        .catch( err => {
+            http.error(res, 500, 500000, "server error: " + err);
+            reject( err ) 
         });
     });
 }
@@ -179,5 +214,8 @@ function getUserDetails(conn, userName, password )
 module.exports = {
     login,
     getConnection,
-    getUserDetails
+    getUserDetails,
+    getRedisConnection,
+    redisGet,
+    redisSet
 }
