@@ -440,7 +440,7 @@ class survey extends Component {
           let dataList = JSON.parse(localStorage.getItem("userData"));
         
           survey.setValue("level", dataList.level);
-
+          survey.setValue("yourname", dataList.name+" "+dataList.surname);
         
           $.ajax({
             method:'get',
@@ -491,7 +491,7 @@ class survey extends Component {
            
             const [name, uid, section] = options.value.split('/');
             console.log(uid);
-            toastr.confirm('มีเพื่อนร่วมห้องอยู่แล้วนะจ๊ะ จะเปลี่ยนคู่นอนเป็น.'+ name + 'หรอ', 
+            toastr.confirm('มีเพื่อนร่วมห้องอยู่แล้วนะจ๊ะ จะเปลี่ยนเพื่อนร่วมห้องเป็น. คุณ'+ name + 'หรอ', 
             {onOk: () => { 
               $.ajax({
                 method:'delete',
@@ -546,7 +546,7 @@ class survey extends Component {
             
               const [name, uid, section] = options.value.split('/');
               console.log(uid);
-              toastr.confirm('มีเพื่อนร่วมห้องอยู่แล้วนะจ๊ะ จะเปลี่ยนคู่นอนเป็น '+ name + 'หรอจ๊ะ', 
+              toastr.confirm('มีเพื่อนร่วมห้องอยู่แล้วนะจ๊ะ จะเปลี่ยนเพื่อนร่วมห้องเป็น '+ name + 'หรอจ๊ะ', 
               {onOk: () => { 
                 $.ajax({
                   method:'delete',
@@ -614,7 +614,7 @@ class survey extends Component {
             return response.json();
           }).then(function(data) {
             if(data.success){
-              toastr.success('เพิ่มคู่นอนให้แล้วจ้า',toastrOptions);
+              toastr.success('เพิ่มเพื่อนร่วมห้องให้แล้วจ้า',toastrOptions);
             }
           });
           
