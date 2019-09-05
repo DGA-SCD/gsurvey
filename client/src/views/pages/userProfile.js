@@ -137,7 +137,7 @@ class UserProfile extends Component {
                                           <span className="text-bold-500 primary">
                                              <Link to="/pages/useer-profile">ชื่อเล่น:</Link>
                                           </span>
-                                          <span className="display-block overflow-hidden">{dataList.name}</span>
+                                          <span className="display-block overflow-hidden">{dataList.nickName}</span>
                                        </li>
                                        
                                        <li className="mb-2">

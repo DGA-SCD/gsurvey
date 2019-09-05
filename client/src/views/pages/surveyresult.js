@@ -129,6 +129,7 @@ class surveyresult extends Component {
             
             if(this.state.dataList.howtogo === '2')
                   return<div>ขับรถไปเอง</div>;
+            else return <div>-</div>
 
             break;
          case "typeofsleep":
@@ -137,8 +138,9 @@ class surveyresult extends Component {
             
             if(this.state.dataList.typeofsleep === 'family')
                   return<div>นอนกับครอบครัว</div>; 
-               else
+            if(this.state.dataList.typeofsleep === 'random')
                   return<div>แล้วแต่ทีมงานจัดเลย</div>;
+            else return <div>-</div>
 
             break;
          case "food":
@@ -147,8 +149,9 @@ class surveyresult extends Component {
             
             if(this.state.dataList.typeofsleep === '2')
                   return<div>ฮาลาล</div>; 
-               else
+            if(this.state.dataList.typeofsleep === '3')
                   return<div>มังสวิรัติ</div>;
+            else return <div>-</div>
 
             break;
          case "follower":
@@ -235,24 +238,28 @@ class surveyresult extends Component {
          );
        }
       renderView() {
-         if(this.state.dataList.follower === "No") {
-           return <div></div>
-         } else  {
-            const items = this.state.isfollwer.map((item, key) =>
-                   <li key={key.toString()}>
-                  <div>ผู้ติดตามคนที่ {key + 1}</div>
-                  <div><b>ชื่อ - สกุล :</b>{item.follwer_name} / บัตรประจำตัวประชน : {item.follwerid} / อายุ  {item.follwer_age}</div>
-                  
-                  <div> {item.follwer_jointoeat === '1'? 'ทานอาหารด้วย':'ไม่ทานอาหาร'} {this.Follwer('follwer_food',item.follwer_food)} </div>
-                  <div> {item.follwermakeinsurance === '1'? 'ทำประกัน':'ไม่ทำประกัน'} {item.follwermakeinsurance === '1'? '/ ผู้รับผลประโยชน์กรมธรรม์ :' + item.follwer_insurance + '/ มีความสัมพันธ์เป็น : '+ item.follwer_insurance_relation:''}</div>
-                  <div>  โรคประจำตัว : {item.follower_disease === ''? '-':item.follower_disease}</div>
-                  </li>
-            
+         if(this.state.dataList.readytogo === "Yes" ) {
+            if(this.state.dataList.follower === "No" ) {
+            return <div></div>
+            } else  {
+               const items = this.state.isfollwer.map((item, key) =>
+                     <li key={key.toString()}>
+                     <div>ผู้ติดตามคนที่ {key + 1}</div>
+                     <div><b>ชื่อ - สกุล :</b>{item.follwer_name} / บัตรประจำตัวประชน : {item.follwerid} / อายุ  {item.follwer_age}</div>
+                     
+                     <div> {item.follwer_jointoeat === '1'? 'ทานอาหารด้วย':'ไม่ทานอาหาร'} {this.Follwer('follwer_food',item.follwer_food)} </div>
+                     <div> {item.follwermakeinsurance === '1'? 'ทำประกัน':'ไม่ทำประกัน'} {item.follwermakeinsurance === '1'? '/ ผู้รับผลประโยชน์กรมธรรม์ :' + item.follwer_insurance + '/ มีความสัมพันธ์เป็น : '+ item.follwer_insurance_relation:''}</div>
+                     <div>  โรคประจำตัว : {item.follower_disease === ''? '-':item.follower_disease}</div>
+                     </li>
+               
 
-         
-            );
-            return <ul>{items}</ul>
-         } 
+            
+               );
+               return <ul>{items}</ul>
+            } 
+         }else{
+            return <div></div>
+         }
        }
        Moreshirt() {
          if(this.state.dataList.shirt_add_more === "No") {

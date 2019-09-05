@@ -375,7 +375,9 @@ class survey extends Component {
     
               var q = survey.getQuestionByName('partner');
               var choices = [];
+              choices.push("เลือก....");
               res.data.frientLists.forEach(e => {
+               
                 // choices.push()
                // console.log("Display name:  " + e.displayName);
                 choices.push(e.displayName);
