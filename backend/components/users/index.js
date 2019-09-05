@@ -33,6 +33,8 @@ const redis = require("redis");
 const logger = winston.logger;
 const router = express.Router();
 
+var USERID;
+
 router.use(function(req, res, next){
     logger.info('calling users api');
     logger.debug('request body: ' + JSON.stringify(req.body));
@@ -81,12 +83,81 @@ router.use(function(req, res, next){
         if( err ){
             http.error(res, 401, 401000, "Invalid token");
         }else{
+            USERID = userId;
             next();
         }
     })
     
 });
 
+// Get User profile 
+router.get('/profile', function (req, res){
+    
+    var userName = USERID;
+    var conn = mysql.createConnection({
+        host: appConf.MYSQL_host,
+        port: appConf.MYSQL_port,
+        user: appConf.MYSQL_user,
+        password: appConf.MYSQL_password,
+        database: appConf.MYSQL_database
+    });
+    
+    conn.connect(function(err) {
+        
+        logger.debug("Trying...");
+
+        if ( err ) {
+            logger.error("Cannot connect to mariadb");
+            http.error(res, 500, 50000, "Cannot connect to mariadb");
+            conn.end();
+            return;
+        }else{
+            logger.debug("Database connected!");
+            logger.debug("Search user name: " + userName);
+
+            const qstr = "SELECT * FROM user_details \
+            WHERE user_details.UserId = " + userName;
+            //INNER JOIN passwords on user_details.UserId = passwords.Username \
+            //WHERE passwords.username = '" + userName + "' and passwords.password = '"+ password +"'";
+
+            conn.query(qstr, function(err, result, fields){
+                if ( err ) {
+                    logger.error( err );
+                    http.error(res, 404, 404000, "Not found user or password");
+                    conn.end();
+                    return; 
+                } else {
+                    logger.debug( "result " + JSON.stringify(result));
+                    var userDetails = result[0];
+                    if ( result[0] != null ) {
+                        http.success(res, { 
+                            id: userDetails.UserID,
+                            name: userDetails.Name,
+                            surname: userDetails.Surname,
+                            nameEN: userDetails.NameEn,
+                            surnameEN: userDetails.SurnameEn,
+                            nickName: userDetails.NickName,
+                            tel: userDetails.Telephone,
+                            email: userDetails.Email,
+                            position: userDetails.Position,
+                            department: userDetails.Department,
+                            devision: userDetails.Segment,
+                            level: userDetails.Level,
+                            role: userDetails.Role
+                        })
+                        conn.end();
+                    } else {
+                        logger.error("invalid user or password");
+                        http.error(res, 401, 401000, "invalid user or password");
+                        conn.end();
+                    }
+                }
+            });
+        }
+    });
+})
+
+// Get roomate by userid
 router.get('/roommates/:userid', function(req, res){
 
     var userId = req.params.userid;
