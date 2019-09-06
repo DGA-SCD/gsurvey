@@ -43,7 +43,7 @@ class SideMenuContent extends Component {
       //this.Auth = new AuthService();
    }
 
-   componentDidMount(){
+   componentDidUpdate(){
       fetch("http://164.115.17.101:8082/v1/survey/questions/seminar-01", {
          method: 'get',
          crossDomain: true,
