@@ -396,7 +396,7 @@ class survey extends Component {
                // console.log("Display name:  " + e.displayName);
                 choices.push(e.displayName);
               });
-    
+              choices.filter(function(obj) { return obj });
               q.choices = choices;
           
             
@@ -497,207 +497,208 @@ class survey extends Component {
       console.log("เพื่อนนอนเก่า"+oldfriend);
       console.log("เพื่อนนอนเก่าsender"+sender.myfriend);
       console.log("t"+t);
-      if(options.value !== 'random' || options.value !== 'family'){
-      if(sender.myfriend !== "none" && options.name === "partner"  && options.value !== oldfriend && (options.value) && t !== null){
-   //   if(sender.myfriend !== "none" && options.name === "partner" && options.value !== sender.myfriend && (options.value) && t !== null){
-        console.log("Option: " + options.value + " value: "+ sender.myfriend);
-        fetch("http://164.115.17.101:8082/v1/users/roommates/"+localStorage.getItem("session_userid"),opt)
-        .then(this._checkerror)
-        .then(res => res.json())
-        .then((result)=>{
-          if( result.success === true && result.data.frientLists){
-           
-            const [name, uid, section] = options.value.split('/');
-            console.log(uid);
-            toastr.confirm('มีเพื่อนร่วมห้องอยู่แล้วนะจ๊ะ จะเปลี่ยนเพื่อนร่วมห้องเป็น. คุณ'+ name + 'หรอ', 
-            {onOk: () => { 
-              $.ajax({
-                method:'delete',
-                crossDomain: true,
-                url: "http://164.115.17.101:8082/v1/users/roommates/"+localStorage.getItem("session_userid"),
+     
+         // เคยทำแบบสำรวจมาแล้ว จะเปลี่ยนคู่นอน
+          if(sender.myfriend !== "none" && options.name === "partner"  && options.value !== oldfriend && (options.value) && t !== null){
+      //   if(sender.myfriend !== "none" && options.name === "partner" && options.value !== sender.myfriend && (options.value) && t !== null){
+            console.log("Option: " + options.value + " value: "+ sender.myfriend);
+            fetch("http://164.115.17.101:8082/v1/users/roommates/"+localStorage.getItem("session_userid"),opt)
+            .then(this._checkerror)
+            .then(res => res.json())
+            .then((result)=>{
+              if( result.success === true && result.data.frientLists){
+              
+                const [name, uid, section] = options.value.split('/');
+                console.log(uid);
+                toastr.confirm('มีเพื่อนร่วมห้องอยู่แล้วนะจ๊ะ จะเปลี่ยนเพื่อนร่วมห้องเป็น. คุณ'+ name + 'หรอ', 
+                {onOk: () => { 
+                  $.ajax({
+                    method:'delete',
+                    crossDomain: true,
+                    url: "http://164.115.17.101:8082/v1/users/roommates/"+localStorage.getItem("session_userid"),
+                    headers: {
+                      "Content-Type": "application/json",
+                      "userid": localStorage.getItem("session_userid"),
+                      "token": localStorage.getItem("token_local")
+                    }
+                    }).done((res) => {
+                        console.log(res);
+                        let opts = {
+                            friendId :uid.trim()
+                          };
+                        fetch('http://164.115.17.101:8082/v1/users/roommates/'+localStorage.getItem("session_userid"), {
+                          method: 'post',
+                          headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                            "userid": localStorage.getItem("session_userid"),
+                            "token": localStorage.getItem("token_local")
+                          },
+                          body: JSON.stringify(opts)
+                        }).then(function(response) {
+                          return response.json();
+                        }).then(function(data) {
+                          if(data.success){
+                            toastr.success('เปลี่ยนให้แล้วจ้า',toastrOptions);
+                          }
+                        });
+                        
+
+                        
+                        
+                    })
+                }, 
+                onCancel: () => { 
+                  console.log('cancel')
+                }})
+            
+              
+              }
+            },(err)=>{});
+            
+          }
+
+
+          /// ทำแบบทดสอบครั้งแรก ไม่เคยเลือกคู่นอน
+          else if(t === null &&  options.name === "partner"  && options.value !== oldfriend && oldfriend === '' && options.value !== null){
+            console.log("Option: " + options.value + " value: "+ sender.myfriend);
+            fetch("http://164.115.17.101:8082/v1/users/roommates/"+localStorage.getItem("session_userid"),opt)
+            .then(this._checkerror)
+            .then(res => res.json())
+            .then((result)=>{
+              if( result.success = true && result.data.frientLists){
+              
+                const [name, uid, section] = options.value.split('/');
+                console.log(uid);
+                toastr.confirm('จะเลือกคู่เพื่อนร่วมห้องเป็น '+ name + 'หรอจ๊ะ', 
+                {onOk: () => { 
+                
+                        let opts = {
+                            friendId :uid.trim()
+                          };
+                        fetch('http://164.115.17.101:8082/v1/users/roommates/'+localStorage.getItem("session_userid"), {
+                          method: 'post',
+                          headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                            "userid": localStorage.getItem("session_userid"),
+                            "token": localStorage.getItem("token_local")
+                          },
+                          body: JSON.stringify(opts)
+                        }).then(function(response) {
+                          return response.json();
+                        }).then(function(data) {
+                          if(data.success){
+                            toastr.success('เพิมให้แล้วจ้า',toastrOptions);
+                          }
+                        });
+                        
+
+                        
+                        
+                  
+                }, 
+                onCancel: () => { 
+                  console.log('cancel')
+                }})
+            
+              
+              }
+            },(err)=>{});
+            
+          }
+
+
+          else if(t === null && options.name === "partner" && options.value !== oldfriend && oldfriend !== '' && options.value !== null){
+              console.log("options.value");
+              console.log(options.value);
+              
+              fetch("http://164.115.17.101:8082/v1/users/roommates/"+localStorage.getItem("session_userid"),opt)
+              .then(this._checkerror)
+              .then(res => res.json())
+              .then((result)=>{
+              console.log(result);
+                if( result.success == true && result.data.frientLists && options.value !== 'random'  && options.value !== 'family'){
+                
+                  const [name, uid, section] = options.value.split('/');
+                  console.log(uid);
+                  toastr.confirm('มีเพื่อนร่วมห้องอยู่แล้วนะจ๊ะ จะเปลี่ยนเพื่อนร่วมห้องเป็น '+ name + 'หรอจ๊ะ', 
+                  {onOk: () => { 
+                    $.ajax({
+                      method:'delete',
+                      crossDomain: true,
+                      url: "http://164.115.17.101:8082/v1/users/roommates/"+localStorage.getItem("session_userid"),
+                      headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        "userid": localStorage.getItem("session_userid"),
+                        "token": localStorage.getItem("token_local")
+                      }
+                      }).done((res) => {
+                          console.log(res);
+                          let opts = {
+                              friendId :uid.trim()
+                            };
+                          fetch('http://164.115.17.101:8082/v1/users/roommates/'+localStorage.getItem("session_userid"), {
+                            method: 'post',
+                            headers: {
+                              'Accept': 'application/json',
+                              'Content-Type': 'application/json',
+                              "userid": localStorage.getItem("session_userid"),
+                              "token": localStorage.getItem("token_local")
+                            },
+                            body: JSON.stringify(opts)
+                          }).then(function(response) {
+                            return response.json();
+                          }).then(function(data) {
+                            if(data.success){
+                              toastr.success('เปลี่ยนให้แล้วจ้า',toastrOptions);
+                            }
+                          });
+                          
+
+                          
+                          
+                      })
+                  }, 
+                  onCancel: () => { 
+                    console.log('cancel')
+                  }})
+              
+                
+                }
+              },(err)=>{});
+              
+          }
+
+          else if(sender.myfriend === 'undefined' && options.name === "partner"  && (t) && options.value !== null){ // ตอบมาแล้วแต่ยังไม่เลือกคู่นอน
+              const [name, uid, section] = options.value.split('/');
+              
+              let opts = {
+                friendId :uid.trim()
+              };
+              fetch('http://164.115.17.101:8082/v1/users/roommates/'+localStorage.getItem("session_userid"), {
+                method: 'post',
                 headers: {
-                  "Content-Type": "application/json",
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json',
                   "userid": localStorage.getItem("session_userid"),
                   "token": localStorage.getItem("token_local")
+                },
+                body: JSON.stringify(opts)
+              })
+              .then(this._checkerror)
+              .then(function(response) {
+                return response.json();
+              }).then(function(data) {
+                if(data.success){
+                  toastr.success('เพิ่มเพื่อนร่วมห้องให้แล้วจ้า',toastrOptions);
                 }
-                }).done((res) => {
-                    console.log(res);
-                    let opts = {
-                        friendId :uid.trim()
-                      };
-                    fetch('http://164.115.17.101:8082/v1/users/roommates/'+localStorage.getItem("session_userid"), {
-                      method: 'post',
-                      headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        "userid": localStorage.getItem("session_userid"),
-                        "token": localStorage.getItem("token_local")
-                      },
-                      body: JSON.stringify(opts)
-                    }).then(function(response) {
-                      return response.json();
-                    }).then(function(data) {
-                      if(data.success){
-                        toastr.success('เปลี่ยนให้แล้วจ้า',toastrOptions);
-                      }
-                    });
-                    
-
-                    
-                    
-                })
-            }, 
-            onCancel: () => { 
-              console.log('cancel')
-            }})
-         
-           
+              });
+              
           }
-        },(err)=>{});
-        
-      }
-
-
-      /// ทำแบบทดสอบครั้งแรก ไม่เคยเลือกคู่นอน
-      if(t === null &&  options.name === "partner"  && options.value !== oldfriend && oldfriend === ''){
-        console.log("Option: " + options.value + " value: "+ sender.myfriend);
-        fetch("http://164.115.17.101:8082/v1/users/roommates/"+localStorage.getItem("session_userid"),opt)
-        .then(this._checkerror)
-        .then(res => res.json())
-        .then((result)=>{
-          if( result.success = true && result.data.frientLists){
-          
-            const [name, uid, section] = options.value.split('/');
-            console.log(uid);
-            toastr.confirm('จะเลือกคู่เพื่อนร่วมห้องเป็น '+ name + 'หรอจ๊ะ', 
-            {onOk: () => { 
-             
-                    let opts = {
-                        friendId :uid.trim()
-                      };
-                    fetch('http://164.115.17.101:8082/v1/users/roommates/'+localStorage.getItem("session_userid"), {
-                      method: 'post',
-                      headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        "userid": localStorage.getItem("session_userid"),
-                        "token": localStorage.getItem("token_local")
-                      },
-                      body: JSON.stringify(opts)
-                    }).then(function(response) {
-                      return response.json();
-                    }).then(function(data) {
-                      if(data.success){
-                        toastr.success('เพิมให้แล้วจ้า',toastrOptions);
-                      }
-                    });
-                    
-
-                    
-                    
-               
-            }, 
-            onCancel: () => { 
-              console.log('cancel')
-            }})
-        
-          
-          }
-        },(err)=>{});
-        
-      }
-
-
-        if(t === null && options.name === "partner" && options.value !== oldfriend && oldfriend !== ''){
-          console.log("options.value");
-          console.log(options.value);
-          
-          fetch("http://164.115.17.101:8082/v1/users/roommates/"+localStorage.getItem("session_userid"),opt)
-          .then(this._checkerror)
-          .then(res => res.json())
-          .then((result)=>{
-          console.log(result);
-            if( result.success = true && result.data.frientLists){
-            
-              const [name, uid, section] = options.value.split('/');
-              console.log(uid);
-              toastr.confirm('มีเพื่อนร่วมห้องอยู่แล้วนะจ๊ะ จะเปลี่ยนเพื่อนร่วมห้องเป็น '+ name + 'หรอจ๊ะ', 
-              {onOk: () => { 
-                $.ajax({
-                  method:'delete',
-                  crossDomain: true,
-                  url: "http://164.115.17.101:8082/v1/users/roommates/"+localStorage.getItem("session_userid"),
-                  headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    "userid": localStorage.getItem("session_userid"),
-                    "token": localStorage.getItem("token_local")
-                  }
-                  }).done((res) => {
-                      console.log(res);
-                      let opts = {
-                          friendId :uid.trim()
-                        };
-                      fetch('http://164.115.17.101:8082/v1/users/roommates/'+localStorage.getItem("session_userid"), {
-                        method: 'post',
-                        headers: {
-                          'Accept': 'application/json',
-                          'Content-Type': 'application/json',
-                          "userid": localStorage.getItem("session_userid"),
-                          "token": localStorage.getItem("token_local")
-                        },
-                        body: JSON.stringify(opts)
-                      }).then(function(response) {
-                        return response.json();
-                      }).then(function(data) {
-                        if(data.success){
-                          toastr.success('เปลี่ยนให้แล้วจ้า',toastrOptions);
-                        }
-                      });
-                      
-
-                      
-                      
-                  })
-              }, 
-              onCancel: () => { 
-                console.log('cancel')
-              }})
-          
-            
-            }
-          },(err)=>{});
-          
-        }
-
-        if(sender.myfriend === 'undefined' && options.name === "partner"  && (t)){ // ตอบมาแล้วแต่ยังไม่เลือกคู่นอน
-          const [name, uid, section] = options.value.split('/');
-          
-          let opts = {
-            friendId :uid.trim()
-          };
-          fetch('http://164.115.17.101:8082/v1/users/roommates/'+localStorage.getItem("session_userid"), {
-            method: 'post',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-              "userid": localStorage.getItem("session_userid"),
-              "token": localStorage.getItem("token_local")
-            },
-            body: JSON.stringify(opts)
-          })
-          .then(this._checkerror)
-          .then(function(response) {
-            return response.json();
-          }).then(function(data) {
-            if(data.success){
-              toastr.success('เพิ่มเพื่อนร่วมห้องให้แล้วจ้า',toastrOptions);
-            }
-          });
-          
-        }
-      
-      }
+          else return true;
+     
       
       
       });       
