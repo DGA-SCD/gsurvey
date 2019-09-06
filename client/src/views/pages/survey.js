@@ -210,7 +210,21 @@ class survey extends Component {
 
 
     }
+    _checkerror(response) {
+      console.log('response.statusmmmmmmmm');
+      console.log(response);
+      console.log(response.status);
+      // raises an error in case response status is not a success
+      if (response.status >= 200 && response.status < 300) { // Success status lies between 200 to 300
+          return response
+      } else {
+          // var error = new Error(response.statusText)
+          // error.response = response
+          // throw error
+      }
 
+
+    }
       
     componentDidMount(){
       var data1 = { 
@@ -371,11 +385,11 @@ class survey extends Component {
               }
             }).done((res) => {
          
-              console.log(res);
+              console.log('เพื่อน'+res);
     
               var q = survey.getQuestionByName('partner');
               var choices = [];
-              choices.push("เลือก....");
+             
               res.data.frientLists.forEach(e => {
                
                 // choices.push()
@@ -481,12 +495,14 @@ class survey extends Component {
       };
       console.log("เพื่อนนอนใหม่"+options.value);
       console.log("เพื่อนนอนเก่า"+oldfriend);
-      console.log("เพื่อนนอนเก่า"+sender.myfriend);
-      console.log("ะt"+t);
-      if(sender.myfriend !== "none" && options.name === "partner" && options.value !== oldfriend && (options.value) && t !== null){
+      console.log("เพื่อนนอนเก่าsender"+sender.myfriend);
+      console.log("t"+t);
+      if(options.value !== 'random' || options.value !== 'family'){
+      if(sender.myfriend !== "none" && options.name === "partner"  && options.value !== oldfriend && (options.value) && t !== null){
    //   if(sender.myfriend !== "none" && options.name === "partner" && options.value !== sender.myfriend && (options.value) && t !== null){
         console.log("Option: " + options.value + " value: "+ sender.myfriend);
         fetch("http://164.115.17.101:8082/v1/users/roommates/"+localStorage.getItem("session_userid"),opt)
+        .then(this._checkerror)
         .then(res => res.json())
         .then((result)=>{
           if( result.success === true && result.data.frientLists){
@@ -540,10 +556,67 @@ class survey extends Component {
         },(err)=>{});
         
       }
-        if(t === null &&  options.name === "partner" && options.value !== oldfriend && oldfriend !== ''){
+
+
+      /// ทำแบบทดสอบครั้งแรก ไม่เคยเลือกคู่นอน
+      if(t === null &&  options.name === "partner"  && options.value !== oldfriend && oldfriend === ''){
+        console.log("Option: " + options.value + " value: "+ sender.myfriend);
+        fetch("http://164.115.17.101:8082/v1/users/roommates/"+localStorage.getItem("session_userid"),opt)
+        .then(this._checkerror)
+        .then(res => res.json())
+        .then((result)=>{
+          if( result.success = true && result.data.frientLists){
+          
+            const [name, uid, section] = options.value.split('/');
+            console.log(uid);
+            toastr.confirm('จะเลือกคู่เพื่อนร่วมห้องเป็น '+ name + 'หรอจ๊ะ', 
+            {onOk: () => { 
+             
+                    let opts = {
+                        friendId :uid.trim()
+                      };
+                    fetch('http://164.115.17.101:8082/v1/users/roommates/'+localStorage.getItem("session_userid"), {
+                      method: 'post',
+                      headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        "userid": localStorage.getItem("session_userid"),
+                        "token": localStorage.getItem("token_local")
+                      },
+                      body: JSON.stringify(opts)
+                    }).then(function(response) {
+                      return response.json();
+                    }).then(function(data) {
+                      if(data.success){
+                        toastr.success('เพิมให้แล้วจ้า',toastrOptions);
+                      }
+                    });
+                    
+
+                    
+                    
+               
+            }, 
+            onCancel: () => { 
+              console.log('cancel')
+            }})
+        
+          
+          }
+        },(err)=>{});
+        
+      }
+
+
+        if(t === null && options.name === "partner" && options.value !== oldfriend && oldfriend !== ''){
+          console.log("options.value");
+          console.log(options.value);
+          
           fetch("http://164.115.17.101:8082/v1/users/roommates/"+localStorage.getItem("session_userid"),opt)
+          .then(this._checkerror)
           .then(res => res.json())
           .then((result)=>{
+          console.log(result);
             if( result.success = true && result.data.frientLists){
             
               const [name, uid, section] = options.value.split('/');
@@ -597,7 +670,7 @@ class survey extends Component {
           
         }
 
-        if(sender.myfriend === 'undefined'  && (t)){ // ตอบมาแล้วแต่ยังไม่เลือกคู่นอน
+        if(sender.myfriend === 'undefined' && options.name === "partner"  && (t)){ // ตอบมาแล้วแต่ยังไม่เลือกคู่นอน
           const [name, uid, section] = options.value.split('/');
           
           let opts = {
@@ -612,7 +685,9 @@ class survey extends Component {
               "token": localStorage.getItem("token_local")
             },
             body: JSON.stringify(opts)
-          }).then(function(response) {
+          })
+          .then(this._checkerror)
+          .then(function(response) {
             return response.json();
           }).then(function(data) {
             if(data.success){
@@ -621,6 +696,10 @@ class survey extends Component {
           });
           
         }
+      
+      }
+      
+      
       });       
  
         return (
