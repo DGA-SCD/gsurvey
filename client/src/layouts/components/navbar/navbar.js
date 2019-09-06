@@ -53,12 +53,12 @@ class ThemeNavbar extends Component {
       this.Auth = new AuthService();
    
    }
-   componentDidMount(){
-      console.log('navbar');
-      console.log(this.Auth.loggedIn());
+   // componentDidMount(){
+   //    console.log('navbar');
+   //    console.log(this.Auth.loggedIn());
      
      
-   }
+   // }
    toggle() {
       this.setState({
          isOpen: !this.state.isOpen
