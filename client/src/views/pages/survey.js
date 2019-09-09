@@ -363,6 +363,7 @@ class survey extends Component {
     .applyTheme("orange");
 
     var t = this.state.answers;
+    var ans = this.state.answers;
     console.log("t--->".t);
     if(this.state.answers) 
     var t = this.state.answers.surveyresult;
