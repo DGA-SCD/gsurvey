@@ -363,11 +363,11 @@ class survey extends Component {
     .applyTheme("orange");
 
     var t = this.state.answers;
-    var ans = this.state.answers;
+   
     console.log("t--->".t);
     if(this.state.answers) 
     var t = this.state.answers.surveyresult;
-    var ans = this.state.answers.surveyresult;
+  
 
     console.log("answer------>"+JSON.stringify(this.state.answers));
     console.log("myfriend------>"+JSON.stringify(this.state.myfriend));
@@ -407,7 +407,7 @@ class survey extends Component {
 
       var survey = new Survey.Model(this.state.question);
       var oldfriend = (this.state.myfriend === undefined || this.state.myfriend === 'none') ? '':this.state.myfriend.displayName;
-      if(ans){
+      if(t){
         survey.data = t;
         
         if(this.state.myfriend && this.state.myfriend.length > 0){
@@ -497,10 +497,10 @@ class survey extends Component {
       console.log("เพื่อนนอนใหม่"+options.value);
       console.log("เพื่อนนอนเก่า"+oldfriend);
       console.log("เพื่อนนอนเก่าsender"+sender.myfriend);
-      console.log("t-->"+JSON.stringify(ans));
+      console.log("t-->"+JSON.stringify(t));
      
          // เคยทำแบบสำรวจมาแล้ว จะเปลี่ยนคู่นอน
-          if(sender.myfriend !== "none" && options.name === "partner"  && options.value !== oldfriend && (options.value) && t !== null && ans.typeofsleep === 'roommate'){
+          if(sender.myfriend !== "none" && options.name === "partner"  && options.value !== oldfriend && (options.value) && t !== null && t.typeofsleep === 'roommate'){
       //   if(sender.myfriend !== "none" && options.name === "partner" && options.value !== sender.myfriend && (options.value) && t !== null){
             console.log("Option: " + options.value + " value: "+ sender.myfriend);
             fetch("http://164.115.17.101:8082/v1/users/roommates/"+localStorage.getItem("session_userid"),opt)
@@ -662,7 +662,7 @@ class survey extends Component {
               
           }
 
-          else if(sender.myfriend === 'undefined' && options.name === "partner"  && (ans) && options.value !== null){ // ตอบมาแล้วแต่ยังไม่เลือกคู่นอน
+          else if(sender.myfriend === 'undefined' && options.name === "partner"  && (t) && options.value !== null){ // ตอบมาแล้วแต่ยังไม่เลือกคู่นอน
               const [name, uid, section] = options.value.split('/');
               
               let opts = {
