@@ -363,10 +363,10 @@ class survey extends Component {
     .applyTheme("orange");
 
     var t = this.state.answers;
-    
+    console.log("t--->".t);
     if(this.state.answers) 
     var t = this.state.answers.surveyresult;
-    
+    var ans = this.state.answers.surveyresult;
 
     console.log("answer------>"+JSON.stringify(this.state.answers));
     console.log("myfriend------>"+JSON.stringify(this.state.myfriend));
@@ -406,7 +406,7 @@ class survey extends Component {
 
       var survey = new Survey.Model(this.state.question);
       var oldfriend = (this.state.myfriend === undefined || this.state.myfriend === 'none') ? '':this.state.myfriend.displayName;
-      if( t ){
+      if(ans){
         survey.data = t;
         
         if(this.state.myfriend && this.state.myfriend.length > 0){
@@ -496,10 +496,10 @@ class survey extends Component {
       console.log("เพื่อนนอนใหม่"+options.value);
       console.log("เพื่อนนอนเก่า"+oldfriend);
       console.log("เพื่อนนอนเก่าsender"+sender.myfriend);
-      console.log("t"+t);
+      console.log("t-->"+JSON.stringify(ans));
      
          // เคยทำแบบสำรวจมาแล้ว จะเปลี่ยนคู่นอน
-          if(sender.myfriend !== "none" && options.name === "partner"  && options.value !== oldfriend && (options.value) && t !== null){
+          if(sender.myfriend !== "none" && options.name === "partner"  && options.value !== oldfriend && (options.value) && t !== null && ans.typeofsleep === 'roommate'){
       //   if(sender.myfriend !== "none" && options.name === "partner" && options.value !== sender.myfriend && (options.value) && t !== null){
             console.log("Option: " + options.value + " value: "+ sender.myfriend);
             fetch("http://164.115.17.101:8082/v1/users/roommates/"+localStorage.getItem("session_userid"),opt)
@@ -550,6 +550,7 @@ class survey extends Component {
                 }, 
                 onCancel: () => { 
                   console.log('cancel')
+                  survey.setValue("partner", oldfriend);
                 }})
             
               
@@ -570,7 +571,58 @@ class survey extends Component {
               
                 const [name, uid, section] = options.value.split('/');
                 console.log(uid);
-                toastr.confirm('จะเลือกคู่เพื่อนร่วมห้องเป็น '+ name + 'หรอจ๊ะ', 
+                toastr.confirm('จะเลือกเพื่อนร่วมห้องเป็น '+ name + 'หรอจ๊ะ', 
+                {onOk: () => { 
+                
+                        let opts = {
+                            friendId :uid.trim()
+                          };
+                        fetch('http://164.115.17.101:8082/v1/users/roommates/'+localStorage.getItem("session_userid"), {
+                          method: 'post',
+                          headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                            "userid": localStorage.getItem("session_userid"),
+                            "token": localStorage.getItem("token_local")
+                          },
+                          body: JSON.stringify(opts)
+                        }).then(function(response) {
+                          return response.json();
+                        }).then(function(data) {
+                          if(data.success){
+                            toastr.success('เพิมให้แล้วจ้า',toastrOptions);
+                          }
+                        });
+                        
+
+                        
+                        
+                  
+                }, 
+                onCancel: () => { 
+                  survey.setValue("partner", oldfriend);
+                }})
+            
+              
+              }
+            },(err)=>{});
+            
+          }
+
+// ทำมาแล้ว แต่ไม่ได้เลือกคู่นอน
+          else if(t !== null && options.name === "partner" && options.value !== oldfriend && oldfriend === '' && options.value !== null){
+              console.log("options.value");
+              console.log(options.value);
+              console.log("Option: " + options.value + " value: "+ sender.myfriend);
+            fetch("http://164.115.17.101:8082/v1/users/roommates/"+localStorage.getItem("session_userid"),opt)
+            .then(this._checkerror)
+            .then(res => res.json())
+            .then((result)=>{
+              if( result.success = true && result.data.frientLists){
+              
+                const [name, uid, section] = options.value.split('/');
+                console.log(uid);
+                toastr.confirm('จะเลือกเพื่อนร่วมห้องเป็น '+ name + 'หรอจ๊ะ', 
                 {onOk: () => { 
                 
                         let opts = {
@@ -600,78 +652,16 @@ class survey extends Component {
                 }, 
                 onCancel: () => { 
                   console.log('cancel')
+                  survey.setValue("partner", oldfriend);
                 }})
             
               
               }
             },(err)=>{});
-            
-          }
-
-
-          else if(t === null && options.name === "partner" && options.value !== oldfriend && oldfriend !== '' && options.value !== null){
-              console.log("options.value");
-              console.log(options.value);
-              
-              fetch("http://164.115.17.101:8082/v1/users/roommates/"+localStorage.getItem("session_userid"),opt)
-              .then(this._checkerror)
-              .then(res => res.json())
-              .then((result)=>{
-              console.log(result);
-                if( result.success == true && result.data.frientLists && options.value !== 'random'  && options.value !== 'family'){
-                
-                  const [name, uid, section] = options.value.split('/');
-                  console.log(uid);
-                  toastr.confirm('มีเพื่อนร่วมห้องอยู่แล้วนะจ๊ะ จะเปลี่ยนเพื่อนร่วมห้องเป็น '+ name + 'หรอจ๊ะ', 
-                  {onOk: () => { 
-                    $.ajax({
-                      method:'delete',
-                      crossDomain: true,
-                      url: "http://164.115.17.101:8082/v1/users/roommates/"+localStorage.getItem("session_userid"),
-                      headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        "userid": localStorage.getItem("session_userid"),
-                        "token": localStorage.getItem("token_local")
-                      }
-                      }).done((res) => {
-                          console.log(res);
-                          let opts = {
-                              friendId :uid.trim()
-                            };
-                          fetch('http://164.115.17.101:8082/v1/users/roommates/'+localStorage.getItem("session_userid"), {
-                            method: 'post',
-                            headers: {
-                              'Accept': 'application/json',
-                              'Content-Type': 'application/json',
-                              "userid": localStorage.getItem("session_userid"),
-                              "token": localStorage.getItem("token_local")
-                            },
-                            body: JSON.stringify(opts)
-                          }).then(function(response) {
-                            return response.json();
-                          }).then(function(data) {
-                            if(data.success){
-                              toastr.success('เปลี่ยนให้แล้วจ้า',toastrOptions);
-                            }
-                          });
-                          
-
-                          
-                          
-                      })
-                  }, 
-                  onCancel: () => { 
-                    console.log('cancel')
-                  }})
-              
-                
-                }
-              },(err)=>{});
               
           }
 
-          else if(sender.myfriend === 'undefined' && options.name === "partner"  && (t) && options.value !== null){ // ตอบมาแล้วแต่ยังไม่เลือกคู่นอน
+          else if(sender.myfriend === 'undefined' && options.name === "partner"  && (ans) && options.value !== null){ // ตอบมาแล้วแต่ยังไม่เลือกคู่นอน
               const [name, uid, section] = options.value.split('/');
               
               let opts = {
