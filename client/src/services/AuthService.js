@@ -6,14 +6,14 @@ export default class AuthService {
   
 
     constructor(domain) {
-      this.domain = domain || 'http://164.115.17.101:8082/v1/auth/login' // API server domain
+      this.domain = domain || 'https://seminar-backend.dga.or.th/v1/auth/login' // API server domain
     //  this.fetch = this.fetch.bind(this) // React binding stuff
       this.login = this.login.bind(this)
      // this.getProfile = this.getProfile.bind(this)
   }
 
     login(userId, password) {
-        let BaseURL = 'http://164.115.17.101:8082/v1/auth/login';
+        let BaseURL = 'https://seminar-backend.dga.or.th/v1/auth/login';
         console.log("login"+userId);
       return fetch(BaseURL, {
           method: 'POST',

@@ -63,7 +63,7 @@ class SurveyCreator extends Component {
   //   $.ajax({
   //     method:'get',
   //     crossDomain: true,
-  //     url: "http://164.115.17.101:8082/v1/survey/questions/seminar-01",
+  //     url: "https://seminar-backend.dga.or.th/v1/survey/questions/seminar-01",
   //     headers: {
   //       "Content-Type": "application/json",
   //       "userid": localStorage.getItem("session_userid"),
@@ -80,7 +80,7 @@ class SurveyCreator extends Component {
   // })
 
 
-        fetch("http://164.115.17.101:8082/v1/survey/questions/seminar-01", {
+        fetch("https://seminar-backend.dga.or.th/v1/survey/questions/seminar-01", {
           method: 'get',
           crossDomain: true,
           headers: {
@@ -142,18 +142,29 @@ class SurveyCreator extends Component {
   saveMySurvey = () => {
 
     var data = this.surveyCreator.text
+   
    // console.log(JSON.stringify(data));
     var data1 = "{\n\"name\":\"seminar-01\","+data.substring(1);
-    //console.log(data1);
+   
+     var jsondata = { name: 'seminar-01', 
+                  createdated:new Date(),
+                  
+   
+    }; 
+    var t = JSON.stringify(jsondata);
+    t = t.substring(0, t.length - 1);
+    
+     var jsondata = t + "," +data.substring(1);
+     console.log(jsondata);
     console.log(JSON.stringify(data1));
 
     $.ajax({
       method:'post',
       crossDomain: true,
       contentType: "application/json",
-      data: data1, 
+      data: jsondata, 
     
-      url: "http://164.115.17.101:8082/v1/survey/questions",
+      url: "https://seminar-backend.dga.or.th/v1/survey/questions",
       headers: {
         "Content-Type": "application/json",
         "userid": localStorage.getItem("session_userid"),
