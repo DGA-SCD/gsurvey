@@ -50,7 +50,7 @@ class surveyresult extends Component {
    
     componentDidMount() {
      
-       fetch("http://164.115.17.101:8082/v1/survey/answers/"+ localStorage.getItem("session_userid")+ "/seminar-01/1", {
+       fetch("https://seminar-backend.dga.or.th/v1/survey/answers/"+ localStorage.getItem("session_userid")+ "/seminar-01/1", {
          method: 'get',
          headers: {
            'Accept': 'application/json',
