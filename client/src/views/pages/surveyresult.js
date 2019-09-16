@@ -83,6 +83,7 @@ class surveyresult extends Component {
             console.log(res.data);
                     console.log('dfsfsfddddddddds-->'+res.data.surveyresult.totalQuantity);
                         this.setState({
+                          
                               dataList:res.data.surveyresult,
                               isfollwer:res.data.surveyresult.detailfollower,
                               shirtmore:res.data.surveyresult.items,
@@ -95,6 +96,7 @@ class surveyresult extends Component {
                            // var num3 = number1 + number2;
                               issurvey:true
                         });
+                        console.log(this.state.dataList);
             }else{
                this.setState({
                                     issurvey:false
@@ -136,24 +138,38 @@ class surveyresult extends Component {
             if(this.state.dataList.typeofsleep === 'roommate')
                   return<div>นอนคู่</div>;
             
-            if(this.state.dataList.typeofsleep === 'family')
+             if(this.state.dataList.typeofsleep === 'family')
                   return<div>นอนกับครอบครัว</div>; 
-            if(this.state.dataList.typeofsleep === 'random')
+             if(this.state.dataList.typeofsleep === 'random')
                   return<div>แล้วแต่ทีมงานจัดเลย</div>;
             else return <div>-</div>
 
             break;
          case "food":
-            if(this.state.dataList.food === '1')
-                  return<div>ทานได้ทุกอย่าง</div>;
-            
-            if(this.state.dataList.typeofsleep === '2')
-                  return<div>ฮาลาล</div>; 
-            if(this.state.dataList.typeofsleep === '3')
-                  return<div>มังสวิรัติ</div>;
-            else return <div>-</div>
+         let result = []
+         for (let i = 0; i < this.state.dataList.food.length; i++) {
+            if (this.state.dataList.food[i] === '1') {
+               result.push('ทานได้ทุกอย่าง')
+            }
+            else if (this.state.dataList.food[i] === '2') {
+               result.push('ฮาลาล')
+            }
+            else if (this.state.dataList.food[i] === '3') {
+               result.push('มังสวิรัติ')
+            }
+            else if (this.state.dataList.food[i] === '4') {
+               result.push('ยกเว้นเนื้อวัว')
+            }else
+            result.push('-')
+            //else return <div>-</div>
+          }
+          var arrString = result.join(", ");
+          
+          
+          return arrString
+         break;
 
-            break;
+       
          case "follower":
             if(this.state.dataList.follower === 'Yes')
                   return<div>มีผู้ติดตาม</div>;
@@ -191,53 +207,32 @@ class surveyresult extends Component {
       }
    
         
-        
-
-      // if (!this.state.dataList.readytogo) return;
-      //    if (this.state.dataList.readytogo === 'Yes') {
-      //      return<div>ไป</div>;
-      //    }
-      //    if (this.state.dataList.readytogo === 'No') {
-      //       return<div>ไม่ไป</div>;
-      //     }
-      //     if (this.state.dataList.howtogo === 'รถบัส') {
-      //       return<div>ไป</div>;
-      //     }
-      //     if (this.state.dataList.howtogo === 'ขับรถไปเอง') {
-      //        return<div>ไม่ไป</div>;
-      //      }
-      //    return null
-      Follwer(state,value) {
-         console.log(state);
-         console.log(value);
-         console.log('total--->'+this.state.totalcost);
-         console.log('Notification');
-         return (
-          
-             (function() {
-               switch(state) {
-                 case 'follwer_food':
-                  if(value === '1'){
-                     return '/ ทานได้ทุกอย่าง';
-                  }
-                  if(value === '2'){
-                     return '/ อาหารฮาลาล';
-                  }
-                  if(value === '3'){
-                     return '/ อาหารมังสวิรัติ';
-                  }
-                  break;
-                 case 'follwermakeinsurance':
-                   return<div>wwwwไป</div>;
-                   break;
-                 default:
-                   return null;
-               }
-             })
-           
-         );
-       }
+     
+     
       renderView() {
+         function follower_food(value){
+           // console.log("dfdf"+value);
+                    let result = []
+                    let arrString
+                  for (let i = 0; i < value.length; i++) {
+                     if (value[i] === '1') {
+                        result.push('ทานได้ทุกอย่าง')
+                     }
+                     else if (value[i] === '2') {
+                        result.push('ฮาลาล')
+                     }
+                     else if (value[i] === '3') {
+                        result.push('มังสวิรัติ')
+                     }
+                     else if (value[i] === '4') {
+                        result.push('ยกเว้นเนื้อวัว')
+                     }else
+                     result.push('-')
+                     //else return <div>-</div>
+                  }
+                  console.log(result);
+                  return arrString = result.join(", ");
+               }
          if(this.state.dataList.readytogo === "Yes" ) {
             if(this.state.dataList.follower === "No" ) {
             return <div></div>
@@ -247,7 +242,12 @@ class surveyresult extends Component {
                      <div>ผู้ติดตามคนที่ {key + 1}</div>
                      <div><b>ชื่อ - สกุล :</b>{item.follwer_name} / บัตรประจำตัวประชน : {item.follwerid} / อายุ  {item.follwer_age}</div>
                      
-                     <div> {item.follwer_jointoeat === '1'? 'ทานอาหารด้วย':'ไม่ทานอาหาร'} {this.Follwer('follwer_food',item.follwer_food)} </div>
+                     <div> {item.follwer_jointoeat === '1'? 'ทานอาหารด้วย :':'ไม่ทานอาหาร'} 
+                     
+                     {follower_food(item.follwer_food)} 
+                     
+                     
+                     </div>
                      <div> {item.follwermakeinsurance === '1'? 'ทำประกัน':'ไม่ทำประกัน'} {item.follwermakeinsurance === '1'? '/ ผู้รับผลประโยชน์กรมธรรม์ :' + item.follwer_insurance + '/ มีความสัมพันธ์เป็น : '+ item.follwer_insurance_relation:''}</div>
                      <div>  โรคประจำตัว : {item.follower_disease === ''? '-':item.follower_disease}</div>
                      </li>
@@ -293,13 +293,13 @@ class surveyresult extends Component {
         <div>
             <FormGroup row>
             <Label  className = "summary_result_lable" sm={3}>ไปร่วมงานสัมมนากับเรา </Label>
-            <Col sm={9}>
+            <Col sm={9} className = "summary_result_lable">
             {this.renderUser("readytogo")}
             </Col>
          </FormGroup>
          <FormGroup row>
             <Label  className = "summary_result_lable"  sm={3}>เลือกการเดินทาง :</Label>
-            <Col sm={9}>
+            <Col sm={9} className = "summary_result_lable">
             {this.renderUser("howtogo")}
             </Col>
          </FormGroup>
@@ -319,6 +319,12 @@ class surveyresult extends Component {
             <Label  className = "summary_result_lable"  sm={3}> เลือกเพื่อนร่วมห้องเป็น</Label>
             <Col sm={9}>
             {this.state.dataList.partner}
+            </Col>
+         </FormGroup>
+         <FormGroup row>
+            <Label  className = "summary_result_lable"  sm={3}> ข้อเสนอเพิ่มเติมกรณีให้ทีมงานจัดให้</Label>
+            <Col sm={9}>
+            {this.state.dataList.random_desc}
             </Col>
          </FormGroup>
          <FormGroup row>
