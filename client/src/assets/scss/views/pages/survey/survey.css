@@ -8,6 +8,18 @@ body{
   
  
 }
+.MuiTable-root .MuiTableCell-body{ 
+  font-family: 'Athiti', sans-serif!important;
+  font-size: 1.00em !important;
+}
+.MuiTable-root{
+  font-family: 'Athiti', sans-serif!important;
+  font-size: 1.00em !important;
+}
+.MuiTableRow-root .MuiTableRow-head{
+  font-family: 'Athiti', sans-serif!important;
+  font-size: 1.00em !important;
+}
 .sv_main .sv_container .sv_body .sv_p_root .sv_q_title{
   font-family: 'Athiti', sans-serif!important;
 }

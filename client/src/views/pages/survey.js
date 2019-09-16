@@ -321,7 +321,7 @@ class survey extends Component {
       onComplete(result) {
         const cookies = new Cookies();
         cookies.remove('cookiesurvey');
-        console.log("Complete! " + JSON.stringify(result));
+        console.log("Complete! ================" + JSON.stringify(result));
         
         var data = { name: 'seminar-01', 
                     employeeId :  localStorage.getItem("session_userid"), 
@@ -376,15 +376,15 @@ class survey extends Component {
     console.log('this.state.myfriend.displayName--->'+this.state.myfriend);
 
     if (this.state.question) {
-     $.ajax({
-            method:'get',
-              crossDomain: true,
-              url: "https://seminar-backend.dga.or.th/v1/users/roommates",
-              headers: {
-                "Content-Type": "application/json",
-                "userid":  localStorage.getItem("session_userid"),
-                "token": localStorage.getItem("token_local")
-              }
+          $.ajax({
+              method:'get',
+                crossDomain: true,
+                url: "https://seminar-backend.dga.or.th/v1/users/roommates",
+                headers: {
+                  "Content-Type": "application/json",
+                  "userid":  localStorage.getItem("session_userid"),
+                  "token": localStorage.getItem("token_local")
+                }
             }).done((res) => {
               console.log(res);
               console.log('เพื่อน'+res);
@@ -398,7 +398,7 @@ class survey extends Component {
                // console.log("Display name:  " + e.displayName);
                 choices.push(e.displayName);
               });
-            console.log(choices);
+           // console.log(choices);
               q.choices = choices;
           
             
@@ -412,6 +412,7 @@ class survey extends Component {
         survey.data = t;
         
         if(this.state.myfriend && this.state.myfriend.length > 0){
+          console.log("==== Set partner =====");
             survey.setValue("partner", this.state.myfriend.displayName);
             survey.myfriend = this.state.myfriend.displayName;
             console.log("==== Set Answer =====" +survey.myfriend );
@@ -494,14 +495,52 @@ class survey extends Component {
             'Accept': 'application/json'
            
         }
+        
       };
+      console.log("คลิกอะไร"+options.name);
       console.log("เพื่อนนอนใหม่"+options.value);
       console.log("เพื่อนนอนเก่า"+oldfriend);
       console.log("เพื่อนนอนเก่าsender"+sender.myfriend);
       console.log("t-->"+JSON.stringify(t));
      
+          if(options.name === 'typeofsleep' && (options.value === 'random' || options.value === 'family' ) && (oldfriend !==  '')){
+            console.log("ไม่นอนคู๋")
+            console.log(oldfriend)
+            survey.setValue("partner", '');
+
+            const [name, uid, section] = oldfriend
+                console.log(uid);
+                toastr.confirm('มีเพื่อนร่วมห้องอยู่แล้วนะจ๊ะ ต้องการจะเปลี่ยนประเภทการนอนหรอจ๊ะ', 
+                {onOk: () => { 
+                  $.ajax({
+                    method:'delete',
+                    crossDomain: true,
+                    url: "https://seminar-backend.dga.or.th/v1/users/roommates/"+localStorage.getItem("session_userid"),
+                    headers: {
+                      "Content-Type": "application/json",
+                      "userid": localStorage.getItem("session_userid"),
+                      "token": localStorage.getItem("token_local")
+                    }
+                    }).done((res) => {
+                        console.log(res);
+                        
+                          if(res.success){
+                            toastr.success('เปลี่ยนให้แล้วจ้า',toastrOptions);
+                          }
+                   
+                        
+
+                        
+                        
+                    })
+                }, 
+                onCancel: () => { 
+                  console.log('cancel')
+                  survey.setValue("partner", oldfriend);
+                }})
+          }
          // เคยทำแบบสำรวจมาแล้ว จะเปลี่ยนคู่นอน
-          if(sender.myfriend !== "none" && options.name === "partner"  && options.value !== oldfriend && (options.value) && t !== null && t.typeofsleep === 'roommate'){
+          else if(sender.myfriend !== "none" && options.name === "partner"  && options.value !== oldfriend && (options.value) && t !== null && t.typeofsleep === 'roommate'){
       //   if(sender.myfriend !== "none" && options.name === "partner" && options.value !== sender.myfriend && (options.value) && t !== null){
             console.log("Option: " + options.value + " value: "+ sender.myfriend);
             fetch("https://seminar-backend.dga.or.th/v1/users/roommates/"+localStorage.getItem("session_userid"),opt)
