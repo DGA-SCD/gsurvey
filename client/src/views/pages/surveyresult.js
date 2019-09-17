@@ -293,13 +293,13 @@ class surveyresult extends Component {
         <div>
             <FormGroup row>
             <Label  className = "summary_result_lable" sm={3}>ไปร่วมงานสัมมนากับเรา </Label>
-            <Col sm={9} className = "summary_result_lable">
+            <Col sm={9} >
             {this.renderUser("readytogo")}
             </Col>
          </FormGroup>
          <FormGroup row>
             <Label  className = "summary_result_lable"  sm={3}>เลือกการเดินทาง :</Label>
-            <Col sm={9} className = "summary_result_lable">
+            <Col sm={9} >
             {this.renderUser("howtogo")}
             </Col>
          </FormGroup>
