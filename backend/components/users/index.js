@@ -28,8 +28,11 @@ const mysql = require('mysql');
 const winston = require('../../commons/logger');
 const http = require('../../commons/http');
 const appConf = require('../../config/production.conf');
+// booking schema
+const schema = require('./allBookingSchema');
 const auth = require('../helpers/auth');
 const redis = require("redis");
+const promise = require("promise");
 const logger = winston.logger;
 const router = express.Router();
 
@@ -521,4 +524,90 @@ router.post('/login', function(req, res) {
     });
 });
 
+
+// getAlluser
+function getAllUser(conn){
+
+    const qstr = "SELECT * FROM user_details";
+
+    return new promise(function(resolve, reject) {
+        conn.query(qstr, function(err, result, fields){
+            if ( err ) {
+                logger.error( "query failed: " + err );
+                reject( err );
+            }
+            else {
+                conn.end();
+                logger.debug( "qeury result: " + JSON.stringify( result ) );
+                resolve( result );
+            }
+        });
+    });
+}
+
+// mysql connection
+function getConnection(){
+    var conn = mysql.createConnection({
+        host: appConf.MYSQL_host,
+        port: appConf.MYSQL_port,
+        user: appConf.MYSQL_user,
+        password: appConf.MYSQL_password,
+        database: appConf.MYSQL_database
+    });
+    return new promise(function(resolve, reject){
+        conn.connect(function(err) {
+            if ( err ) {
+                logger.error( "mysql connect failed" );
+                reject( err );
+            } else {
+                logger.debug( "mysql connected" );
+                resolve( conn );
+            }
+        })
+    });
+}
+
+// Get list booking 
+function getAllBooking(req, res){
+
+    let mysqlConn = getConnection();
+
+    return new promise((resolve, reject) => {
+
+        mysqlConn.catch( err => {
+            http.error(res, 500, 500100, "connect to mysql failed: " + err);
+            reject( err );
+        })
+         .then( conn =>{
+            return getAllUser(conn);
+         })    
+         .catch( err => {
+            http.error(res, 500, 500200, "cannot query data from mariadb: " + err);
+            reject( err );
+         }).then( allUsers => {
+            console.log(allUsers);
+            var lists = [];
+            allUsers.forEach(e => {
+                lists.push({
+                    userId: e.UserID,
+                    fullname: e.Name + " " + e.Surname,
+                    department: e.Department,
+                    segment: e.Segment,
+                    friend: "",
+                    room: 0,
+                    vehicle: 0,
+                    remark: "",
+                })
+            });
+            http.success(res,{
+                columns: schema.allbooking(),
+                data: lists
+            })
+            resolve(allUsers);
+            mysqlConn.end();
+         })
+    }); 
+}
+
+router.get('/allbooking', getAllBooking);
 module.exports = router;
