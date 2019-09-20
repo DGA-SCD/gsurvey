@@ -528,7 +528,22 @@ router.post('/login', function(req, res) {
 // getAlluser
 function getAllUser(conn){
 
-    const qstr = "SELECT * FROM user_details";
+    const qstr = "SELECT \
+        t.*,\
+        u2.Name  as FName,\
+        u2.Surname as FSurname \
+    FROM ( \
+        SELECT   \
+            u.userID, \
+            u.Name, \
+            u.Surname, \
+            u.Department, \
+            u.Segment, \
+            r.FriendID FROM user_details as u \
+    LEFT JOIN roommates as r \
+    ON u.userId = r.UserID \
+    ) as t \
+    LEFT JOIN user_details as u2 on t.FriendID = u2.UserID";
 
     return new promise(function(resolve, reject) {
         conn.query(qstr, function(err, result, fields){
@@ -588,12 +603,19 @@ function getAllBooking(req, res){
             console.log(allUsers);
             var lists = [];
             allUsers.forEach(e => {
+                
+                let fullFriendName = "";
+
+                if ( e.FriendID != null ){
+                    fullFriendName = e.FName + " " + e.FSurname;
+                }
+
                 lists.push({
                     userId: e.UserID,
                     fullname: e.Name + " " + e.Surname,
                     department: e.Department,
                     segment: e.Segment,
-                    friend: "",
+                    friend: fullFriendName,
                     room: 0,
                     vehicle: 0,
                     remark: "",
