@@ -460,7 +460,7 @@ function getAllBooking(req, res){
                 
                 let fullFriendName = "";
 
-                if ( e.FriendID != null ){
+                if ( e.FriendID != null && e.FName != null && e.FSurname != null){
                     fullFriendName = e.FName + " " + e.FSurname;
                 }
 
