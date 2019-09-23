@@ -40,7 +40,7 @@ const router = express.Router();
 var USERID;
 
 router.use(function(req, res, next){
-    logger.info('calling users api');
+    logger.info('calling users api ' + req.path);
     logger.debug('request body: ' + JSON.stringify(req.body));
     next();
 });
@@ -110,6 +110,10 @@ router.post('/roommates/:userid', user.bindRoommate);
 // Unbinding a friend
 router.delete('/roommates/:userid', user.unbindRoommate);
 
- // get all booking
+// get all booking
 router.get('/allbooking', user.getAllBooking);
+
+// set booking room and vehecle
+router.post('/booking', user.setRoomAndVehicle);
+
 module.exports = router;

@@ -9,7 +9,7 @@ const router = express.Router();
 const surveyDAL = require('./surveyDAL');
 
 router.use(function(req, res, next){
-    logger.info('calling survey api');
+    logger.info('calling users api ' + req.path);
     next();
 });
 
