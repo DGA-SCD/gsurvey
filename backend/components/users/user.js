@@ -376,54 +376,14 @@ function unbindRoommate(req, res){
 }
 
 // getAlluser
-function getAllUser(mysqlConn){
-
-    const qstr = "SELECT * FROM user_details limit 10";
-
-    return new promise(function(resolve, reject) {
-        conn.query(qstr, function(err, result, fields){
-            if ( err ) {
-                logger.error( "query failed: " + err );
-                reject( err );
-            }
-            else {
-                conn.end();
-                logger.debug( "qeury result: " + JSON.stringify( result ) );
-                resolve( result );
-            }
-        });
-    });
-}
-
-// mysql connection
-function getConnection(){
-    var conn = mysql.createConnection({
-        host: appConf.MYSQL_host,
-        port: appConf.MYSQL_port,
-        user: appConf.MYSQL_user,
-        password: appConf.MYSQL_password,
-        database: appConf.MYSQL_database
-    });
-    return new promise(function(resolve, reject){
-        conn.connect(function(err) {
-            if ( err ) {
-                logger.error( "mysql connect failed" );
-                reject( err );
-            } else {
-                logger.debug( "mysql connected" );
-                resolve( conn );
-            }
-        })
-    });
-}
-
-// getAlluser
 function getAllUser(conn){
 
     const qstr = "SELECT \
         t.*,\
         u2.Name  as FName,\
-        u2.Surname as FSurname \
+        u2.Surname as FSurname, \
+        b.Vehicle, \
+        b.Room \
     FROM ( \
         SELECT   \
             u.userID, \
@@ -435,7 +395,8 @@ function getAllUser(conn){
     LEFT JOIN roommates as r \
     ON u.userId = r.UserID \
     ) as t \
-    LEFT JOIN user_details as u2 on t.FriendID = u2.UserID";
+    LEFT JOIN user_details as u2 on t.FriendID = u2.UserID \
+    LEFT JOIN booking as b on b.userId = t.userId";
 
     return new promise(function(resolve, reject) {
         conn.query(qstr, function(err, result, fields){
@@ -503,7 +464,7 @@ function getAllBooking(req, res){
                 }
 
                 lists.push({
-                    userId: e.UserID,
+                    userId: e.userID,
                     fullname: e.Name + " " + e.Surname,
                     department: e.Department,
                     segment: e.Segment,
@@ -523,11 +484,53 @@ function getAllBooking(req, res){
     }); 
 }
 
+// set room and vehicle
+function setRoomAndVehicle(req, res){
+
+    var ctx = req.body;
+    var userId = req.USERID;
+    var roomId = ctx.room;
+    var vehicleId = ctx.vehicle;
+    var remark = ctx.remark;
+
+    let mysqlConn = getConnection();
+
+    return new promise((resolve, reject) => {
+        mysqlConn.catch( err => {
+            http.error(res, 500, 500100, "connect to mysql failed: " + err);
+            reject( err );
+        })
+        .then( conn =>{
+            const qstr = "UPDATE booking \
+                SET vehicle = " + vehicleId
+                + ",room = " + roomId
+                + " WHERE UserID = " + userId;
+            conn.query(qstr, function(err, result, fields) {
+                if( err ) {
+                    logger.error( err );
+                    http.error(res, 500, 50000, err);
+                    conn.end();
+                    reject( err );
+                } else {
+                    logger.debug( JSON.stringify( result ) );
+                    http.success(res);
+                    resolve( true );
+                }
+            });
+        })    
+        .catch( err => {
+            http.error(res, 500, 500200, "cannot query data from mariadb: " + err);
+            reject( err );
+         });
+    });
+}
+
 module.exports = {
     getProfile,
     getRoommatesByUserId,
     getRoommates,
     bindRoommate,
     unbindRoommate,
-    getAllBooking
+    getAllBooking,
+    setRoomAndVehicle
 };

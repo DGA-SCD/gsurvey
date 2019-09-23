@@ -31,7 +31,7 @@ const auth = require("./auth");
 const router = express.Router();
 
 router.use(function(req, res, next){
-    logger.info('calling users api');
+    logger.info('calling users api ' + req.path);
     logger.debug('request body: ' + JSON.stringify(req.body));
     next();
 });
