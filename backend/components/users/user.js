@@ -383,7 +383,8 @@ function getAllUser(conn){
         u2.Name  as FName,\
         u2.Surname as FSurname, \
         b.Vehicle, \
-        b.Room \
+        b.Room, \
+        b.Remark \
     FROM ( \
         SELECT   \
             u.userID, \
@@ -469,9 +470,9 @@ function getAllBooking(req, res){
                     department: e.Department,
                     segment: e.Segment,
                     friend: fullFriendName,
-                    room: 0,
-                    vehicle: 0,
-                    remark: "",
+                    room: e.Room,
+                    vehicle: e.Vehicle,
+                    remark: e.Remark,
                 });
             });
             http.success(res, {
