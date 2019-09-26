@@ -147,6 +147,7 @@ class surveyresult extends Component {
             break;
          case "food":
          let result = []
+         if(this.state.dataList.food){
          for (let i = 0; i < this.state.dataList.food.length; i++) {
             if (this.state.dataList.food[i] === '1') {
                result.push('ทานได้ทุกอย่าง')
@@ -167,6 +168,9 @@ class surveyresult extends Component {
           
           
           return arrString
+         }else{
+            return <div>-</div>
+         }
          break;
 
        
