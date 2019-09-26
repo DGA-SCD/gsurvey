@@ -259,8 +259,8 @@ function bindRoommate(req, res){
                         if( result.length == 2 ){ 
                             //The both of you are available
                             qstr = "UPDATE roommates \
-                                        SET FriendID = " + newFriend
-                                        + " WHERE UserID = " + userId + " and FriendID is null";
+                                        SET FriendID = \"" + newFriend
+                                        + "\" WHERE UserID = \"" + userId + "\" and FriendID is null";
                             conn.query(qstr, function(err, result, fields) {
                                 if( err ) {
                                     logger.error( err );
@@ -268,8 +268,8 @@ function bindRoommate(req, res){
                                     conn.end();
                                 } else {
                                     qstr = "UPDATE roommates \
-                                        SET FriendID = " + userId
-                                        + " WHERE UserID = " + newFriend;
+                                        SET FriendID = \"" + userId
+                                        + "\" WHERE UserID = \"" + newFriend + "\"";
                                     conn.query(qstr, function(err, result, fields) {
                                         if( err ) {
                                             logger.error( err );
@@ -338,7 +338,7 @@ function unbindRoommate(req, res){
                         //The both of you are available
                         qstr = "UPDATE roommates \
                                     SET FriendID = null"
-                                    + " WHERE UserID = " + userId;
+                                    + " WHERE UserID = \"" + userId + "\"";
                         conn.query(qstr, function(err, result, fields) {
                             if( err ) {
                                 logger.error(err);
@@ -348,7 +348,7 @@ function unbindRoommate(req, res){
                             } else {
                                 qstr = "UPDATE roommates \
                                     SET FriendID = null"
-                                    + " WHERE UserID = " + friendId;
+                                    + " WHERE UserID = \"" + friendId + "\"";
                                 conn.query(qstr, function(err, result, fields) {
                                     if( err ) {
                                         logger.error(err);
@@ -459,7 +459,6 @@ function getAllBooking(req, res){
             allUsers.forEach(e => {
                 
                 let fullFriendName = "";
-
                 if ( e.FriendID != null && e.FName != null && e.FSurname != null){
                     fullFriendName = e.FName + " " + e.FSurname;
                 }
@@ -505,7 +504,7 @@ function setRoomAndVehicle(req, res){
             const qstr = "UPDATE booking \
                 SET vehicle = " + vehicleId
                 + ",room = " + roomId
-                + " WHERE UserID = " + userId;
+                + " WHERE UserID = \"" + userId + "\"";
             conn.query(qstr, function(err, result, fields) {
                 if( err ) {
                     logger.error( err );
