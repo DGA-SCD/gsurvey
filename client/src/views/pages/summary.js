@@ -162,72 +162,14 @@ class Example extends Component {
       .catch(error => {
         // do some clean-up job
       });
-    // .then(response => {
-    //   if (response.status !== '200') {
-    //     this.setState({ redirectToReferrer: false });
-    //   } else {
-    //     return response.json().then(res => {
-    //       console.log(res)
-    //       this.setState({ data: res.data.data })
-    //     });
-    //   }
-    // })
-    // fetch("http://dummy.restapiexample.com/api/v1/employees")
-    // .then(response => {
-    //   console.log(response.status); 
 
-    //   if (response.status !== '200') {
-    //    this.setState({redirectToReferrer:false});
-    //     console.log('chkredirect==>'+this.state.redirectToReferrer);
-
-    //   } 
-    //     return response.json();
-    // })
-    // .then(res => {
-    //   console.log(res);
-    //   this.setState({ data: res.data.data})
-    // })
   }
 
   handleRowAdd(newData, resolve) {
     console.log('dfdfd')
     console.log(newData)
     const newValue = newData;
-    // const valueToRemove = 'department'
-    // const filteredItems = newValue.filter(function (newValue) {
-    //   return item !== valueToRemove
-    // })
-    // console.log(filteredItems);
 
-    // let result = newUser.filter(t => t.descripcion !== 'fullname');
-    // console.log(result);
-    // const myarray = newData.filters(function(hero) {
-    //   return 
-    // });
-    // const { products } = this.state;
-
-    // const apiUrl = 'http://localhost/dev/tcxapp/reactapi/deleteProduct';
-    // const formData = new FormData();
-    // formData.append('productId', productId);
-
-    // const options = {
-    //   method: 'POST',
-    //   body: formData
-    // }
-
-    // fetch(apiUrl, options)
-    //   .then(res => res.json())
-    //   .then(
-    //     (result) => {
-    //       this.setState({
-    //         response: result,
-    //         products: products.filter(product => product.id !== productId)
-    //       });
-    //     },
-    //     (error) => {
-    //       this.setState({ error });
-    //     }
-    //   )
   }
   render() {
     if (!this.Auth.loggedIn()) {
