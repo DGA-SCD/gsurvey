@@ -1,6 +1,7 @@
-import React, { Component, useState } from 'react';
+import React, { Component, useState, forwardRef } from 'react';
 import ReactDOM from "react-dom";
-import { forwardRef } from 'react';
+
+import { Link, Redirect } from "react-router-dom";
 import Box from '@material-ui/core/Box';
 import MaterialTable from "material-table";
 import DeleteOutline from '@material-ui/icons/DeleteOutline';
@@ -21,25 +22,27 @@ import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 import { fontSize } from '@material-ui/system';
 import "../../assets/scss/views/pages/survey/survey.css";
+import AuthService from '../../services/AuthService';
+import { array } from 'prop-types';
 const tableIcons = {
-    Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
-    Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
-    Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-    Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
-    DetailPanel: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
-    Edit: forwardRef((props, ref) => <Edit {...props} ref={ref} />),
-    Export: forwardRef((props, ref) => <SaveAlt {...props} ref={ref} />),
-    Filter: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
-    FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
-    LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
-    NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
-    PreviousPage: forwardRef((props, ref) => <ChevronLeft {...props} ref={ref} />),
-    ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-    Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
-    SortArrow: forwardRef((props, ref) => <ArrowUpward {...props} ref={ref} />),
-    ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
-    ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
-  };
+  Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
+  Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
+  Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+  Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
+  DetailPanel: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
+  Edit: forwardRef((props, ref) => <Edit {...props} ref={ref} />),
+  Export: forwardRef((props, ref) => <SaveAlt {...props} ref={ref} />),
+  Filter: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
+  FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
+  LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
+  NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
+  PreviousPage: forwardRef((props, ref) => <ChevronLeft {...props} ref={ref} />),
+  ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+  Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
+  SortArrow: forwardRef((props, ref) => <ArrowUpward {...props} ref={ref} />),
+  ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
+  ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
+};
 
 
 const url = 'http://jsonplaceholder.typicode.com/posts';
@@ -50,54 +53,157 @@ class Example extends Component {
   constructor(props) {
     super(props);
 
-    
+
     this.state = {
-      columns:[
-        { title: 'รหัสพนักงาน', field: 'id' },
-        { title: 'First Name', field: 'employee_name' },
-        { title: 'Sarary Name', field: 'employee_salary' },
-        { title: 'Employee_age', field: 'employee_age' },
-        { title: 'Image', field: 'profile_image' },
-        // {
-        //   title: 'Avatar',
-        //   field: 'avatar',
-        //   render: rowData => (
-        //     <img
-        //       style={{ height: 36, borderRadius: '50%' }}
-        //       src={rowData.avatar}
-        //     />
-        //   ),
-        // },
-        // { title: 'Id', field: 'id' },
-        // { title: 'First Name', field: 'first_name' },
-        // { title: 'Last Name', field: 'last_name' },
+      columns: [
+        {
+          "title": "userId",
+          "field": "userId",
+          "type": "string",
+          hidden: true
+        },
+        {
+          "title": "ชื่อ-สกุล",
+          "field": "fullname",
+          "type": "string",
+          editable: 'never'
+        },
+        {
+          "title": "ส่วนงาน",
+          "field": "department",
+          "type": "string",
+          editable: 'never'
+        },
+        {
+          "title": "ฝ่าย",
+          "field": "segment",
+          "type": "string",
+          editable: 'never'
+        },
+        {
+          "title": "เพื่อนร่วมห้อง",
+          "field": "friend",
+          "type": "string",
+
+        },
+        {
+          "title": "ห้อง",
+          "field": "room",
+          "type": "string",
+          "lookup": {
+            0: "ไม่ระบุ",
+            1101: "1101",
+
+            1102: "1102",
+            1103: "1103",
+
+            1104: "1104",
+            1105: "1105",
+
+            1106: "1106"
+
+          }
+        },
+
+        {
+          "title": "เดินทางโดย",
+          "field": "vehicle",
+          "type": "string",
+          "lookup": {
+            "0": "ไม่ระบุ",
+            "1": "รถส่วนตัว",
+            "2": "รถตู้",
+            "3": "รถบัสคันที่ 1",
+            "4": "รถบัสคันที่ 2",
+            "5": "รถบัสคันที่ 3"
+          }
+        },
+        {
+          "title": "หมายเหตุ",
+          "field": "remark",
+          "type": "string"
+        }
       ],
       data: [],
     }
+    this.Auth = new AuthService();
   }
 
   componentDidMount() {
-     
-   // fetch("https://reqres.in/api/users")
-   fetch("http://dummy.restapiexample.com/api/v1/employees")
-    .then(response => {
-      console.log(response.status); 
-      if (response.status !== 200) {
-       this.setState({redirectToReferrer:false});
-        console.log('chkredirect==>'+this.state.redirectToReferrer);
-   
-      } 
-        return response.json();
-    })
-    .then(res => {
-      console.log(res);
-      this.setState({ data: res})
-    })
+    console.log('reload');
+    const options = {
+      async: true,
+      mode: 'cors',
+      crossDomain: true,
+      cache: 'no-cache',
+      method: 'GET',
+      headers: {
+        "userid": localStorage.getItem("session_userid"),
+        "token": localStorage.getItem("token_local"),
+        // "token" : "3gUMtyWlKatfMk5aLi5PpgQxfTJcA91YlN6Nt8XyiR1CwLs6wGP69FSQs8EKHCsg",
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+
+      }
+    };
+    fetch('https://seminar-backend.dga.or.th/v1/users/allbooking', options)
+      .then(response => {
+        if (response.ok) {
+          return response.json().then(res => {
+            console.log(res)
+            this.setState({ data: res.data.data })
+          });
+        } else if (response.status == 401) { // something bad happened...
+          console.log('401')
+          localStorage.clear();
+          return (<Redirect to={'login'} />)
+        }
+      })
+      .catch(error => {
+        // do some clean-up job
+      });
+    // .then(response => {
+    //   if (response.status !== '200') {
+    //     this.setState({ redirectToReferrer: false });
+    //   } else {
+    //     return response.json().then(res => {
+    //       console.log(res)
+    //       this.setState({ data: res.data.data })
+    //     });
+    //   }
+    // })
+    // fetch("http://dummy.restapiexample.com/api/v1/employees")
+    // .then(response => {
+    //   console.log(response.status); 
+
+    //   if (response.status !== '200') {
+    //    this.setState({redirectToReferrer:false});
+    //     console.log('chkredirect==>'+this.state.redirectToReferrer);
+
+    //   } 
+    //     return response.json();
+    // })
+    // .then(res => {
+    //   console.log(res);
+    //   this.setState({ data: res.data.data})
+    // })
   }
 
-  handleRowAdd(newData,resolve) {
+  handleRowAdd(newData, resolve) {
     console.log('dfdfd')
     console.log(newData)
+    const newValue = newData;
+    // const valueToRemove = 'department'
+    // const filteredItems = newValue.filter(function (newValue) {
+    //   return item !== valueToRemove
+    // })
+    // console.log(filteredItems);
+
+    // let result = newUser.filter(t => t.descripcion !== 'fullname');
+    // console.log(result);
+    // const myarray = newData.filters(function(hero) {
+    //   return 
+    // });
     // const { products } = this.state;
 
     // const apiUrl = 'http://localhost/dev/tcxapp/reactapi/deleteProduct';
@@ -124,10 +230,13 @@ class Example extends Component {
     //   )
   }
   render() {
+    if (!this.Auth.loggedIn()) {
+      return (<Redirect to={'login'} />)
+    }
     return (
-      
+
       <MaterialTable
-        title="Editable Preview"
+        title="จัดการเพื่อนร่วมห้อง/จัดการห้องพัก"
         columns={this.state.columns}
         data={this.state.data}
         editable={{
@@ -143,20 +252,69 @@ class Example extends Component {
               }, 1000)
             }),
           onRowUpdate: (newData, oldData) =>
-          
-           new Promise((resolve, reject) => {
-            //  console.log(newData);
-              this.handleRowAdd(newData, resolve);
-              const data = this.state.data;
-                
+
+            new Promise((resolve, reject) => {
+              let data = this.state.data;
               const index = data.indexOf(oldData);
-            //  console.log(index);
               data[index] = newData;
-             // console.log(data[index]);
-              this.setState({ data }, () => resolve());
+
+
+              const obj = JSON.parse(JSON.stringify(newData));
+              console.log(obj);
+
+              delete obj['fullname'];
+              delete obj['department'];
+              delete obj['segment'];
+              delete obj['friend'];
+              delete obj['segment'];
+              console.log(obj);
+
+              const options = {
+                async: true,
+                mode: 'cors',
+                crossDomain: true,
+                cache: 'no-cache',
+                method: 'POST',
+                headers: {
+                  "userid": localStorage.getItem("session_userid"),
+                  "token": localStorage.getItem("token_local"),
+                  'Content-Type': 'application/json',
+                  'Accept': 'application/json'
+
+                },
+                body: JSON.stringify(obj)
+              };
+              const url = "https://seminar-backend.dga.or.th/v1/users/booking"
+              fetch(url, options)
+                .then((response) => response.json())
+
+                .then((res) => {
+                  console.log(res);
+                  if (res.code === 20000) {
+
+
+                    const data = this.state.data;
+
+                    const index = data.indexOf(oldData);
+                    //  console.log(index);
+                    data[index] = newData;
+                    // console.log(data[index]);
+                    this.setState({ data }, () => resolve());
+                  } else {
+                    alert('ไม่สามารถเปลี่ยนแปลงข้อมูลได้ ติดต่อผู้ดูแลระบบ')
+                  }
+                })
+
+
+
+
+
+
+
+
             }),
           onRowDelete: oldData =>
-         
+
             new Promise((resolve, reject) => {
               setTimeout(() => {
                 {
@@ -171,25 +329,26 @@ class Example extends Component {
         }}
         options={{
           sorting: true,
-          //filtering: true,
+          grouping: true,
           exportButton: true,
-          paginationType: "stepped",
+          exportAllData: true,
+          // paginationType: "stepped",
           headerStyle: {
             backgroundColor: '#00ADFF',
             color: '#FFF',
-            font:"Athiti !important"
+            font: "Athiti !important"
           },
           rowStyle: {
-            font:"Athiti !important"
+            font: "Athiti !important"
           }
         }}
       />
-   
+
     )
   }
-   
 
- 
+
+
 }
 export default Example;
 
