@@ -489,7 +489,7 @@ function getAllBooking(req, res){
 function setRoomAndVehicle(req, res){
 
     var ctx = req.body;
-    var userId = req.USERID;
+    var userId = ctx.userId;
     var roomId = ctx.room;
     var vehicleId = ctx.vehicle;
     var remark = ctx.remark;
