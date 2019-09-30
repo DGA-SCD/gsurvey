@@ -1,6 +1,6 @@
 // import external modules
 import React, { Fragment, Component } from "react";
-import { Link,Redirect } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 
 import AuthService from '../../services/AuthService';
 import {
@@ -30,13 +30,13 @@ class UserProfile extends Component {
    constructor(props) {
       super(props);
 
-      
+
       this.state = {
-         dataList:[],
-         name:"",
-         
-       
-         user_id:"",
+         dataList: [],
+         name: "",
+
+
+         user_id: "",
          activeTab: "2",
          redirectToReferrer: ''
       };
@@ -45,8 +45,8 @@ class UserProfile extends Component {
       this.Auth = new AuthService();
    }
 
-   
-   
+
+
 
    toggle = tab => {
       if (this.state.activeTab !== tab) {
@@ -56,18 +56,22 @@ class UserProfile extends Component {
       }
    };
 
-   
-    
+
+
    render() {
+      if (localStorage.getItem("userData") == '') {
+         return (<Redirect to={'login'} />)
+      }
+
 
       console.log("render");
       let dataList = JSON.parse(localStorage.getItem("userData"));
-      if (!this.Auth.loggedIn()) {
-         return (<Redirect to={'login'}/>)
-      }
+      // if (!this.Auth.loggedIn()) {
+      //    return (<Redirect to={'login'}/>)
+      // }
 
-    //  console.log('dfsfdfsfsfssfd--->'+this.Auth_checkStatus);
-     
+      //  console.log('dfsfdfsfsfssfd--->'+this.Auth_checkStatus);
+
       // else{
 
 
@@ -87,10 +91,10 @@ class UserProfile extends Component {
                                  <h3 className="card-title text-white">{this.state.name} {this.state.surname}</h3>
                                
                               </div> */}
-                             
+
                            </div>
                         </Col>
-                        
+
                         <Col xs="2">
                            <div className="align-self-center halfway-fab text-center">
                               <Link to="/pages/user-profile" className="profile-image">
@@ -105,23 +109,23 @@ class UserProfile extends Component {
                         <Col xs="5">
                            <div className="align-self-start halfway-fab pl-3 pt-2">
                               <div className="text-right" >
-                                 <h3 className="card-title text-white" style={{paddingRight:20}}>{dataList.name} {dataList.surname}</h3>
-                               
+                                 <h3 className="card-title text-white" style={{ paddingRight: 20 }}>{dataList.name} {dataList.surname}</h3>
+
                               </div>
-                             
+
                            </div>
                         </Col>
                      </Row>
-                   
+
                   </Card>
                </Col>
             </Row>
 
             <TabContent activeTab={this.state.activeTab}>
-               
-           
+
+
                <TabPane tabId="2">
-                  
+
                   <Row>
                      <Col sm="12">
                         <Card>
@@ -129,7 +133,7 @@ class UserProfile extends Component {
                               <h5>ข้อมูลส่วนบุคคล</h5>
                            </CardHeader>
                            <CardBody>
-                             
+
                               <Row>
                                  <Col xs="12" md="6" lg="4">
                                     <ul className="no-list-style">
@@ -139,7 +143,7 @@ class UserProfile extends Component {
                                           </span>
                                           <span className="display-block overflow-hidden">{dataList.nickName}</span>
                                        </li>
-                                       
+
                                        <li className="mb-2">
                                           <span className="text-bold-500 primary">
                                              <Link to="/pages/user-profile">ฝ่าย/ส่วน :</Link>
@@ -150,22 +154,22 @@ class UserProfile extends Component {
                                  </Col>
                                  <Col xs="12" md="6" lg="4">
                                     <ul className="no-list-style">
-                                      
+
                                        <li className="mb-2">
                                           <span className="text-bold-500 primary">
                                              <Link to="/pages/user-profile">อีเมล:</Link>
                                           </span>
-                                         
+
                                           <span className="display-block overflow-hidden">   {dataList.email}</span>
-                                          
+
                                        </li>
                                        <li className="mb-2">
                                           <span className="text-bold-500 primary">
                                              <Link to="/pages/user-profile">รหัสพนักงาน:</Link>
                                           </span>
-                                         
+
                                           <span className="display-block overflow-hidden">  {dataList.id}</span>
-                                          
+
                                        </li>
                                     </ul>
                                  </Col>
@@ -183,26 +187,26 @@ class UserProfile extends Component {
                                           </span>
                                           <span className="display-block overflow-hidden">{dataList.position}</span>
                                        </li>
-                                       
+
                                     </ul>
                                  </Col>
                               </Row>
-                             
+
                            </CardBody>
                         </Card>
                      </Col>
-                     
+
                   </Row>
                </TabPane>
                {/* User Timeline */}
 
-               
+
                {/* Photos */}
-              
+
             </TabContent>
          </Fragment>
       );
-      }
+   }
    //}
 }
 

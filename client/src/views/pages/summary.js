@@ -52,80 +52,87 @@ class Example extends Component {
 
   constructor(props) {
     super(props);
-
-
     this.state = {
-      columns: [
-        {
-          "title": "userId",
-          "field": "userId",
-          "type": "string",
-          hidden: true
-        },
-        {
-          "title": "ชื่อ-สกุล",
-          "field": "fullname",
-          "type": "string",
-          editable: 'never'
-        },
-        {
-          "title": "ส่วนงาน",
-          "field": "department",
-          "type": "string",
-          editable: 'never'
-        },
-        {
-          "title": "ฝ่าย",
-          "field": "segment",
-          "type": "string",
-          editable: 'never'
-        },
-        {
-          "title": "เพื่อนร่วมห้อง",
-          "field": "friend",
-          "type": "string",
+      data: "",
+      columns: "",
+      redirect: true
 
-        },
-        {
-          "title": "ห้อง",
-          "field": "room",
-          "type": "string",
-          "lookup": {
-            0: "ไม่ระบุ",
-            1101: "1101",
 
-            1102: "1102",
-            1103: "1103",
+    };
 
-            1104: "1104",
-            1105: "1105",
 
-            1106: "1106"
+    // this.state = {
+    //   columns: [
+    //     {
+    //       "title": "userId",
+    //       "field": "userId",
+    //       "type": "string",
+    //       hidden: true
+    //     },
+    //     {
+    //       "title": "ชื่อ-สกุล",
+    //       "field": "fullname",
+    //       "type": "string",
+    //       editable: 'never'
+    //     },
+    //     {
+    //       "title": "ส่วนงาน",
+    //       "field": "department",
+    //       "type": "string",
+    //       editable: 'never'
+    //     },
+    //     {
+    //       "title": "ฝ่าย",
+    //       "field": "segment",
+    //       "type": "string",
+    //       editable: 'never'
+    //     },
+    //     {
+    //       "title": "เพื่อนร่วมห้อง",
+    //       "field": "friend",
+    //       "type": "string",
 
-          }
-        },
+    //     },
+    //     {
+    //       "title": "ห้อง",
+    //       "field": "room",
+    //       "type": "string",
+    //       "lookup": {
+    //         0: "ไม่ระบุ",
+    //         1101: "1101",
 
-        {
-          "title": "เดินทางโดย",
-          "field": "vehicle",
-          "type": "string",
-          "lookup": {
-            "0": "ไม่ระบุ",
-            "1": "รถส่วนตัว",
-            "2": "รถตู้",
-            "3": "รถบัสคันที่ 1",
-            "4": "รถบัสคันที่ 2",
-            "5": "รถบัสคันที่ 3"
-          }
-        },
-        {
-          "title": "หมายเหตุ",
-          "field": "remark",
-          "type": "string"
-        }
-      ],
-      data: [],
-    }
+    //         1102: "1102",
+    //         1103: "1103",
+
+    //         1104: "1104",
+    //         1105: "1105",
+
+    //         1106: "1106"
+
+    //       }
+    //     },
+
+    //     {
+    //       "title": "เดินทางโดย",
+    //       "field": "vehicle",
+    //       "type": "string",
+    //       "lookup": {
+    //         "0": "ไม่ระบุ",
+    //         "1": "รถส่วนตัว",
+    //         "2": "รถตู้",
+    //         "3": "รถบัสคันที่ 1",
+    //         "4": "รถบัสคันที่ 2",
+    //         "5": "รถบัสคันที่ 3"
+    //       }
+    //     },
+    //     {
+    //       "title": "หมายเหตุ",
+    //       "field": "remark",
+    //       "type": "string"
+    //     }
+    //   ],
+    //   data: [],
+    // }
     this.Auth = new AuthService();
   }
 
@@ -151,8 +158,14 @@ class Example extends Component {
         if (response.ok) {
           return response.json().then(res => {
             console.log(res)
-            this.setState({ data: res.data.data })
+
+            this.setState({
+              data: res.data.data,
+              columns: JSON.parse(JSON.stringify(res.data.columns)),
+              redirect: false
+            })
           });
+          console.log(this.state.columns);
         } else if (response.status == 401) { // something bad happened...
           console.log('401')
           localStorage.clear();
@@ -172,80 +185,82 @@ class Example extends Component {
 
   }
   render() {
+    console.log('render');
     if (!this.Auth.loggedIn()) {
       return (<Redirect to={'login'} />)
     }
-    return (
+    if (this.state.columns) {
+      return (
 
-      <MaterialTable
-        title="จัดการเพื่อนร่วมห้อง/จัดการห้องพัก"
-        columns={this.state.columns}
-        data={this.state.data}
-        editable={{
-          onRowAdd: newData =>
-            new Promise((resolve, reject) => {
-              setTimeout(() => {
-                {
-                  const data = this.state.data;
-                  data.push(newData);
-                  this.setState({ data }, () => resolve());
-                }
-                resolve()
-              }, 1000)
-            }),
-          onRowUpdate: (newData, oldData) =>
-
-            new Promise((resolve, reject) => {
-              let data = this.state.data;
-              const index = data.indexOf(oldData);
-              data[index] = newData;
-
-
-              const obj = JSON.parse(JSON.stringify(newData));
-              console.log(obj);
-
-              delete obj['fullname'];
-              delete obj['department'];
-              delete obj['segment'];
-              delete obj['friend'];
-              delete obj['segment'];
-              console.log(obj);
-
-              const options = {
-                async: true,
-                mode: 'cors',
-                crossDomain: true,
-                cache: 'no-cache',
-                method: 'POST',
-                headers: {
-                  "userid": localStorage.getItem("session_userid"),
-                  "token": localStorage.getItem("token_local"),
-                  'Content-Type': 'application/json',
-                  'Accept': 'application/json'
-
-                },
-                body: JSON.stringify(obj)
-              };
-              const url = "https://seminar-backend.dga.or.th/v1/users/booking"
-              fetch(url, options)
-                .then((response) => response.json())
-
-                .then((res) => {
-                  console.log(res);
-                  if (res.code === 20000) {
-
-
+        <MaterialTable
+          title="จัดการเพื่อนร่วมห้อง/จัดการห้องพัก"
+          columns={this.state.columns}
+          data={this.state.data}
+          editable={{
+            onRowAdd: newData =>
+              new Promise((resolve, reject) => {
+                setTimeout(() => {
+                  {
                     const data = this.state.data;
-
-                    const index = data.indexOf(oldData);
-                    //  console.log(index);
-                    data[index] = newData;
-                    // console.log(data[index]);
+                    data.push(newData);
                     this.setState({ data }, () => resolve());
-                  } else {
-                    alert('ไม่สามารถเปลี่ยนแปลงข้อมูลได้ ติดต่อผู้ดูแลระบบ')
                   }
-                })
+                  resolve()
+                }, 1000)
+              }),
+            onRowUpdate: (newData, oldData) =>
+
+              new Promise((resolve, reject) => {
+                let data = this.state.data;
+                const index = data.indexOf(oldData);
+                data[index] = newData;
+
+
+                const obj = JSON.parse(JSON.stringify(newData));
+                console.log(obj);
+
+                delete obj['fullname'];
+                delete obj['department'];
+                delete obj['segment'];
+                delete obj['friend'];
+                delete obj['segment'];
+                console.log(obj);
+
+                const options = {
+                  async: true,
+                  mode: 'cors',
+                  crossDomain: true,
+                  cache: 'no-cache',
+                  method: 'POST',
+                  headers: {
+                    "userid": localStorage.getItem("session_userid"),
+                    "token": localStorage.getItem("token_local"),
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+
+                  },
+                  body: JSON.stringify(obj)
+                };
+                const url = "https://seminar-backend.dga.or.th/v1/users/booking"
+                fetch(url, options)
+                  .then((response) => response.json())
+
+                  .then((res) => {
+                    console.log(res);
+                    if (res.code === 20000) {
+
+
+                      const data = this.state.data;
+
+                      const index = data.indexOf(oldData);
+                      //  console.log(index);
+                      data[index] = newData;
+                      // console.log(data[index]);
+                      this.setState({ data }, () => resolve());
+                    } else {
+                      alert('ไม่สามารถเปลี่ยนแปลงข้อมูลได้ ติดต่อผู้ดูแลระบบ')
+                    }
+                  })
 
 
 
@@ -254,41 +269,42 @@ class Example extends Component {
 
 
 
-            }),
-          onRowDelete: oldData =>
+              }),
+            onRowDelete: oldData =>
 
-            new Promise((resolve, reject) => {
-              setTimeout(() => {
-                {
-                  let data = this.state.data;
-                  const index = data.indexOf(oldData);
-                  data.splice(index, 1);
-                  this.setState({ data }, () => resolve());
-                }
-                resolve()
-              }, 1000)
-            }),
-        }}
-        options={{
-          sorting: true,
-          grouping: true,
-          exportButton: true,
-          exportAllData: true,
-          // paginationType: "stepped",
-          headerStyle: {
-            backgroundColor: '#00ADFF',
-            color: '#FFF',
-            font: "Athiti !important"
-          },
-          rowStyle: {
-            font: "Athiti !important"
-          }
-        }}
-      />
+              new Promise((resolve, reject) => {
+                setTimeout(() => {
+                  {
+                    let data = this.state.data;
+                    const index = data.indexOf(oldData);
+                    data.splice(index, 1);
+                    this.setState({ data }, () => resolve());
+                  }
+                  resolve()
+                }, 1000)
+              }),
+          }}
+          options={{
+            sorting: true,
+            grouping: true,
+            exportButton: true,
+            exportAllData: true,
+            // paginationType: "stepped",
+            headerStyle: {
+              backgroundColor: '#00ADFF',
+              color: '#FFF',
+              font: "Athiti !important"
+            },
+            rowStyle: {
+              font: "Athiti !important"
+            }
+          }}
+        />
 
-    )
+      )
+    }
+    return <div>Loading...</div>;
   }
-
 
 
 }
