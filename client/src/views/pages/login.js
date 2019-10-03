@@ -1,10 +1,10 @@
 // import external modules
 //https://www.skptricks.com/2018/06/simple-form-validation-in-reactjs-example.html
 import React, { Component } from "react";
-import { NavLink,Redirect } from "react-router-dom";
+import { NavLink, Redirect } from "react-router-dom";
 import AuthService from '../../services/AuthService';
-
-import {toastr} from 'react-redux-toastr';
+import Logo from "../../assets/img/logo3.png";
+import { toastr } from 'react-redux-toastr';
 import {
    Row,
    Alert,
@@ -14,162 +14,174 @@ import {
    FormGroup,
    Button,
    Label,
-   Card,   
+   Card,
    CardBody,
    CardFooter
 } from "reactstrap";
+import { relative } from "path";
 const toastrOptions = {
    timeOut: 3000, // by setting to 0 it will prevent the auto close
    position: 'top-right',
    showCloseButton: true, // false by default
    closeOnToastrClick: true, // false by default, this will close the toastr when user clicks on it
    progressBar: false,
- }
- 
+}
+
 
 class Login extends Component {
    constructor(props) {
       super(props);
       this.state = {
-        userData : [],
-        userid: '',
-       session_userid : '',
-       visible: false,
-        password: '',
-        redirectToReferrer: false,
-        useridError: false,
-        passError: false,
-        errors: {
+         userData: [],
          userid: '',
-        
+         session_userid: '',
+         visible: false,
          password: '',
-        }
+         redirectToReferrer: false,
+         useridError: false,
+         passError: false,
+         errors: {
+            userid: '',
+
+            password: '',
+         }
       };
       this.handleSubmit = this.handleSubmit.bind(this);
       this.Auth = new AuthService();
-    }
+   }
 
-    onKeyPress(event) {
+   onKeyPress(event) {
       var decimalvalidate = /^[0-9]*$/;
-      if (!decimalvalidate.test(event.key)) 
-        event.preventDefault();
-     }
+      if (!decimalvalidate.test(event.key))
+         event.preventDefault();
+   }
 
- 
 
-    handlePassChange = event => {
+
+   handlePassChange = event => {
       this.setState({ password: event.target.value })
       this.setState({ passError: false });
-    
-    };
-    handleUseridChange = event => {
+
+   };
+   handleUseridChange = event => {
       this.setState({ userid: event.target.value })
       this.setState({ useridError: false });
-    
-    };
 
-     maxLengthCheck = (object) => {
+   };
+
+   maxLengthCheck = (object) => {
       if (object.target.value.length > object.target.maxLength) {
-       object.target.value = object.target.value.slice(0, object.target.maxLength)
-        }
+         object.target.value = object.target.value.slice(0, object.target.maxLength)
       }
-   
-   
+   }
+
+
    validateForm() {
 
-      const { userid, password} = this.state;
+      const { userid, password } = this.state;
       let errors = {};
       let formIsValid = true;
 
-      if(userid.length !== 6){
-        formIsValid = false;
-        toastr.error( 'Error','Incorrect UserID',toastrOptions)
+      if (userid.length !== 6) {
+         formIsValid = false;
+         toastr.error('Error', 'Incorrect UserID', toastrOptions)
       }
 
-      
 
-      
+
+
       if (!password) {
-        formIsValid = false;
-        toastr.error( 'Error','Incorrect UserIDdddd',toastrOptions)
+         formIsValid = false;
+         toastr.error('Error', 'Incorrect UserIDdddd', toastrOptions)
       }
 
 
       this.setState({
-        errors: errors
+         errors: errors
       });
       return formIsValid;
 
 
-    }
+   }
 
-   
 
-    handleSubmit(e) {
+
+   handleSubmit(e) {
       e.preventDefault();
       if (this.validateForm()) {
-         
-         
-          console.log(this.state.userid);
-          console.log(this.state.password);
-          this.Auth.login(this.state.userid,this.state.password)
-            .then((result) => {
-            let responseJson = result;
-                  console.log("respon"+responseJson);
-            if(responseJson){         
-               localStorage.setItem('userData',JSON.stringify(responseJson.data));
-           
-             
-               localStorage.getItem('token_local',JSON.stringify(responseJson.data.token));
-               this.setState({redirectToReferrer: true});
-            }else{
-               toastr.error( 'Error','Cannot Login',toastrOptions)
-            }
-            
-         })
-         .catch(err =>{
-             alert(err);
-         })
 
-    }
+
+         console.log(this.state.userid);
+         console.log(this.state.password);
+         this.Auth.login(this.state.userid, this.state.password)
+            .then((result) => {
+               let responseJson = result;
+               console.log("respon" + responseJson);
+               if (responseJson) {
+                  localStorage.setItem('userData', JSON.stringify(responseJson.data));
+
+
+                  localStorage.getItem('token_local', JSON.stringify(responseJson.data.token));
+                  this.setState({ redirectToReferrer: true });
+               } else {
+                  toastr.error('Error', 'Cannot Login', toastrOptions)
+               }
+
+            })
+            .catch(err => {
+               alert(err);
+            })
+
+      }
    }
    componentDidMount() {
-      console.log("componentDidMount"+this.state.redirectToReferrer);
+      console.log("componentDidMount" + this.state.redirectToReferrer);
       if (this.Auth.loggedIn()) {
-        
-         this.setState({redirectToReferrer: true});
-         // return (<Redirect to={'user-profile'}/>)
-         }else{
-            this.setState({redirectToReferrer: false});
-         }
-   }
-   
 
-   
+         this.setState({ redirectToReferrer: true });
+         // return (<Redirect to={'user-profile'}/>)
+      } else {
+         this.setState({ redirectToReferrer: false });
+      }
+   }
+
+
+
    render() {
-     console.log(this.state.redirectToReferrer);
-      const {errors} = this.state;
-    
+
+
+      console.log(this.state.redirectToReferrer);
+      const { errors } = this.state;
+
       if (this.state.redirectToReferrer) {
-         return (<Redirect to={'user-profile'}/>)
-       }
-      
+         return (<Redirect to={'user-profile'} />)
+      }
+
       //  if(sessionStorage.getItem('userData')){
       //    return (<Redirect to={'user-profile'}/>)
       //  }
 
-   
+
       return (
-         
+
          <div className="container">
-          
+
             <Row className="full-height-vh">
-          
+
                <Col xs="12" className="d-flex align-items-center justify-content-center">
                   <Card className="gradient-indigo-purple text-center width-400">
-                
+
                      <CardBody>
-                        <h2 className="white py-4">  เข้าสู่ระบบ</h2>
+                        <img src={Logo} alt="logo" />
+                        <h2 className="" style={{
+                           color: 'white'
+                           // backgroundColor: 'blue',
+                           //   paddingTop: -1000 + 'rem !important' // 20px !important
+
+                        }}>  เข้าสู่ระบบ</h2>
+                        {/* <div className="logo-img">
+                           <img src={Logo} alt="logo" />
+                        </div> */}
                         {/* <Alert
                               color="danger"
                               isOpen={this.state.visible}
@@ -179,28 +191,28 @@ class Login extends Component {
                            {this.state.useridError}
                            </Alert> */}
                         <Form className="pt-2" id="loginForm" method="post" onSubmit={this.handleSubmit}>
-                        <div>
-                         
+                           <div>
+
                            </div>
                            <FormGroup>
-                               <Col md="12">
-                               <input type="textbox"  
-                               name='userid'    
-                               onKeyPress={this.onKeyPress.bind(this)}
-                               //onKeyDown={e => /[\+\-\.\,]$/.test(e.key) && e.preventDefault()}
-                               className="form-control" 
-                            
-                               placeholder="รหัสพนักงาน(080xxx)" 
-                              onInput={this.maxLengthCheck}   
-                              value={this.state.userid}
-                              //onBlur={this.handleChange}
-                               onChange = {this.handleUseridChange}
-                             
-                               maxLength="6"  
-                               required
-                           />
-                              
-                              </Col> 
+                              <Col md="12">
+                                 <input type="textbox"
+                                    name='userid'
+                                    onKeyPress={this.onKeyPress.bind(this)}
+                                    //onKeyDown={e => /[\+\-\.\,]$/.test(e.key) && e.preventDefault()}
+                                    className="form-control"
+
+                                    placeholder="รหัสพนักงาน(080xxx)"
+                                    onInput={this.maxLengthCheck}
+                                    value={this.state.userid}
+                                    //onBlur={this.handleChange}
+                                    onChange={this.handleUseridChange}
+
+                                    maxLength="6"
+                                    required
+                                 />
+
+                              </Col>
                            </FormGroup>
                            <FormGroup>
                               <Col md="12">
@@ -211,31 +223,31 @@ class Login extends Component {
                                     id="password"
                                     placeholder="02Aug19xx"
                                     value={this.state.password}
-                                    onChange = {this.handlePassChange}
-                                   // onBlur={this.handleChange}
-                               
-                                   
+                                    onChange={this.handlePassChange}
+                                    // onBlur={this.handleChange}
+
+
                                     required
                                  />
                               </Col>
                            </FormGroup>
-                          
-                          
+
+
                            <FormGroup>
-                              
+
                            </FormGroup>
                            <FormGroup>
                               <Col md="12">
                                  <Button type="submit" color="danger" block className="btn-pink btn-raised">
                                     เข้าสู่ระบบ
                                  </Button>
-                                 
+
                               </Col>
                            </FormGroup>
                         </Form>
                      </CardBody>
                      <CardFooter>
-                       
+
                      </CardFooter>
                   </Card>
                </Col>

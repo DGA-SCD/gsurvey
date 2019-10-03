@@ -203,7 +203,7 @@ class survey extends Component {
       myfriend: "none",
       question: "",
       allResponses: [],
-      allTimeInfo: ""
+      allTimeInfo: "",
 
     };
     this.Auth = new AuthService();
@@ -298,7 +298,7 @@ class survey extends Component {
         //.then(this._checkResponse(response1))
         console.log("response1.data");
         console.log(response1.data);
-        console.log(response2);
+        console.log("เพื่อนร่วมห้อง" + response2);
         console.log(response3.data);
 
 
@@ -313,8 +313,9 @@ class survey extends Component {
       .catch((err) => {
         console.log(err);
       });
+    // console.log("เพื่อนร่วมห้อง..........." + JSON.stringify(this.state.myfriend));
 
-
+    // console.log("เพื่อนร่วมห้อง..........." + this.state.myfriend.length);
   }
 
 
@@ -409,15 +410,19 @@ class survey extends Component {
 
       var survey = new Survey.Model(this.state.question);
       var oldfriend = (this.state.myfriend === undefined || this.state.myfriend === 'none') ? '' : this.state.myfriend.displayName;
+
+
+
       if (t) {
         survey.data = t;
-
-        if (this.state.myfriend && this.state.myfriend.length > 0) {
-          console.log("==== Set partner =====");
-          survey.setValue("partner", this.state.myfriend.displayName);
-          survey.myfriend = this.state.myfriend.displayName;
-          console.log("==== Set Answer =====" + survey.myfriend);
-        }
+        survey.setValue("partner", oldfriend);
+        // if (this.state.myfriend.length !== 0) {
+        //   //   //if (this.state.myfriend && this.state.myfriend.length > 0) {
+        //   //   console.log("==== Set partner =====");
+        //   //   survey.setValue("partner", this.state.myfriend.displayName);
+        //   //   survey.myfriend = this.state.myfriend.displayName;
+        //   //   console.log("==== Set Answer =====" + survey.myfriend);
+        //   // }
 
 
 
@@ -439,7 +444,7 @@ class survey extends Component {
       survey.clearInvisibleValues = "onHidden";
       survey.showQuestionNumbers = 'off';
       survey.onAfterRenderQuestion.add(function (sender, options) {
-
+        console.log('afterrender');
         if (options.question.name === "follwer_budget_room") {
 
           options.question.value = parseInt(1000);
@@ -462,21 +467,21 @@ class survey extends Component {
         survey.setValue("level", dataList.level);
         survey.setValue("yourname", dataList.name + " " + dataList.surname);
 
-        $.ajax({
-          method: 'get',
-          crossDomain: true,
-          url: "https://seminar-backend.dga.or.th/v1/users/roommates/" + localStorage.getItem("session_userid"),
-          headers: {
-            "Content-Type": "application/json",
-            "userid": localStorage.getItem("session_userid"),
-            "token": localStorage.getItem("token_local")
-          }
-        }).done((res) => {
-          if (res.data.frientLists[0] != undefined) {
+        // $.ajax({
+        //   method: 'get',
+        //   crossDomain: true,
+        //   url: "https://seminar-backend.dga.or.th/v1/users/roommates/" + localStorage.getItem("session_userid"),
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //     "userid": localStorage.getItem("session_userid"),
+        //     "token": localStorage.getItem("token_local")
+        //   }
+        // }).done((res) => {
+        //   if (res.data.frientLists[0] != undefined) {
 
-            survey.setValue("partner", res.data.frientLists[0].displayName);
-          }
-        });
+        //     survey.setValue("partner", res.data.frientLists[0].displayName);
+        //   }
+        // });
 
       });
 
@@ -498,12 +503,15 @@ class survey extends Component {
           }
 
         };
-        console.log("คลิกอะไร" + options.name);
-        console.log("เพื่อนนอนใหม่" + options.value);
-        console.log("เพื่อนนอนเก่า" + oldfriend);
-        console.log("เพื่อนนอนเก่าsender" + sender.myfriend);
-        console.log("t-->" + JSON.stringify(t));
-        if (options.name === 'readytogo' && options.value === 'No') {
+        console.log("คลิกอะไร(options.name)" + options.name);
+        console.log("เพื่อนนอนใหม่(options.value)" + options.value);
+        console.log("เพื่อนนอนเก่า(oldfirend)" + oldfriend);
+        console.log("คำตอบ(t)" + t);
+        console.log("คำตอบ( t.typeofsleep)" + t.typeofsleep);
+
+
+        // เปลี่ยนจากไป เปน ไม่ไป
+        if (options.name === 'readytogo' && options.value === 'No' && oldfriend != '') {
           $.ajax({
             method: 'delete',
             crossDomain: true,
@@ -515,13 +523,194 @@ class survey extends Component {
             }
           }).done((res) => {
             console.log(res);
-
+            oldfriend = '';
 
           })
         }
-        if (options.name === 'typeofsleep' && (options.value === 'random' || options.value === 'family') && (oldfriend !== '')) {
+        // เลือกเป็นนอนคู่
+        else if (options.name === 'partner') {
+
+          //เคยมีคู่นอนแล้วจะเปลี่ยนคู่นอน ทำแบบสำรวจมาแล้ว
+          if (options.value !== oldfriend && (options.value) && (t) && oldfriend != '') {
+            console.log("เคยมีคู่นอนแล้วจะเปลี่ยนคู่นอน ทำแบบสำรวจมาแล้ว")
+
+            fetch("https://seminar-backend.dga.or.th/v1/users/roommates/" + localStorage.getItem("session_userid"), opt)
+              .then(this._checkerror)
+              .then(res => res.json())
+              .then((result) => {
+                if (result.success === true && result.data.frientLists) {
+
+                  const [name, uid, section] = options.value.split('/');
+                  console.log(uid);
+                  toastr.confirm('มีเพื่อนร่วมห้องอยู่แล้วนะจ๊ะ จะเปลี่ยนเพื่อนร่วมห้องเป็น. คุณ' + name + 'หรอ',
+                    {
+                      onOk: () => {
+                        $.ajax({
+                          method: 'delete',
+                          crossDomain: true,
+                          url: "https://seminar-backend.dga.or.th/v1/users/roommates/" + localStorage.getItem("session_userid"),
+                          headers: {
+                            "Content-Type": "application/json",
+                            "userid": localStorage.getItem("session_userid"),
+                            "token": localStorage.getItem("token_local")
+                          }
+                        }).done((res) => {
+                          console.log(res);
+                          let opts = {
+                            friendId: uid.trim()
+                          };
+                          fetch('https://seminar-backend.dga.or.th/v1/users/roommates/' + localStorage.getItem("session_userid"), {
+                            method: 'post',
+                            crossDomain: true,
+                            headers: {
+                              'Accept': 'application/json',
+                              'Content-Type': 'application/json',
+                              "userid": localStorage.getItem("session_userid"),
+                              "token": localStorage.getItem("token_local")
+                            },
+                            body: JSON.stringify(opts)
+                          }).then(function (response) {
+                            return response.json();
+                          }).then(function (data) {
+                            if (data.success) {
+                              toastr.success('เปลี่ยนให้แล้วจ้า', toastrOptions);
+                              oldfriend = options.value;
+                            }
+                          });
+
+
+
+
+                        })
+                          .fail(function (xhr, status, error) {
+                            //Ajax request failed.
+                            var errorMessage = xhr.status + ': ' + xhr.statusText
+                            alert('Error - ' + errorMessage);
+                          })
+                      },
+                      onCancel: () => {
+                        console.log('cancel')
+                        survey.setValue("partner", oldfriend);
+                      }
+                    })
+
+
+                }
+              }, (err) => {
+                alert('no success')
+              });
+
+          }
+          // ทำมาแล้ว แต่ไม่มีคู่นอน  เพื่อนเปนค่าว่าง
+          else if ((t) && oldfriend === '') {
+            console.log("ทำมาแล้วไม่มีคู่นอน")
+            fetch("https://seminar-backend.dga.or.th/v1/users/roommates/" + localStorage.getItem("session_userid"), opt)
+              .then(this._checkerror)
+              .then(res => res.json())
+              .then((result) => {
+                if (result.success = true && result.data.frientLists) {
+
+                  const [name, uid, section] = options.value.split('/');
+                  console.log(uid);
+                  toastr.confirm('จะเลือกเพื่อนร่วมห้องเป็น ' + name + 'หรอจ๊ะ',
+                    {
+                      onOk: () => {
+
+                        let opts = {
+                          friendId: uid.trim()
+                        };
+                        fetch('https://seminar-backend.dga.or.th/v1/users/roommates/' + localStorage.getItem("session_userid"), {
+                          method: 'post',
+                          crossDomain: true,
+                          headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                            "userid": localStorage.getItem("session_userid"),
+                            "token": localStorage.getItem("token_local")
+                          },
+                          body: JSON.stringify(opts)
+                        }).then(function (response) {
+                          return response.json();
+                        }).then(function (data) {
+                          if (data.success) {
+                            toastr.success('เพิมให้แล้วจ้า', toastrOptions);
+                            oldfriend = options.value;
+                          }
+                        });
+
+
+
+
+
+                      },
+                      onCancel: () => {
+                        console.log('cancel')
+                        survey.setValue("partner", oldfriend);
+                      }
+                    })
+
+
+                }
+              }, (err) => { });
+
+          }
+          /// ทำแบบทดสอบครั้งแรก ไม่เคยเลือกคู่นอน
+          else if (t === null && options.value !== oldfriend && oldfriend === '' && options.value !== null) {
+            console.log('ทำแบบทดสอบครั้งแรก ไม่เคยเลือกคู่นอน')
+            fetch("https://seminar-backend.dga.or.th/v1/users/roommates/" + localStorage.getItem("session_userid"), opt)
+              .then(this._checkerror)
+              .then(res => res.json())
+              .then((result) => {
+                if (result.success = true && result.data.frientLists) {
+
+                  const [name, uid, section] = options.value.split('/');
+                  console.log(uid);
+                  toastr.confirm('จะเลือกเพื่อนร่วมห้องเป็น ' + name + 'หรอจ๊ะ',
+                    {
+                      onOk: () => {
+
+                        let opts = {
+                          friendId: uid.trim()
+                        };
+                        fetch('https://seminar-backend.dga.or.th/v1/users/roommates/' + localStorage.getItem("session_userid"), {
+                          method: 'post',
+                          headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                            "userid": localStorage.getItem("session_userid"),
+                            "token": localStorage.getItem("token_local")
+                          },
+                          body: JSON.stringify(opts)
+                        }).then(function (response) {
+                          return response.json();
+                        }).then(function (data) {
+                          if (data.success) {
+                            toastr.success('เพิมให้แล้วจ้า', toastrOptions);
+                            oldfriend = options.value;
+                          }
+                        });
+
+
+
+
+
+                      },
+                      onCancel: () => {
+                        survey.setValue("partner", oldfriend);
+                      }
+                    })
+
+
+                }
+              }, (err) => { alert('no success') });
+          }
+
+        }
+        //เปบี่ยนเป็นนอนกับครอบครัว หรือ ให้ทีมจัดให้
+        else if (options.name === 'typeofsleep' && (options.value === 'random' || options.value === 'family') && (oldfriend != '')) {
           console.log("ไม่นอนคู๋")
-          console.log(oldfriend)
+          console.log("unbindเพื่อนทิ้ง")
+
           survey.setValue("partner", '');
 
           const [name, uid, section] = oldfriend
@@ -543,6 +732,8 @@ class survey extends Component {
 
                   if (res.success) {
                     toastr.success('เปลี่ยนให้แล้วจ้า', toastrOptions);
+                    oldfriend = '';
+
                   }
 
 
@@ -550,6 +741,11 @@ class survey extends Component {
 
 
                 })
+                  .fail(function (xhr, status, error) {
+                    //Ajax request failed.
+                    var errorMessage = xhr.status + ': ' + xhr.statusText
+                    alert('Error - ' + errorMessage);
+                  })
               },
               onCancel: () => {
                 console.log('cancel')
@@ -557,201 +753,9 @@ class survey extends Component {
               }
             })
         }
-        // เคยทำแบบสำรวจมาแล้ว จะเปลี่ยนคู่นอน
-        else if (sender.myfriend !== "none" && options.name === "partner" && options.value !== oldfriend && (options.value) && t !== null && t.typeofsleep === 'roommate') {
-          //   if(sender.myfriend !== "none" && options.name === "partner" && options.value !== sender.myfriend && (options.value) && t !== null){
-          console.log("Option: " + options.value + " value: " + sender.myfriend);
-          fetch("https://seminar-backend.dga.or.th/v1/users/roommates/" + localStorage.getItem("session_userid"), opt)
-            .then(this._checkerror)
-            .then(res => res.json())
-            .then((result) => {
-              if (result.success === true && result.data.frientLists) {
-
-                const [name, uid, section] = options.value.split('/');
-                console.log(uid);
-                toastr.confirm('มีเพื่อนร่วมห้องอยู่แล้วนะจ๊ะ จะเปลี่ยนเพื่อนร่วมห้องเป็น. คุณ' + name + 'หรอ',
-                  {
-                    onOk: () => {
-                      $.ajax({
-                        method: 'delete',
-                        crossDomain: true,
-                        url: "https://seminar-backend.dga.or.th/v1/users/roommates/" + localStorage.getItem("session_userid"),
-                        headers: {
-                          "Content-Type": "application/json",
-                          "userid": localStorage.getItem("session_userid"),
-                          "token": localStorage.getItem("token_local")
-                        }
-                      }).done((res) => {
-                        console.log(res);
-                        let opts = {
-                          friendId: uid.trim()
-                        };
-                        fetch('https://seminar-backend.dga.or.th/v1/users/roommates/' + localStorage.getItem("session_userid"), {
-                          method: 'post',
-                          headers: {
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json',
-                            "userid": localStorage.getItem("session_userid"),
-                            "token": localStorage.getItem("token_local")
-                          },
-                          body: JSON.stringify(opts)
-                        }).then(function (response) {
-                          return response.json();
-                        }).then(function (data) {
-                          if (data.success) {
-                            toastr.success('เปลี่ยนให้แล้วจ้า', toastrOptions);
-                          }
-                        });
 
 
 
-
-                      })
-                    },
-                    onCancel: () => {
-                      console.log('cancel')
-                      survey.setValue("partner", oldfriend);
-                    }
-                  })
-
-
-              }
-            }, (err) => { });
-
-        }
-
-
-        /// ทำแบบทดสอบครั้งแรก ไม่เคยเลือกคู่นอน
-        else if (t === null && options.name === "partner" && options.value !== oldfriend && oldfriend === '' && options.value !== null) {
-          console.log("Option: " + options.value + " value: " + sender.myfriend);
-          fetch("https://seminar-backend.dga.or.th/v1/users/roommates/" + localStorage.getItem("session_userid"), opt)
-            .then(this._checkerror)
-            .then(res => res.json())
-            .then((result) => {
-              if (result.success = true && result.data.frientLists) {
-
-                const [name, uid, section] = options.value.split('/');
-                console.log(uid);
-                toastr.confirm('จะเลือกเพื่อนร่วมห้องเป็น ' + name + 'หรอจ๊ะ',
-                  {
-                    onOk: () => {
-
-                      let opts = {
-                        friendId: uid.trim()
-                      };
-                      fetch('https://seminar-backend.dga.or.th/v1/users/roommates/' + localStorage.getItem("session_userid"), {
-                        method: 'post',
-                        headers: {
-                          'Accept': 'application/json',
-                          'Content-Type': 'application/json',
-                          "userid": localStorage.getItem("session_userid"),
-                          "token": localStorage.getItem("token_local")
-                        },
-                        body: JSON.stringify(opts)
-                      }).then(function (response) {
-                        return response.json();
-                      }).then(function (data) {
-                        if (data.success) {
-                          toastr.success('เพิมให้แล้วจ้า', toastrOptions);
-                        }
-                      });
-
-
-
-
-
-                    },
-                    onCancel: () => {
-                      survey.setValue("partner", oldfriend);
-                    }
-                  })
-
-
-              }
-            }, (err) => { });
-
-        }
-
-        // ทำมาแล้ว แต่ไม่ได้เลือกคู่นอน
-        else if (t !== null && options.name === "partner" && options.value !== oldfriend && oldfriend === '' && options.value !== null) {
-          console.log("options.value");
-          console.log(options.value);
-          console.log("Option: " + options.value + " value: " + sender.myfriend);
-          fetch("https://seminar-backend.dga.or.th/v1/users/roommates/" + localStorage.getItem("session_userid"), opt)
-            .then(this._checkerror)
-            .then(res => res.json())
-            .then((result) => {
-              if (result.success = true && result.data.frientLists) {
-
-                const [name, uid, section] = options.value.split('/');
-                console.log(uid);
-                toastr.confirm('จะเลือกเพื่อนร่วมห้องเป็น ' + name + 'หรอจ๊ะ',
-                  {
-                    onOk: () => {
-
-                      let opts = {
-                        friendId: uid.trim()
-                      };
-                      fetch('https://seminar-backend.dga.or.th/v1/users/roommates/' + localStorage.getItem("session_userid"), {
-                        method: 'post',
-                        headers: {
-                          'Accept': 'application/json',
-                          'Content-Type': 'application/json',
-                          "userid": localStorage.getItem("session_userid"),
-                          "token": localStorage.getItem("token_local")
-                        },
-                        body: JSON.stringify(opts)
-                      }).then(function (response) {
-                        return response.json();
-                      }).then(function (data) {
-                        if (data.success) {
-                          toastr.success('เพิมให้แล้วจ้า', toastrOptions);
-                        }
-                      });
-
-
-
-
-
-                    },
-                    onCancel: () => {
-                      console.log('cancel')
-                      survey.setValue("partner", oldfriend);
-                    }
-                  })
-
-
-              }
-            }, (err) => { });
-
-        }
-
-        else if (sender.myfriend === 'undefined' && options.name === "partner" && (t) && options.value !== null) { // ตอบมาแล้วแต่ยังไม่เลือกคู่นอน
-          const [name, uid, section] = options.value.split('/');
-
-          let opts = {
-            friendId: uid.trim()
-          };
-          fetch('https://seminar-backend.dga.or.th/v1/users/roommates/' + localStorage.getItem("session_userid"), {
-            method: 'post',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-              "userid": localStorage.getItem("session_userid"),
-              "token": localStorage.getItem("token_local")
-            },
-            body: JSON.stringify(opts)
-          })
-            .then(this._checkerror)
-            .then(function (response) {
-              return response.json();
-            }).then(function (data) {
-              if (data.success) {
-                toastr.success('เพิ่มเพื่อนร่วมห้องให้แล้วจ้า', toastrOptions);
-              }
-            });
-
-        }
         else return true;
 
 
