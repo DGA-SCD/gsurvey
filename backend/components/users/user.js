@@ -501,10 +501,11 @@ function setRoomAndVehicle(req, res){
             reject( err );
         })
         .then( conn =>{
-            const qstr = "UPDATE booking \
-                SET vehicle = " + vehicleId
-                + ",room = " + roomId
-                + " WHERE UserID = \"" + userId + "\"";
+            const qstr = 'UPDATE booking \
+                SET vehicle = ' + vehicleId
+                + ',room = ' + roomId
+                + ',Remark = "' + remark + '"'
+                + ' WHERE UserID = "' + userId + '"';
             conn.query(qstr, function(err, result, fields) {
                 if( err ) {
                     logger.error( err );
