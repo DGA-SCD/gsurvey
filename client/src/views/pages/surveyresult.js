@@ -256,7 +256,7 @@ class surveyresult extends Component {
             else if (value[i] === '4') {
                result_follower.push('มื้อเย็น(วันที่2)')
             }
-            else if (value[i] === '4') {
+            else if (value[i] === '5') {
                result_follower.push('มื้อกลางวัน(วันที่3)')
             }
             else

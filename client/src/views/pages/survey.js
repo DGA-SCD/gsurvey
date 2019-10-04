@@ -633,7 +633,7 @@ class survey extends Component {
                           return response.json();
                         }).then(function (data) {
                           if (data.success) {
-                            toastr.success('เพิมให้แล้วจ้า', toastrOptions);
+                            toastr.success('เพิ่มให้แล้วจ้า', toastrOptions);
                             oldfriend = options.value;
                           }
                         });
