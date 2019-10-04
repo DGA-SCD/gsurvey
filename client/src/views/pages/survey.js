@@ -365,9 +365,9 @@ class survey extends Component {
       .StylesManager
       .applyTheme("orange");
 
-    var t = this.state.answers;
+    //  var t = this.state.answers;
 
-    console.log("t--->".t);
+    // console.log("t--->".t);
     if (this.state.answers)
       var t = this.state.answers.surveyresult;
 
@@ -388,8 +388,6 @@ class survey extends Component {
           "token": localStorage.getItem("token_local")
         }
       }).done((res) => {
-        console.log(res);
-        console.log('เพื่อน' + res);
 
         var q = survey.getQuestionByName('partner');
         var choices = [];
@@ -414,8 +412,12 @@ class survey extends Component {
 
 
       if (t) {
+
+        t.partner = oldfriend;
         survey.data = t;
+        //console.log("survecy.data" + JSON.stringify(survey.data));
         survey.setValue("partner", oldfriend);
+        //console.log("คำถาม พาร์ทเนอทร์" + survey.getValue("partner"))
         // if (this.state.myfriend.length !== 0) {
         //   //   //if (this.state.myfriend && this.state.myfriend.length > 0) {
         //   //   console.log("==== Set partner =====");
@@ -467,21 +469,6 @@ class survey extends Component {
         survey.setValue("level", dataList.level);
         survey.setValue("yourname", dataList.name + " " + dataList.surname);
 
-        // $.ajax({
-        //   method: 'get',
-        //   crossDomain: true,
-        //   url: "https://seminar-backend.dga.or.th/v1/users/roommates/" + localStorage.getItem("session_userid"),
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //     "userid": localStorage.getItem("session_userid"),
-        //     "token": localStorage.getItem("token_local")
-        //   }
-        // }).done((res) => {
-        //   if (res.data.frientLists[0] != undefined) {
-
-        //     survey.setValue("partner", res.data.frientLists[0].displayName);
-        //   }
-        // });
 
       });
 
@@ -756,7 +743,7 @@ class survey extends Component {
 
 
 
-        else return true;
+        else { survey.setValue("partner", oldfriend); }
 
 
 
