@@ -490,11 +490,6 @@ class survey extends Component {
           }
 
         };
-        console.log("คลิกอะไร(options.name)" + options.name);
-        console.log("เพื่อนนอนใหม่(options.value)" + options.value);
-        console.log("เพื่อนนอนเก่า(oldfirend)" + oldfriend);
-        console.log("คำตอบ(t)" + t);
-        console.log("คำตอบ( t.typeofsleep)" + t.typeofsleep);
 
 
         // เปลี่ยนจากไป เปน ไม่ไป
