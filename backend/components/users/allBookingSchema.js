@@ -26,8 +26,8 @@
 module.exports.allbooking = () => { return [
     { title: 'รหัส', field: 'userId', type: 'string'},
     { title: 'ชื่อ-สกุล', field: 'fullname', type: 'string'},
-    { title: 'ส่วนงาน', field: 'segment', type: 'string'},
     { title: 'ฝ่าย', field: 'department', type: 'string'},
+    { title: 'ส่วนงาน', field: 'segment', type: 'string'},
     { title: 'เพื่อนร่วมห้อง', field: 'friend', type: 'string'},
     { title: 'ห้อง', field: 'room', type: 'string', lookup: {
         2: "1101 Twin Bed (2)",
