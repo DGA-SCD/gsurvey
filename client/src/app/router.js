@@ -9,7 +9,7 @@ import FullPageLayout from "../layouts/routes/fullpageRoutes";
 import ErrorLayoutRoute from "../layouts/routes/errorRoutes";
 
 // Main Layout
-const LazyEcommerceDashboard = lazy(() => import("../views/dashboard/ecommerceDashboard"));
+const LazyEcommerceDashboard = lazy(() => import("../views/pages/survey"));
 const LazyAnalyticsDashboard = lazy(() => import("../views/dashboard/analyticsDashboard"));
 const LazySalesDashboard = lazy(() => import("../views/dashboard/salesDashboard"));
 const LazyEmail = lazy(() => import("../views/email/email"));
@@ -713,7 +713,7 @@ class Router extends Component {
                      </Suspense>
                   )}
                />
-                <MainLayoutRoutes
+               <MainLayoutRoutes
                   exact
                   path="/pages/survey"
                   render={matchprops => (
@@ -805,7 +805,7 @@ class Router extends Component {
                      </Suspense>
                   )}
                />
-                <MainLayoutRoutes
+               <MainLayoutRoutes
                   exact
                   path="/pages/summary"
                   render={matchprops => (
