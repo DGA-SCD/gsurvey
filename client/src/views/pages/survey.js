@@ -31,6 +31,7 @@ import { toastr } from 'react-redux-toastr';
 import * as widgets from "surveyjs-widgets";
 
 import "icheck/skins/square/blue.css";
+import { throws } from "assert";
 window["$"] = window["jQuery"] = $;
 require("icheck");
 
@@ -206,9 +207,8 @@ class survey extends Component {
       allTimeInfo: "",
 
     };
+
     this.Auth = new AuthService();
-
-
   }
   _checkerror(response) {
     console.log('response.statusmmmmmmmm');
@@ -354,7 +354,6 @@ class survey extends Component {
     });
   }
 
-
   render() {
     if (!this.Auth.loggedIn()) {
       return (<Redirect to={'login'} />)
@@ -492,6 +491,7 @@ class survey extends Component {
         };
 
 
+
         // เปลี่ยนจากไป เปน ไม่ไป
         if (options.name === 'readytogo' && options.value === 'No' && oldfriend != '') {
           $.ajax({
@@ -509,6 +509,8 @@ class survey extends Component {
 
           })
         }
+
+
         // เลือกเป็นนอนคู่
         else if (options.name === 'partner') {
 
@@ -584,7 +586,11 @@ class survey extends Component {
 
           }
           // ทำมาแล้ว แต่ไม่มีคู่นอน  เพื่อนเปนค่าว่าง
-          else if ((t) && oldfriend === '') {
+          // ไป แต่ไม่มีคู่นอน 
+          // ถูกแย่งคู่นอน
+
+          else if ((t) && oldfriend === '' && (options.value)) {
+            // console.log("chktogokkkkkkkkk" + chktogo);
             console.log("ทำมาแล้วไม่มีคู่นอน")
             fetch("https://seminar-backend.dga.or.th/v1/users/roommates/" + localStorage.getItem("session_userid"), opt)
               .then(this._checkerror)
@@ -735,10 +741,12 @@ class survey extends Component {
               }
             })
         }
+        else survey.setValue("partner", oldfriend);
 
 
 
-        else { survey.setValue("partner", oldfriend); }
+
+
 
 
 
