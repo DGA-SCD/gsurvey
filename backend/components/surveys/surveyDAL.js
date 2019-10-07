@@ -13,7 +13,7 @@ Model.prototype.getQuestions = async function(ctx){
     await MongoClient.connect(appConf.mongoDB, { useNewUrlParser: true })
     .then(  async function(db){
             logger.info("successfully connected MongoDB");
-            await db.db('seminar').collection('question').findOne({name: ctx}, function (error, response) {
+            await db.db(appConf.MONGODB_dbname).collection('question').findOne({name: ctx}, function (error, response) {
                 if(error) {
                     console.log('Error occurred while inserting');
                 } else {
@@ -36,7 +36,7 @@ Model.prototype.setQuestions = async function(ctx){
     await MongoClient.connect(appConf.mongoDB, { useNewUrlParser: true })
     .then( async function(db){
             logger.info("successfully connected MongoDB");
-            db.db('seminar').collection('question').findOneAndReplace({name: ctx.name}, ctx, {upsert: true}, function (error, response) {
+            db.db(appConf.MONGODB_dbname).collection('question').findOneAndReplace({name: ctx.name}, ctx, {upsert: true}, function (error, response) {
                 if(error) {
                     console.log('Error occurred while inserting');
                 } else {
@@ -56,7 +56,7 @@ Model.prototype.getAnswer = async function(ctx){
     await MongoClient.connect(appConf.mongoDB, { useNewUrlParser: true })
     .then(  async function(db){
             logger.info("successfully connected MongoDB");
-            await db.db('seminar').collection('answer').findOne(ctx, function (error, response) {
+            await db.db(appConf.MONGODB_dbname).collection('answer').findOne(ctx, function (error, response) {
                 if(error) {
                     console.log('Error occurred while inserting');
                 } else {
@@ -83,7 +83,7 @@ Model.prototype.setAnswer = async function(ctx){
                 ,version: ctx.version
             };
             logger.debug("filter: " + JSON.stringify(filters));
-            db.db('seminar').collection('answer').findOneAndReplace(filters, ctx, {upsert: true}, function (error, response) {
+            db.db(appConf.MONGODB_dbname).collection('answer').findOneAndReplace(filters, ctx, {upsert: true}, function (error, response) {
                 if(error) {
                     console.log('Error occurred while inserting');
                 } else {
