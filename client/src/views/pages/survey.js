@@ -7,7 +7,7 @@ import { Link, Redirect } from "react-router-dom";
 import Cookies from 'universal-cookie';
 import ReactDOM from 'react-dom';
 import AuthService from '../../services/AuthService';
-
+import { BACKEND_URL } from "../../services/AppConfig";
 import * as Survey from "survey-react";
 import "survey-react/survey.css";
 
@@ -62,7 +62,7 @@ const toastrConfirmOptions = {
     $.ajax({
       method: 'delete',
       crossDomain: true,
-      url: "https://seminar-backend.dga.or.th/v1/users/roommates/" + localStorage.getItem("session_userid"),
+      url: BACKEND_URL + "/v1/users/roommates/" + localStorage.getItem("session_userid"),
     }).done((res) => {
       console.log(res);
 
@@ -207,7 +207,7 @@ class survey extends Component {
       allTimeInfo: "",
 
     };
-
+    console.log("my configfdsf : " + BACKEND_URL);
     this.Auth = new AuthService();
   }
   _checkerror(response) {
@@ -227,6 +227,7 @@ class survey extends Component {
   }
 
   componentDidMount() {
+    console.log('dfjkdlfs' + BACKEND_URL)
     var data1 = {
       userid: localStorage.getItem("session_userid"),
       token: localStorage.getItem("token_local")
@@ -247,9 +248,9 @@ class survey extends Component {
 
       }
     };
-    var url1 = "https://seminar-backend.dga.or.th/v1/survey/questions/seminar-01";
-    var url2 = "https://seminar-backend.dga.or.th/v1/users/roommates/" + localStorage.getItem("session_userid");
-    var url3 = "https://seminar-backend.dga.or.th/v1/survey/answers/" + localStorage.getItem("session_userid") + "/seminar-01/1";
+    var url1 = BACKEND_URL + "/v1/survey/questions/seminar-01";
+    var url2 = BACKEND_URL + "/v1/users/roommates/" + localStorage.getItem("session_userid");
+    var url3 = BACKEND_URL + "/v1/survey/answers/" + localStorage.getItem("session_userid") + "/seminar-01/1";
 
 
 
@@ -335,7 +336,7 @@ class survey extends Component {
 
     $.ajax({
       type: "POST",
-      url: "https://seminar-backend.dga.or.th/v1/survey/answers",
+      url: BACKEND_URL + "/v1/survey/answers",
       contentType: "application/json",
       data: JSON.stringify(data),  //no further stringification
       headers: {
@@ -380,7 +381,7 @@ class survey extends Component {
       $.ajax({
         method: 'get',
         crossDomain: true,
-        url: "https://seminar-backend.dga.or.th/v1/users/roommates",
+        url: BACKEND_URL + "/v1/users/roommates",
         headers: {
           "Content-Type": "application/json",
           "userid": localStorage.getItem("session_userid"),
@@ -497,7 +498,7 @@ class survey extends Component {
           $.ajax({
             method: 'delete',
             crossDomain: true,
-            url: "https://seminar-backend.dga.or.th/v1/users/roommates/" + localStorage.getItem("session_userid"),
+            url: BACKEND_URL + "/v1/users/roommates/" + localStorage.getItem("session_userid"),
             headers: {
               "Content-Type": "application/json",
               "userid": localStorage.getItem("session_userid"),
@@ -513,12 +514,14 @@ class survey extends Component {
 
         // เลือกเป็นนอนคู่
         else if (options.name === 'partner') {
-
+          console.log(' options.value' + options.value);
+          console.log("oldfriend" + oldfriend);
+          console.log('t' + JSON.stringify(t))
           //เคยมีคู่นอนแล้วจะเปลี่ยนคู่นอน ทำแบบสำรวจมาแล้ว
           if (options.value !== oldfriend && (options.value) && (t) && oldfriend != '') {
             console.log("เคยมีคู่นอนแล้วจะเปลี่ยนคู่นอน ทำแบบสำรวจมาแล้ว")
 
-            fetch("https://seminar-backend.dga.or.th/v1/users/roommates/" + localStorage.getItem("session_userid"), opt)
+            fetch(BACKEND_URL + "/v1/users/roommates/" + localStorage.getItem("session_userid"), opt)
               .then(this._checkerror)
               .then(res => res.json())
               .then((result) => {
@@ -532,7 +535,7 @@ class survey extends Component {
                         $.ajax({
                           method: 'delete',
                           crossDomain: true,
-                          url: "https://seminar-backend.dga.or.th/v1/users/roommates/" + localStorage.getItem("session_userid"),
+                          url: BACKEND_URL + "/v1/users/roommates/" + localStorage.getItem("session_userid"),
                           headers: {
                             "Content-Type": "application/json",
                             "userid": localStorage.getItem("session_userid"),
@@ -543,7 +546,7 @@ class survey extends Component {
                           let opts = {
                             friendId: uid.trim()
                           };
-                          fetch('https://seminar-backend.dga.or.th/v1/users/roommates/' + localStorage.getItem("session_userid"), {
+                          fetch(BACKEND_URL + '/v1/users/roommates/' + localStorage.getItem("session_userid"), {
                             method: 'post',
                             crossDomain: true,
                             headers: {
@@ -592,7 +595,7 @@ class survey extends Component {
           else if ((t) && oldfriend === '' && (options.value)) {
             // console.log("chktogokkkkkkkkk" + chktogo);
             console.log("ทำมาแล้วไม่มีคู่นอน")
-            fetch("https://seminar-backend.dga.or.th/v1/users/roommates/" + localStorage.getItem("session_userid"), opt)
+            fetch(BACKEND_URL + "/v1/users/roommates/" + localStorage.getItem("session_userid"), opt)
               .then(this._checkerror)
               .then(res => res.json())
               .then((result) => {
@@ -607,7 +610,7 @@ class survey extends Component {
                         let opts = {
                           friendId: uid.trim()
                         };
-                        fetch('https://seminar-backend.dga.or.th/v1/users/roommates/' + localStorage.getItem("session_userid"), {
+                        fetch(BACKEND_URL + '/v1/users/roommates/' + localStorage.getItem("session_userid"), {
                           method: 'post',
                           crossDomain: true,
                           headers: {
@@ -643,9 +646,10 @@ class survey extends Component {
 
           }
           /// ทำแบบทดสอบครั้งแรก ไม่เคยเลือกคู่นอน
-          else if (t === null && options.value !== oldfriend && oldfriend === '' && options.value !== null) {
+          else if (t === undefined && options.value !== oldfriend && oldfriend === '' && options.value !== null) {
+
             console.log('ทำแบบทดสอบครั้งแรก ไม่เคยเลือกคู่นอน')
-            fetch("https://seminar-backend.dga.or.th/v1/users/roommates/" + localStorage.getItem("session_userid"), opt)
+            fetch(BACKEND_URL + "/v1/users/roommates/" + localStorage.getItem("session_userid"), opt)
               .then(this._checkerror)
               .then(res => res.json())
               .then((result) => {
@@ -660,7 +664,7 @@ class survey extends Component {
                         let opts = {
                           friendId: uid.trim()
                         };
-                        fetch('https://seminar-backend.dga.or.th/v1/users/roommates/' + localStorage.getItem("session_userid"), {
+                        fetch(BACKEND_URL + '/v1/users/roommates/' + localStorage.getItem("session_userid"), {
                           method: 'post',
                           headers: {
                             'Accept': 'application/json',
@@ -692,6 +696,77 @@ class survey extends Component {
                 }
               }, (err) => { alert('no success') });
           }
+          /// ทำแบบทดสอบครั้งแรก เลือคู่มาแล้วจะเปลี่ยนคู่นอน
+          else if (t === undefined && options.value !== oldfriend && options.value !== null) {
+            console.log("เคยมีคู่นอนแล้วจะเปลี่ยนคู่นอน ทำแบบสำรวจมาแล้ว")
+
+            fetch(BACKEND_URL + "/v1/users/roommates/" + localStorage.getItem("session_userid"), opt)
+              .then(this._checkerror)
+              .then(res => res.json())
+              .then((result) => {
+                if (result.success === true && result.data.frientLists) {
+
+                  const [name, uid, section] = options.value.split('/');
+                  console.log(uid);
+                  toastr.confirm('มีเพื่อนร่วมห้องอยู่แล้วนะจ๊ะ จะเปลี่ยนเพื่อนร่วมห้องเป็น.. คุณ' + name + 'หรอ',
+                    {
+                      onOk: () => {
+                        $.ajax({
+                          method: 'delete',
+                          crossDomain: true,
+                          url: BACKEND_URL + "/v1/users/roommates/" + localStorage.getItem("session_userid"),
+                          headers: {
+                            "Content-Type": "application/json",
+                            "userid": localStorage.getItem("session_userid"),
+                            "token": localStorage.getItem("token_local")
+                          }
+                        }).done((res) => {
+                          console.log(res);
+                          let opts = {
+                            friendId: uid.trim()
+                          };
+                          fetch(BACKEND_URL + '/v1/users/roommates/' + localStorage.getItem("session_userid"), {
+                            method: 'post',
+                            crossDomain: true,
+                            headers: {
+                              'Accept': 'application/json',
+                              'Content-Type': 'application/json',
+                              "userid": localStorage.getItem("session_userid"),
+                              "token": localStorage.getItem("token_local")
+                            },
+                            body: JSON.stringify(opts)
+                          }).then(function (response) {
+                            return response.json();
+                          }).then(function (data) {
+                            if (data.success) {
+                              toastr.success('เปลี่ยนให้แล้วจ้า', toastrOptions);
+                              oldfriend = options.value;
+                            }
+                          });
+
+
+
+
+                        })
+                          .fail(function (xhr, status, error) {
+                            //Ajax request failed.
+                            var errorMessage = xhr.status + ': ' + xhr.statusText
+                            alert('Error - ' + errorMessage);
+                          })
+                      },
+                      onCancel: () => {
+                        console.log('cancel')
+                        survey.setValue("partner", oldfriend);
+                      }
+                    })
+
+
+                }
+              }, (err) => {
+                alert('no success')
+              });
+
+          }
 
         }
         //เปบี่ยนเป็นนอนกับครอบครัว หรือ ให้ทีมจัดให้
@@ -709,7 +784,7 @@ class survey extends Component {
                 $.ajax({
                   method: 'delete',
                   crossDomain: true,
-                  url: "https://seminar-backend.dga.or.th/v1/users/roommates/" + localStorage.getItem("session_userid"),
+                  url: BACKEND_URL + "/v1/users/roommates/" + localStorage.getItem("session_userid"),
                   headers: {
                     "Content-Type": "application/json",
                     "userid": localStorage.getItem("session_userid"),
