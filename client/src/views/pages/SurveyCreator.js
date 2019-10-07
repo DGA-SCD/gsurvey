@@ -18,7 +18,7 @@ import "select2/dist/js/select2.js";
 import "jquery-bar-rating";
 //import AuthService from '../../services/AuthService';
 import "icheck/skins/square/blue.css";
-
+import { BACKEND_URL } from "../../services/AppConfig";
 import * as widgets from "surveyjs-widgets";
 
 SurveyJSCreator.StylesManager.applyTheme("default");
@@ -80,7 +80,7 @@ class SurveyCreator extends Component {
     // })
 
 
-    fetch("https://seminar-backend.dga.or.th/v1/survey/questions/seminar-01", {
+    fetch(BACKEND_URL + "/v1/survey/questions/seminar-01", {
       method: 'get',
       crossDomain: true,
       headers: {
@@ -165,7 +165,7 @@ class SurveyCreator extends Component {
       contentType: "application/json",
       data: jsondata,
 
-      url: "https://seminar-backend.dga.or.th/v1/survey/questions",
+      url: BACKEND_URL + "/v1/survey/questions",
       headers: {
         "Content-Type": "application/json",
         "userid": localStorage.getItem("session_userid"),
