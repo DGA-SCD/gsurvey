@@ -1,6 +1,6 @@
 import React, { Component, useState, forwardRef } from 'react';
 import ReactDOM from "react-dom";
-
+import { BACKEND_URL } from "../../services/AppConfig";
 import { Link, Redirect } from "react-router-dom";
 import Box from '@material-ui/core/Box';
 import MaterialTable from "material-table";
@@ -53,8 +53,8 @@ class Example extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: "",
-      columns: "",
+      data: [],
+      columns: [],
       redirect: true
 
 
@@ -153,7 +153,7 @@ class Example extends Component {
 
       }
     };
-    fetch('https://seminar-backend.dga.or.th/v1/users/allbooking', options)
+    fetch(BACKEND_URL + '/v1/users/allbooking', options)
       .then(response => {
         if (response.ok) {
           return response.json().then(res => {
@@ -185,7 +185,7 @@ class Example extends Component {
 
   }
   render() {
-    console.log('render');
+    console.log('renderๅๅๅๅ');
     if (!this.Auth.loggedIn()) {
       return (<Redirect to={'login'} />)
     }
@@ -241,7 +241,7 @@ class Example extends Component {
                   },
                   body: JSON.stringify(obj)
                 };
-                const url = "https://seminar-backend.dga.or.th/v1/users/booking"
+                const url = BACKEND_URL + "/v1/users/booking"
                 fetch(url, options)
                   .then((response) => response.json())
 

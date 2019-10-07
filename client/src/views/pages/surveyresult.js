@@ -2,6 +2,7 @@ import React, { Component, Fragment } from "react";
 import { Link, Redirect } from "react-router-dom";
 import { Card, CardBody, CardTitle, Row, Col, Button, Form, CustomInput, FormGroup, Label, Input } from "reactstrap";
 import AuthService from '../../services/AuthService';
+import { BACKEND_URL } from "../../services/AppConfig";
 import "../../assets/scss/views/pages/survey/survey.css";
 import {
    X,
@@ -49,7 +50,7 @@ class surveyresult extends Component {
 
    componentDidMount() {
 
-      fetch("https://seminar-backend.dga.or.th/v1/survey/answers/" + localStorage.getItem("session_userid") + "/seminar-01/1", {
+      fetch(BACKEND_URL + "/v1/survey/answers/" + localStorage.getItem("session_userid") + "/seminar-01/1", {
          method: 'get',
          headers: {
             'Accept': 'application/json',

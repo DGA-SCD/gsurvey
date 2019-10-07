@@ -1,19 +1,19 @@
 
 import React, { Fragment, Component } from "react";
 import { Link, Redirect } from "react-router-dom";
+import { BACKEND_URL } from "./AppConfig";
 export default class AuthService {
-  //let BaseURL = 'http://demo4393909.mockable.io/';
-
 
   constructor(domain) {
-    this.domain = domain || 'https://seminar-backend.dga.or.th/v1/auth/login' // API server domain
+    this.domain = domain || BACKEND_URL + '/v1/auth/login' // API server domain
     //  this.fetch = this.fetch.bind(this) // React binding stuff
     this.login = this.login.bind(this)
     // this.getProfile = this.getProfile.bind(this)
+    console.log("my config : " + BACKEND_URL);
   }
 
   login(userId, password) {
-    let BaseURL = 'https://seminar-backend.dga.or.th/v1/auth/login';
+    let BaseURL = BACKEND_URL + '/v1/auth/login';
     console.log("login" + userId);
     return fetch(BaseURL, {
       method: 'POST',
@@ -90,7 +90,7 @@ export default class AuthService {
 
       }
     };
-    fetch('https://seminar-backend.dga.or.th/v1/users/profile', options)
+    fetch(BACKEND_URL + '/v1/users/profile', options)
       .then(response => {
         if (response.ok) {
           console.log('ok')
