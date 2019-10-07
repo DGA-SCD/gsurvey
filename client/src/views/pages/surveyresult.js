@@ -81,8 +81,8 @@ class surveyresult extends Component {
             } else {
                if (res.data) {
                   console.log(res);
-                  //  this.setState({ dataList: res.data.surveyresult })
-                  //  this.setState({ isfollwer: res.data.surveyresult.detailfollower })
+                  this.setState({ dataList: res.data.surveyresult })
+                  this.setState({ isfollwer: res.data.surveyresult.detailfollower })
                   //  this.setState({ issurvey: true })
                   console.log('dfsfsfddddddddds-->' + res.data.surveyresult.totalQuantity);
                   this.setState({
@@ -99,7 +99,7 @@ class surveyresult extends Component {
                      // var num3 = number1 + number2;
                      issurvey: true
                   });
-                  console.log(this.state.dataList);
+                  console.log("fdsfsa" + this.state.dataList);
                } else {
                   this.setState({
                      issurvey: false
@@ -289,7 +289,7 @@ class surveyresult extends Component {
 
                   </div>
                   <div> {item.follwermakeinsurance === '1' ? 'ทำประกัน' : 'ไม่ทำประกัน'} {item.follwermakeinsurance === '1' ? '/ ผู้รับผลประโยชน์กรมธรรม์ :' + item.follwer_insurance + '/ มีความสัมพันธ์เป็น : ' + item.follwer_insurance_relation : ''}</div>
-                  <div>  โรคประจำตัว : {item.follower_disease === '' ? '-' : item.follower_disease}</div>
+                  <div>  โรคประจำตัว : {item.follower_disease1 === '' ? '-' : item.follower_disease1}</div>
                </li>
 
 
