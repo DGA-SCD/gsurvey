@@ -259,9 +259,11 @@ class surveyresult extends Component {
             }
             else if (value[i] === '5') {
                result_follower.push('มื้อกลางวัน(วันที่3)')
+            } else if (value[i] === '6') {
+               result_follower.push('ไม่กินเลยสักมื้อจ้า')
             }
             else
-               result_follower.push('-')
+               result_follower.push('ไม่กินเลยสักมื้อจ้า')
             //else return <div>-</div>
          }
          return arrString_follower = result_follower.join(", ");
