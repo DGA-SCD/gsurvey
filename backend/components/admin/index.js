@@ -27,7 +27,6 @@ const http = require('../../commons/http');
 const appConf = require('../../config/production.conf');
 const redis = require("redis");
 const logger = winston.logger;
-const auth = require("./auth");
 const router = express.Router();
 
 
