@@ -7,6 +7,7 @@ global.appRoot = path.resolve(__dirname);
 const user = require('./components/users/index.js');
 const survey = require('./components/surveys/index.js');
 const auth = require('./components/auth/index.js');
+const report = require('./components/admin/index.js');
 const conf = require('./config/production.conf');
 const app = express();
 
@@ -33,5 +34,6 @@ app.options("/*", function(req, res, next){
 app.use('/v1/auth', auth);
 app.use('/v1/users', user);
 app.use('/v1/survey', survey);
+app.use('/v1/reports', report);
 
 module.exports = app;
