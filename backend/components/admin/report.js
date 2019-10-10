@@ -28,6 +28,7 @@ const redis = require("redis");
 const logger = winston.logger;
 const promise = require('promise');
 const helperMySQL = require('../helpers/mysql');
+const MongoClient = require('mongodb').MongoClient;
 const schema = require('./report-schema');
 
 // Food Detial Mapping
