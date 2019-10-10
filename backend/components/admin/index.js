@@ -63,6 +63,6 @@ router.use(function(req, res, next){
 });
 
 // Reports
-router.get('/reports/billing', report.billing);
+router.get('/billing', report.billing);
 
 module.exports = router;
