@@ -268,7 +268,7 @@ function billing( req, res ){
                             console.log( "userCost: " + JSON.stringify(userCost) );
                             http.success(res, 
                                 {
-                                columns: schema.cost,
+                                columns: schema.cost(),
                                 data: userCost
                             });
                             resolve(true);
