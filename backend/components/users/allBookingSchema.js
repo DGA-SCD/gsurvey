@@ -24,11 +24,11 @@
  * Use for generate header of datable
  */
 module.exports.allbooking = () => { return [
-    { title: 'รหัส', field: 'userId', type: 'string'},
-    { title: 'ชื่อ-สกุล', field: 'fullname', type: 'string'},
-    { title: 'ฝ่าย', field: 'department', type: 'string'},
-    { title: 'ส่วนงาน', field: 'segment', type: 'string'},
-    { title: 'เพื่อนร่วมห้อง', field: 'friend', type: 'string'},
+    { title: 'รหัส', field: 'userId', type: 'string', readonly: true},
+    { title: 'ชื่อ-สกุล', field: 'fullname', type: 'string', readonly: true},
+    { title: 'ฝ่าย', field: 'department', type: 'string', readonly: true},
+    { title: 'ส่วนงาน', field: 'segment', type: 'string', readonly: true},
+    { title: 'เพื่อนร่วมห้อง', field: 'friend', type: 'string', readonly: true},
     { title: 'ห้อง', field: 'room', type: 'string', lookup: {
         2: "1101 Twin Bed (2)",
         3: "1102 Twin Bed (2)",
