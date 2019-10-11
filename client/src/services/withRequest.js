@@ -20,8 +20,8 @@ export default url => WrappedComponent =>
                 method: 'GET',
                 headers: {
                     "userid": localStorage.getItem("session_userid"),
-                    // "token": localStorage.getItem("token_local"),
-                    "token": "3gUMtyWlKatfMk5aLi5PpgQxfTJcA91YlN6Nt8XyiR1CwLs6wGP69FSQs8EKHCsg",
+                    "token": localStorage.getItem("token_local"),
+                    //"token": "3gUMtyWlKatfMk5aLi5PpgQxfTJcA91YlN6Nt8XyiR1CwLs6wGP69FSQs8EKHCsg",
                     'Content-Type': 'application/json',
                     'Accept': 'application/json'
 
