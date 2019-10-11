@@ -290,6 +290,8 @@ class Example extends Component {
             exportButton: true,
             exportAllData: true,
             // paginationType: "stepped",
+            pageSize: 10,
+            pageSizeOptions: [25, 50, 100],
             headerStyle: {
               backgroundColor: '#00ADFF',
               color: '#FFF',
