@@ -80,6 +80,14 @@ class SideMenuContent extends Component {
                         </NavLink>
                      </SideMenu.MenuSingleItem>
                      <SideMenu.MenuSingleItem>
+                        <NavLink to="/pages/billing" activeClassName="active">
+                           <i className="menu-icon">
+                              <Calendar size={18} />
+                           </i>
+                           <span className="menu-item-text">สรุปผลสำรวจ</span>
+                        </NavLink>
+                     </SideMenu.MenuSingleItem>
+                     <SideMenu.MenuSingleItem>
                         <NavLink to="/pages/surveyresult" activeClassName="active">
                            <i className="menu-icon">
                               <Copy size={18} />
