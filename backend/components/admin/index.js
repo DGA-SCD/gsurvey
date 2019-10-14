@@ -27,6 +27,7 @@ const http = require('../../commons/http');
 const appConf = require('../../config/production.conf');
 const redis = require("redis");
 const report = require("./report");
+const stats = require("./stats");
 const logger = winston.logger;
 const router = express.Router();
 
@@ -64,5 +65,9 @@ router.use(function(req, res, next){
 
 // Reports
 router.get('/billing', report.billing);
+router.get('/completesurvey', stats.getNumberofCompleteSurvey);
+router.get('/totalstaff', stats.getTotalStaff);
+router.get('/donesurveybysegment', stats.getDoneSurveyBySegment);
+router.get('/donesurveybydepartment', stats.getDoneSurveyByDepartment);
 
 module.exports = router;
