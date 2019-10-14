@@ -35,5 +35,6 @@ app.use('/v1/auth', auth);
 app.use('/v1/users', user);
 app.use('/v1/survey', survey);
 app.use('/v1/reports', report);
+app.use('/v1/stats', report);
 
 module.exports = app;

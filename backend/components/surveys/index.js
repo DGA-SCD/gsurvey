@@ -56,6 +56,7 @@ router.use(function(req, res, next){
         if( err ){
             http.error(res, 401, 401000, "Invalid token");
         }else{
+            req.USERID = userId;
             next();
         }
     })
@@ -144,6 +145,7 @@ router.post('/answers', async function(req, res) {
     
     var model = new surveyDAL();
     var ctx = req.body;
+    ctx.USERID = req.USERID;
     console.log(ctx);
     var r = await model.setAnswer(ctx);
     res.status(200).json({

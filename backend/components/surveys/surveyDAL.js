@@ -2,6 +2,7 @@ const Promise = require('promise');
 const MongoClient = require('mongodb').MongoClient
 const appConf = require('../../config/production.conf');
 const winston = require('../../commons/logger');
+const mysqlHelper = require('../helpers/mysql');
 const logger = winston.logger;
 
 const COLLECTION_QUESTION = 'question';
@@ -47,8 +48,9 @@ Model.prototype.setQuestions = async function(ctx){
             await db.close();
     }).catch( function(err){
         logger.error("Failed to connection MongoDB:" + err);
+        return {success: false, data: "", err: "Failed to connection MongoDB:" + err};
     });
-    return {success: true, data: "", err: ""};
+    
 }
 
 Model.prototype.getAnswer = async function(ctx){
@@ -63,7 +65,6 @@ Model.prototype.getAnswer = async function(ctx){
                    console.log('response: ', response);
                    data = response;
                 }
-                
             });
             await db.close();
     }).catch( function(err){
@@ -75,6 +76,11 @@ Model.prototype.getAnswer = async function(ctx){
 
 Model.prototype.setAnswer = async function(ctx){
     var res;
+    var mysql = mysqlHelper.getConnection();
+    const qstr = "UPDATE user_stats \
+    set IsAnswer = " + appConf.surveySetting.round +
+    " WHERE UserID = '" + ctx.USERID + "'";
+
     await MongoClient.connect(appConf.mongoDB, { useNewUrlParser: true })
     .then( async function(db){
             logger.info("successfully connected MongoDB");
@@ -89,6 +95,19 @@ Model.prototype.setAnswer = async function(ctx){
                 } else {
                    console.log('inserted record', response);
                    res = response;
+                   mysql.then( conn => {
+                   conn.query(qstr, function(err, result){
+                         if ( err ) {
+                             logger.info("error: " + err);
+                             return {success: false, data: "", err: "Failed to connection MongoDB:" + err};
+                         }else{
+                             return {success: true, data: "", err: ""};
+                         }
+                    });
+                   })
+                .catch( err => {
+                     return {success: false, data: "", err: "Failed to connection MongoDB:" + err};
+                });
                 }
             });
             await db.close();
