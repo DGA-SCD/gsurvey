@@ -169,7 +169,7 @@ function login(req, res) {
             http.error(res, 500, 500100, "connect to redis failed: " + err);
         })
         .then( redisConn => {
-            return redisSet( redisConn, userid, token, 60 * 60 );
+            return redisSet( redisConn, userid, token, 60 * appConf.tokenExpiredTime );
         })
         .catch( err => {
             reject( err );
@@ -178,7 +178,7 @@ function login(req, res) {
         .then( reply => {
 
             let options = {
-                maxAge: 1000 * 60 * 60,         // would expire after 15 minutes
+                maxAge: 1000 * 60 * appConf.tokenExpiredTime,         // would expire after 15 minutes
                 httpOnly: true,                 // The cookie only accessible by the web server
                 signed: appConf.cookies.signed  // Indicates if the cookie should be signed
             }    
