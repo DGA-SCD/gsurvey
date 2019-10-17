@@ -37,6 +37,7 @@ class Login extends Component {
          session_userid: '',
          visible: false,
          password: '',
+
          redirectToReferrer: false,
          useridError: false,
          passError: false,
@@ -116,13 +117,13 @@ class Login extends Component {
          this.Auth.login(this.state.userid, this.state.password)
             .then((result) => {
                let responseJson = result;
-               console.log("respon" + responseJson);
+
                if (responseJson) {
-                  localStorage.setItem('userData', JSON.stringify(responseJson.data));
-
-
-                  localStorage.getItem('token_local', JSON.stringify(responseJson.data.token));
-                  this.setState({ redirectToReferrer: true });
+                  console.log('dsfasfsdfsdklfjdschds[f;sdlfjdslkfjs;' + JSON.stringify(responseJson));
+                  this.setState({
+                     user: this.Auth.getToken()
+                  });
+                  console.log(this.state.user)
                } else {
                   toastr.error('Error', 'Cannot Login', toastrOptions)
                }
@@ -135,13 +136,21 @@ class Login extends Component {
       }
    }
    componentDidMount() {
-      console.log("componentDidMount" + this.state.redirectToReferrer);
-      if (this.Auth.loggedIn()) {
+      console.log('componentDidMount')
+      if (!this.Auth.loggedIn()) {
+         this.props.history.replace('/pages/login')
 
-         this.setState({ redirectToReferrer: true });
-         // return (<Redirect to={'user-profile'}/>)
       } else {
-         this.setState({ redirectToReferrer: false });
+         try {
+            const profile = this.Auth.getToken()
+            this.setState({
+               user: profile
+            })
+         }
+         catch (err) {
+            this.Auth.logout()
+            this.props.history.replace('/pages/login')
+         }
       }
    }
 
@@ -150,10 +159,17 @@ class Login extends Component {
    render() {
 
 
-      console.log(this.state.redirectToReferrer);
+      const divStyle = {
+         fontSize: '13px',
+         color: 'white',
+         textAlign: 'left'
+
+      };
+
+      // console.log(this.state.redirectToReferrer);
       const { errors } = this.state;
 
-      if (this.state.redirectToReferrer) {
+      if (this.state.user) {
          return (<Redirect to={'user-profile'} />)
       }
 
@@ -229,7 +245,9 @@ class Login extends Component {
 
                                     required
                                  />
+
                               </Col>
+
                            </FormGroup>
 
 
@@ -252,7 +270,7 @@ class Login extends Component {
                   </Card>
                </Col>
             </Row>
-         </div>
+         </div >
       );
    }
 }
