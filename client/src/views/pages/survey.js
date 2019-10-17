@@ -207,8 +207,13 @@ class survey extends Component {
       allTimeInfo: "",
 
     };
-    console.log("my configfdsf : " + BACKEND_URL);
+
     this.Auth = new AuthService();
+    this.intervalID = setInterval(() => this.Auth.IsAvailable(), 10000);
+  }
+  componentWillUnmount() {
+
+    clearTimeout(this.intervalID);
   }
   _checkerror(response) {
     console.log('response.statusmmmmmmmm');
@@ -218,16 +223,17 @@ class survey extends Component {
     if (response.status >= 200 && response.status < 300) { // Success status lies between 200 to 300
       return response
     } else {
-      // var error = new Error(response.statusText)
+      var error = new Error(response.statusText)
       // error.response = response
       // throw error
+      alert(error);
     }
 
 
   }
 
   componentDidMount() {
-    console.log('dfjkdlfs' + BACKEND_URL)
+    console.log('componentDidMountcomponentDidMountcomponentDidMountcomponentDidMountcomponentDidMount')
     var data1 = {
       userid: localStorage.getItem("session_userid"),
       token: localStorage.getItem("token_local")
@@ -261,8 +267,7 @@ class survey extends Component {
     var apiRequest1 = fetch(url1, options).then((response) => {
       console.log(response.status);
       if (response.status !== 200) {
-        this.setState({ redirectToReferrer: false });
-        console.log('chkredirect==>' + this.state.redirectToReferrer);
+
         localStorage.clear();
 
         this.props.history.push('/pages/login');
@@ -272,8 +277,7 @@ class survey extends Component {
 
     var apiRequest2 = fetch(url2, options).then(function (response) {
       if (response.status !== 200) {
-        this.setState({ redirectToReferrer: false });
-        console.log('chkredirect==>' + this.state.redirectToReferrer);
+
         localStorage.clear();
 
         this.props.history.push('/pages/login');
@@ -282,8 +286,7 @@ class survey extends Component {
     });
     var apiRequest3 = fetch(url3, options).then(function (response) {
       if (response.status !== 200) {
-        this.setState({ redirectToReferrer: false });
-        console.log('chkredirect==>' + this.state.redirectToReferrer);
+
         localStorage.clear();
 
         this.props.history.push('/pages/login');
