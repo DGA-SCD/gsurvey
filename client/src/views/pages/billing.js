@@ -38,11 +38,16 @@ class Billing extends Component {
         };
 
         this.Auth = new AuthService();
+        this.intervalID = setInterval(() => this.Auth.IsAvailable(), 10000);
+    }
+    componentWillUnmount() {
+
+        clearTimeout(this.intervalID);
     }
 
     render() {
-        console.log('result' + this.Auth.loggedIn())
-        console.log("requestFailed" + this.props.requestFailed)
+        console.log('result:::' + this.Auth.loggedIn())
+        console.log("requestFailed:::" + this.props.requestFailed)
         if (this.props.requestFailed) {
             return (<Redirect to={'login'} />)
         }
@@ -51,7 +56,7 @@ class Billing extends Component {
             return (
 
                 <MaterialTable
-                    title="จัดการเพื่อนร่วมห้อง/จัดการห้องพัก"
+                    title="จัดการค่าใช้จ่าย"
                     columns={this.props.result.data.columns}
                     data={this.props.result.data.data}
 
