@@ -74,7 +74,7 @@ class SideMenuContent extends Component {
 
             //4 dashbard
             <SideMenu.MenuSingleItem>
-                <NavLink to="/pages/dashbard" activeClassName="active">
+                <NavLink to="/pages/dashboard" activeClassName="active">
                     <i className="menu-icon">
                         <PieChart size={18} />
                     </i>
@@ -104,11 +104,22 @@ class SideMenuContent extends Component {
 
                 let dataList = JSON.parse(localStorage.getItem("userData"));
 
-                if (dataList.role === 'admin') {
+                if (dataList.role === 'sadmin') {
 
                     return (
                         <SideMenu className="sidebar-content" toggleSidebarMenu={this.props.toggleSidebarMenu}>
                             {menuLists}
+                        </SideMenu>
+                    );
+                }
+                else if (dataList.role === 'admin') {
+                    return (
+                        <SideMenu className="sidebar-content" toggleSidebarMenu={this.props.toggleSidebarMenu}>
+                            {menuLists[0]}
+                            {menuLists[1]}
+                            {menuLists[2]}
+                            {menuLists[3]}
+                            {menuLists[4]}
                         </SideMenu>
                     );
                 }
