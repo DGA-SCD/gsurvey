@@ -46,7 +46,7 @@ module.exports.cost = () => { return [
     { title: 'วันที่ 1 มื้อกลางวัน', field: 'follwerMealD1_lunch', type: 'numeric'},
     { title: 'วันที่ 2 มื้อเข้า', field: 'follwerMealD2_breakfast', type: 'numeric'},
     { title: 'วันที่ 2 มื้อกลางวัน', field: 'follwerMealD2_lunch', type: 'numeric'},
-    { title: 'วันที่ 4 มื้อกลางวัน', field: 'follwerMealD3_lunch', type: 'numeric'},
+    { title: 'วันที่ 3 มื้อกลางวัน', field: 'follwerMealD3_lunch', type: 'numeric'},
     { title: 'สมัคประกัน', field: 'followerApplyInsurance', type: 'string'},
     { title: 'ผู้รับผลประโยชน์', field: 'RelationOfBeneficiary', type: 'string'},
     { title: 'โรคประจำตัว', field: 'congenitalDisease', type: 'string'},

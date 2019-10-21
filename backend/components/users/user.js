@@ -384,6 +384,7 @@ function getAllUser(conn){
         u2.Surname as FSurname, \
         b.Vehicle, \
         b.Room, \
+        b.Join, \
         b.Remark \
     FROM ( \
         SELECT   \
@@ -407,7 +408,6 @@ function getAllUser(conn){
             }
             else {
                 conn.end();
-                logger.debug( "qeury result: " + JSON.stringify( result ) );
                 resolve( result );
             }
         });
@@ -462,7 +462,7 @@ function getAllBooking(req, res){
                 if ( e.FriendID != null && e.FName != null && e.FSurname != null){
                     fullFriendName = e.FName + " " + e.FSurname;
                 }
-
+                console.log("Query result: Join > ", e.Join);
                 lists.push({
                     userId: e.userID,
                     fullname: e.Name + " " + e.Surname,
@@ -471,6 +471,7 @@ function getAllBooking(req, res){
                     friend: fullFriendName,
                     room: e.Room,
                     vehicle: e.Vehicle,
+                    join: (e.Join == 1)?"ไป":"ไม่ไป",
                     remark: e.Remark,
                 });
             });

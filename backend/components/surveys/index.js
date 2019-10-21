@@ -141,18 +141,7 @@ router.get('/answers/:empid/:qid/:version', async function(req, res) {
         data: data })
 });
 
-router.post('/answers', async function(req, res) {
-    
-    var model = new surveyDAL();
-    var ctx = req.body;
-    ctx.USERID = req.USERID;
-    console.log(ctx);
-    var r = await model.setAnswer(ctx);
-    res.status(200).json({
-        success: r.success,
-        code: 20000,
-        desc: "",
-        data: r.data })
-});
+var model = new surveyDAL();
+router.post('/answers', model.setAnswer);
 
 module.exports = router;

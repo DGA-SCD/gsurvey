@@ -265,7 +265,7 @@ function billing( req, res ){
                        
                         conn.db(appConf.MONGODB_dbname).collection('answer').find({},{name: '1', version: '1', surveyresult: '1'},).toArray(function(err, response){
                             setCost(users, userCost, response);
-                            console.log( "userCost: " + JSON.stringify(userCost) );
+                            // console.log( "userCost: " + JSON.stringify(userCost) );
                             http.success(res, 
                                 {
                                 columns: schema.cost(),

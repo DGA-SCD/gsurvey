@@ -72,7 +72,6 @@ function getUserDetails( conn, userName, password )
             }
             else {
                 conn.end();
-                logger.debug( "qeury result: " + JSON.stringify( result[0] ) );
                 resolve( result[0] );
             }
         });
