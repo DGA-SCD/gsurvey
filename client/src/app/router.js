@@ -827,7 +827,7 @@ class Router extends Component {
                />
                <MainLayoutRoutes
                   exact
-                  path="/pages/dashbard"
+                  path="/pages/dashboard"
                   render={matchprops => (
                      <Suspense fallback={<Spinner />}>
                         <LazyDashboard {...matchprops} />
