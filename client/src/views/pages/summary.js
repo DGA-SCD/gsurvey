@@ -23,7 +23,7 @@ import ViewColumn from '@material-ui/icons/ViewColumn';
 import { fontSize } from '@material-ui/system';
 import "../../assets/scss/views/pages/survey/survey.css";
 import AuthService from '../../services/AuthService';
-import withRequest from "../../services/withRequest";
+//import withRequest from "../../services/withRequest";
 import { array } from 'prop-types';
 const tableIcons = {
   Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -60,28 +60,75 @@ class Summary extends Component {
     };
 
 
+    console.log("state" + this.state)
+    console.log(this.props)
     this.Auth = new AuthService();
     this.intervalID = setInterval(() => this.Auth.IsAvailable(), 10000);
   }
   componentWillUnmount() {
 
     clearTimeout(this.intervalID);
+
   }
 
 
+
+  componentDidMount() {
+    console.log("=======summanry===");
+    const options = {
+      async: true,
+      mode: 'cors',
+      crossDomain: true,
+      cache: 'no-cache',
+      redirect: 'follow',
+
+      method: 'GET',
+      headers: {
+        "userid": localStorage.getItem("session_userid"),
+        "token": localStorage.getItem("token_local"),
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+
+      }
+    };
+
+    fetch(BACKEND_URL + '/v1/users/allbooking', options)
+      .then(response => {
+        console.log("response.status" + response.status)
+        if (response.status === 200) {
+          return response.json()
+        } else {
+          console.log("response.status not success" + response.status)
+          this.setState({ requestFailed: true })
+        }
+
+      })
+      .then(result => {
+        console.log(result);
+
+        this.setState({ result: result, columns: result.data.columns, data: result.data.data, requestFailed: false })
+      })
+      .catch(e => {
+        console.log(e);
+        this.setState({ requestFailed: true });
+      });
+  }
+
   render() {
+
     console.log('result:::' + this.Auth.loggedIn())
-    console.log("requestFailed:::" + this.props.requestFailed)
-    if (this.props.requestFailed) {
+    console.log("requestFailed:::" + this.state.requestFailed)
+    console.log(this.state.columns)
+    if (this.state.requestFailed) {
       return (<Redirect to={'login'} />)
     }
-    if (this.props.result.data) {
+    if (this.state.result) {
       return (
 
         <MaterialTable
           title="จัดการเพื่อนร่วมห้อง/จัดการห้องพัก"
-          columns={this.props.result.data.columns}
-          data={this.props.result.data.data}
+          columns={this.state.columns}
+          data={this.state.data}
           editable={{
             onRowAdd: newData =>
               new Promise((resolve, reject) => {
@@ -94,6 +141,7 @@ class Summary extends Component {
                   resolve()
                 }, 1000)
               }),
+
             onRowUpdate: (newData, oldData) =>
 
               new Promise((resolve, reject) => {
@@ -141,7 +189,7 @@ class Summary extends Component {
                       const index = data.indexOf(oldData);
                       //  console.log(index);
                       data[index] = newData;
-                      // console.log(data[index]);
+                      console.log(data[index]);
                       this.setState({ data }, () => resolve());
                     } else {
                       alert('ไม่สามารถเปลี่ยนแปลงข้อมูลได้ ติดต่อผู้ดูแลระบบ')
@@ -196,5 +244,5 @@ class Summary extends Component {
 
 
 }
-//export default Example;
-export default withRequest(BACKEND_URL + '/v1/users/allbooking')(Summary)
+export default Summary;
+//export default withRequest(BACKEND_URL + '/v1/users/allbooking')(Summary)
