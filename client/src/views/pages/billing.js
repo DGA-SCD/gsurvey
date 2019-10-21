@@ -44,21 +44,64 @@ class Billing extends Component {
 
         clearTimeout(this.intervalID);
     }
+    componentDidMount() {
+        const options = {
+            async: true,
+            mode: 'cors',
+            crossDomain: true,
+            cache: 'no-cache',
+            redirect: 'follow',
+
+            method: 'GET',
+            headers: {
+                "userid": localStorage.getItem("session_userid"),
+                "token": localStorage.getItem("token_local"),
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+
+            }
+        };
+
+        fetch(BACKEND_URL + '/v1/reports/billing', options)
+            .then(response => {
+                console.log("response.status" + response.status)
+                if (response.status === 200) {
+                    return response.json()
+                } else {
+                    console.log("response.status not success" + response.status)
+                    this.setState({ requestFailed: true })
+                }
+
+            })
+            .then(result => {
+                //console.log(result);
+                console.log("wihtrequestx" + result);
+
+                this.setState({ result: result, columns: result.data.columns, data: result.data.data, requestFailed: false })
+
+            })
+            .catch(e => {
+                console.log(e);
+                this.setState({ ...this.state, requestFailed: true });
+            });
+
+
+    }
 
     render() {
         console.log('result:::' + this.Auth.loggedIn())
-        console.log("requestFailed:::" + this.props.requestFailed)
-        if (this.props.requestFailed) {
+
+        if (this.state.requestFailed) {
             return (<Redirect to={'login'} />)
         }
-        if (this.props.result.data) {
+        if (this.state.result) {
 
             return (
 
                 <MaterialTable
                     title="จัดการค่าใช้จ่าย"
-                    columns={this.props.result.data.columns}
-                    data={this.props.result.data.data}
+                    columns={this.state.columns}
+                    data={this.state.data}
 
                     options={{
                         sorting: true,
@@ -84,5 +127,6 @@ class Billing extends Component {
         return <div>Loading...</div>;
     }
 }
+export default Billing
 //export default withRequest('https://jsonplaceholder.typicode.com/users')(Result)
-export default withRequest(BACKEND_URL + '/v1/reports/billing')(Billing)
+//export default withRequest(BACKEND_URL + '/v1/reports/billing')(Billing)
