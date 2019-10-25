@@ -28,6 +28,7 @@ const appConf = require('../../config/production.conf');
 const redis = require("redis");
 const report = require("./report");
 const stats = require("./stats");
+const booking = require("./booking");
 const logger = winston.logger;
 const router = express.Router();
 
@@ -69,5 +70,5 @@ router.get('/completesurvey', stats.getNumberofCompleteSurvey);
 router.get('/totalstaff', stats.getTotalStaff);
 router.get('/donesurveybysegment', stats.getDoneSurveyBySegment);
 router.get('/donesurveybydepartment', stats.getDoneSurveyByDepartment);
-
+router.get('/rooms', booking.getRooms);
 module.exports = router;

@@ -385,6 +385,7 @@ function getAllUser(conn){
         b.Vehicle, \
         b.Room, \
         b.Join, \
+        ss.IsAnswer, \
         b.Remark \
     FROM ( \
         SELECT   \
@@ -398,7 +399,8 @@ function getAllUser(conn){
     ON u.userId = r.UserID \
     ) as t \
     LEFT JOIN user_details as u2 on t.FriendID = u2.UserID \
-    LEFT JOIN booking as b on b.userId = t.userId";
+    LEFT JOIN booking as b on b.userId = t.userId \
+    LEFT JOIN user_stats as ss on ss.userId = t.userId";
 
     return new promise(function(resolve, reject) {
         conn.query(qstr, function(err, result, fields){
@@ -462,7 +464,7 @@ function getAllBooking(req, res){
                 if ( e.FriendID != null && e.FName != null && e.FSurname != null){
                     fullFriendName = e.FName + " " + e.FSurname;
                 }
-                console.log("Query result: Join > ", e.Join);
+                //console.log("Query result: Join > ", e.Join);
                 lists.push({
                     userId: e.userID,
                     fullname: e.Name + " " + e.Surname,
@@ -471,7 +473,7 @@ function getAllBooking(req, res){
                     friend: fullFriendName,
                     room: e.Room,
                     vehicle: e.Vehicle,
-                    join: (e.Join == 1)?"ไป":"ไม่ไป",
+                    join: (e.IsAnswer == 0)?"ยังไม่ได้ทำ":(e.Join == 1)?"ไป":"ไม่ไป",
                     remark: e.Remark,
                 });
             });
