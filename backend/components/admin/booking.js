@@ -44,8 +44,8 @@ function getRooms(req, res){
     return new promise( (resolve, reject) => {
         mysql.then( conn => {
         
-            let reservedRooms =  helperMySQL.sqlquery( conn, qstr_reserved);
-            let rooms = helperMySQL.sqlquery( conn, qstr_rooms);
+            let reservedRooms =  helperMySQL.query( conn, qstr_reserved);
+            let rooms = helperMySQL.query( conn, qstr_rooms);
 
             promise.all([reservedRooms, rooms]).then( results => {
 
@@ -71,7 +71,7 @@ function getRooms(req, res){
                 results[1].forEach(e => {
                     data[e.Id] = e.RoomNumber + " " + e.RoomType + " (" + ((reserved[e.Id]==undefined)?0:reserved[e.Id].count) + "/" + e.MaxGuest + ")" ;
                 });
-                
+
                 http.success(res, data);
                 resolve(data);
 
