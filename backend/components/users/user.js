@@ -531,7 +531,6 @@ function setRoomAndVehicle(req, res){
                             //Update a friend's room
                             const qstr_update_friend_booking = 'UPDATE booking \
                             SET room = ' + roomId
-                            + ',Remark = "' + remark + '"'
                             + ' WHERE UserID = "' + friend[0].FriendId + '"';
 
                             helperMySQL.query(conn, qstr_update_friend_booking).then( status => {
