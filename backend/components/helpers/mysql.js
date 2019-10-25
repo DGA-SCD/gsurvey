@@ -26,6 +26,23 @@ function getConnection(){
     });
 }
 
+
+function sqlquery(conn, qstr , cb){
+    console.log( "Query String: " + qstr );
+    return new promise( (resolve, reject) => {
+        conn.query( qstr, (err, result) => {
+            if ( err ){ 
+                logger.error("sql query error: " + err);
+                reject( err );
+            }
+            else {
+                resolve( result );
+            }
+        });
+    });
+}
+
 module.exports = {
-    getConnection
+    getConnection,
+    sqlquery
 }

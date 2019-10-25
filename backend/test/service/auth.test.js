@@ -35,7 +35,6 @@ describe("test connect redis", () => {
 
     test("should return connection", ()=>{
         return auth.getRedisConnection().then( conn => {
-            console.log( conn );
             redisConn = conn;
             expect( redisConn !== undefined ).toBe( true );
         }).catch( err => expect( err ).toBe() );
