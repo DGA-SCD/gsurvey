@@ -96,7 +96,7 @@ function getJoin(ctx) {
 }
 
 
-function sqlquery(conn, qstr , cb){
+function query(conn, qstr , cb){
     console.log( "Query String: " + qstr );
     return new promise( (resolve, reject) => {
         conn.query( qstr, (err, result) => {
@@ -150,8 +150,8 @@ Model.prototype.setAnswer = function(req, res){
                 
                 mysql.then( conn => {
 
-                    let update_user_stats =  sqlquery( conn, qstr);
-                    let update_booking_vehicle = sqlquery( conn, qstr2);
+                    let update_user_stats =  mysqlHelper.query( conn, qstr);
+                    let update_booking_vehicle = mysqlHelper.query( conn, qstr2);
 
                     promise.all([update_user_stats, update_booking_vehicle]).then( (results) => {
                         if( results[0] ==  undefined ){

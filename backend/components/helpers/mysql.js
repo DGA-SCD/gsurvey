@@ -27,7 +27,7 @@ function getConnection(){
 }
 
 
-function sqlquery(conn, qstr , cb){
+function query(conn, qstr , cb){
     console.log( "Query String: " + qstr );
     return new promise( (resolve, reject) => {
         conn.query( qstr, (err, result) => {
@@ -44,5 +44,5 @@ function sqlquery(conn, qstr , cb){
 
 module.exports = {
     getConnection,
-    sqlquery
+    query
 }

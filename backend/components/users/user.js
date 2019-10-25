@@ -24,6 +24,7 @@ const express = require('express');
 const crypto = require('crypto');
 const base64url = require('base64url')
 const mysql = require('mysql');
+const helperMySQL = require('../helpers/mysql');
 const winston = require('../../commons/logger');
 const http = require('../../commons/http');
 const appConf = require('../../config/production.conf');
@@ -503,29 +504,58 @@ function setRoomAndVehicle(req, res){
             http.error(res, 500, 500100, "connect to mysql failed: " + err);
             reject( err );
         })
-        .then( conn =>{
-            const qstr = 'UPDATE booking \
-                SET vehicle = ' + vehicleId
-                + ',room = ' + roomId
-                + ',Remark = "' + remark + '"'
-                + ' WHERE UserID = "' + userId + '"';
-            conn.query(qstr, function(err, result, fields) {
-                if( err ) {
-                    logger.error( err );
-                    http.error(res, 500, 50000, err);
-                    conn.end();
-                    reject( err );
-                } else {
-                    logger.debug( JSON.stringify( result ) );
-                    http.success(res);
-                    resolve( true );
+        .then( conn => {
+
+            //Update a staff's room
+            const qstr_update_booking = 'UPDATE booking \
+            SET vehicle = ' + vehicleId
+            + ',room = ' + roomId
+            + ',Remark = "' + remark + '"'
+            + ' WHERE UserID = "' + userId + '"';
+
+            helperMySQL.query(conn, qstr_update_booking).then( result => {
+
+                logger.debug("query status: " + JSON.stringify(result));
+                if ( result == undefined ){
+                    http.error(res, 500, 500200, "cannot query data from mariadb");
+                    reject( "cannot query data from mariadb" );
+                }else{
+                    const myRoommate = "SELECT FriendId FROM roommates WHERE UserId = '" + userId + "'";
+                    helperMySQL.query(conn, myRoommate).then( friend => {
+
+                        logger.debug("query status: " + JSON.stringify(friend));
+                        if( friend[0] == undefined && friend[0].FriendID == null ) {
+                            http.success(res);
+                            resolve(true);
+                        } else {
+                            //Update a friend's room
+                            const qstr_update_friend_booking = 'UPDATE booking \
+                            SET room = ' + roomId
+                            + ',Remark = "' + remark + '"'
+                            + ' WHERE UserID = "' + friend[0].FriendId + '"';
+
+                            helperMySQL.query(conn, qstr_update_friend_booking).then( status => {
+                                logger.debug("query status: " + JSON.stringify(status));
+                                http.success(res);
+                                resolve(true);
+                            })
+                            .catch( err => {
+                                http.error(res, 500, 500200, "cannot query data from mariadb: " + err);
+                                reject( err );
+                            });
+                        }
+                    })
+                    .catch( err => {
+                        http.error(res, 500, 500200, "cannot query data from mariadb: " + err);
+                        reject( err );
+                    });
                 }
+            })
+            .catch( err => {
+                http.error(res, 500, 500200, "cannot query data from mariadb: " + err);
+                reject( err );
             });
-        })    
-        .catch( err => {
-            http.error(res, 500, 500200, "cannot query data from mariadb: " + err);
-            reject( err );
-         });
+        })
     });
 }
 
