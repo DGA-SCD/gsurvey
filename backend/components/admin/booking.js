@@ -38,7 +38,7 @@ const MongoClient = require('mongodb').MongoClient;
 function getRooms(req, res){
 
     var qstr_rooms  = "SELECT Id, RoomNumber, RoomType, MaxGuest FROM rooms";
-    var qstr_reserved = "SELECT max(Room) as Room, count(Room) as count FROM seminar_stag.booking GROUP by Room;"
+    var qstr_reserved = "SELECT max(Room) as Room, count(Room) as count FROM seminar_stag.booking GROUP by Room";
 
     var mysql = helperMySQL.getConnection()
     return new promise( (resolve, reject) => {
