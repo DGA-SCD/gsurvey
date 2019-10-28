@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from "react";
 import { Link, Redirect } from "react-router-dom";
-import { Card, CardBody, CardTitle, Row, Col, Button, Form, CustomInput, FormGroup, Label, Input } from "reactstrap";
+import { Card, CardBody, Row, Col, Button, Form, FormGroup, Label } from "reactstrap";
 import AuthService from '../../services/AuthService';
 import { BACKEND_URL } from "../../services/AppConfig";
 import "../../assets/scss/views/pages/survey/survey.css";
@@ -222,32 +222,38 @@ class surveyresult extends Component {
          return arrString = result.join(", ");
       }
       function follwer_jointoeat(value) {
+         console.log('follwer_jointoeat')
+         console.log(value)
          let result_follower = []
          let arrString_follower
+         if (value !== undefined) {
+            for (let i = 0; i < value.length; i++) {
+               if (value[i] === '1') {
+                  result_follower.push('มื้อกลางวัน(วันที่1)')
+               }
+               else if (value[i] === '2') {
+                  result_follower.push('มื้อเย็น(วันที่1)')
+               }
+               else if (value[i] === '3') {
+                  result_follower.push('มื้อกลางวัน(วันที่2)')
+               }
+               else if (value[i] === '4') {
+                  result_follower.push('มื้อเย็น(วันที่2)')
+               }
+               else if (value[i] === '5') {
+                  result_follower.push('มื้อกลางวัน(วันที่3)')
+               } else if (value[i] === '6') {
+                  result_follower.push('ไม่กินเลยสักมื้อจ้า')
+               }
+               else
+                  result_follower.push('ไม่กินเลยสักมื้อจ้า')
+               //else return <div>-</div>
+            }
 
-         for (let i = 0; i < value.length; i++) {
-            if (value[i] === '1') {
-               result_follower.push('มื้อกลางวัน(วันที่1)')
-            }
-            else if (value[i] === '2') {
-               result_follower.push('มื้อเย็น(วันที่1)')
-            }
-            else if (value[i] === '3') {
-               result_follower.push('มื้อกลางวัน(วันที่2)')
-            }
-            else if (value[i] === '4') {
-               result_follower.push('มื้อเย็น(วันที่2)')
-            }
-            else if (value[i] === '5') {
-               result_follower.push('มื้อกลางวัน(วันที่3)')
-            } else if (value[i] === '6') {
-               result_follower.push('ไม่กินเลยสักมื้อจ้า')
-            }
-            else
-               result_follower.push('ไม่กินเลยสักมื้อจ้า')
-            //else return <div>-</div>
+            return arrString_follower = result_follower.join(", ");
+         } else {
+            return arrString_follower = ' ไม่ทานด้วยจ้าา'
          }
-         return arrString_follower = result_follower.join(", ");
 
 
          // return arrString_follower
