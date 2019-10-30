@@ -475,12 +475,12 @@ function getAllBooking(req, res){
                 console.log("affected row: " + allUsers.length);
                 var lists = [];
 
-                MongoClient.connect(appConf.mongoDB, { useNewUrlParser: true })
+                MongoClient.connect(appConf.mongoDB)
                 .then(  db => {
                     logger.info("successfully connected MongoDB");
                     db.db(appConf.MONGODB_dbname).collection('answer').find({},{projection: {'employeeId': '1', 'surveyresult.typeofsleep': '1', 'surveyresult.random_desc': '1'}}).toArray( function (error, results) {
                         if(error) {
-                            console.log('Error occurred while inserting: ' + error);
+                            console.log('Error while query answer: ' + error);
                         } else {
                             console.log('mongdb results: ', results);
                             var answer = {};
@@ -527,8 +527,9 @@ function getAllBooking(req, res){
                             //console.log( "data: ", JSON.stringify(lists));
                             resolve(true);
                         }
+                        db.close();
                     });
-                    db.close();
+                    
                 })
                 .catch( err => {
                     console.log('mongo error: ' + err);
