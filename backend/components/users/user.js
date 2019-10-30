@@ -480,7 +480,7 @@ function getAllBooking(req, res){
                     logger.info("successfully connected MongoDB");
                     db.db(appConf.MONGODB_dbname).collection('answer').find({},{projection: {'employeeId': '1', 'surveyresult.typeofsleep': '1', 'surveyresult.random_desc': '1'}}).toArray( function (error, results) {
                         if(error) {
-                            console.log('Error occurred while inserting');
+                            console.log('Error occurred while inserting: ' + error);
                         } else {
                             console.log('mongdb results: ', results);
                             var answer = {};
