@@ -33,6 +33,7 @@ const redis = require("redis");
 const logger = winston.logger;
 const router = express.Router();
 const promise = require('promise');
+const MongoClient = require('mongodb').MongoClient;
 
 // Get User profile 
 function getProfile(req, res){
@@ -441,51 +442,100 @@ function getConnection(){
 
 // Get list booking 
 function getAllBooking(req, res){
+    const qstr = "SELECT \
+        t.*,\
+        u2.Name  as FName,\
+        u2.Surname as FSurname, \
+        b.Vehicle, \
+        b.Room, \
+        b.Join, \
+        ss.IsAnswer, \
+        b.Remark \
+    FROM ( \
+        SELECT   \
+            u.userID, \
+            u.Name, \
+            u.Surname, \
+            u.Department, \
+            u.Segment, \
+            r.FriendID FROM user_details as u \
+    LEFT JOIN roommates as r \
+    ON u.userId = r.UserID \
+    ) as t \
+    LEFT JOIN user_details as u2 on t.FriendID = u2.UserID \
+    LEFT JOIN booking as b on b.userId = t.userId \
+    LEFT JOIN user_stats as ss on ss.userId = t.userId";
 
-    let mysqlConn = getConnection();
+    let mysqlConn = helperMySQL.getConnection();
 
     return new promise((resolve, reject) => {
+         
+         mysqlConn.then( conn => {
+            conn.query(qstr, function( err, allUsers ){
+                console.log("affected row: " + allUsers.length);
+                var lists = [];
 
-        mysqlConn.catch( err => {
-            http.error(res, 500, 500100, "connect to mysql failed: " + err);
-            reject( err );
-        })
-        .then( conn =>{
-            return getAllUser(conn);
-         })    
-        .catch( err => {
-            http.error(res, 500, 500200, "cannot query data from mariadb: " + err);
-            reject( err );
-         }).then( allUsers => {
-            console.log("affected row: " + allUsers.length);
-            var lists = [];
-            allUsers.forEach(e => {
-                
-                let fullFriendName = "";
-                if ( e.FriendID != null && e.FName != null && e.FSurname != null){
-                    fullFriendName = e.FName + " " + e.FSurname;
-                }
-                //console.log("Query result: Join > ", e.Join);
-                lists.push({
-                    userId: e.userID,
-                    fullname: e.Name + " " + e.Surname,
-                    department: e.Department,
-                    segment: e.Segment,
-                    friend: fullFriendName,
-                    room: e.Room,
-                    vehicle: e.Vehicle,
-                    join: (e.IsAnswer == 0)?"ยังไม่ได้ทำ":(e.Join == 1)?"ไป":"ไม่ไป",
-                    remark: e.Remark,
+                MongoClient.connect(appConf.mongoDB, { useNewUrlParser: true })
+                .then(  db => {
+                    logger.info("successfully connected MongoDB");
+                    db.db(appConf.MONGODB_dbname).collection('answer').find({},{projection: {'employeeId': '1', 'surveyresult.typeofsleep': '1', 'surveyresult.random_desc': '1'}}).toArray( function (error, results) {
+                        if(error) {
+                            console.log('Error occurred while inserting');
+                        } else {
+                            console.log('mongdb results: ', results);
+                            var answer = {};
+                            results.forEach(e => {
+                                let sleepingType = '';
+                                let remark = '';
+
+                                if ( e.surveyresult != undefined && e.surveyresult.typeofsleep != undefined ) {
+                                    sleepingType = e.surveyresult.typeofsleep;
+                                }
+                                if ( e.surveyresult != undefined && e.surveyresult.random_desc != undefined ) {
+                                    remark = e.surveyresult.random_desc;
+                                }
+
+                                answer[e.employeeId] = {'sleepingType': sleepingType, 'roomRemark': remark};
+
+                            });
+
+                            allUsers.forEach(e => {
+                                let fullFriendName = "";
+                                if ( e.FriendID != null && e.FName != null && e.FSurname != null){
+                                    fullFriendName = e.FName + " " + e.FSurname;
+                                }
+                                
+                                lists.push({
+                                    userId: e.userID,
+                                    fullname: e.Name + " " + e.Surname,
+                                    department: e.Department,
+                                    segment: e.Segment,
+                                    friend: fullFriendName,
+                                    room: e.Room,
+                                    vehicle: e.Vehicle,
+                                    join: (e.IsAnswer == 0)?"ยังไม่ได้ทำ":(e.Join == 1)?"ไป":"ไม่ไป",
+                                    remark: e.Remark,
+                                    roomRemark: (answer[e.userID])?answer[e.userID].roomRemark:'',
+                                    sleepingType: (answer[e.userID])?answer[e.userID].sleepingType:'',
+                                });
+                            });
+                            http.success(res, {
+                                columns: schema.allbooking(),
+                                data: lists
+                            });
+                            conn.end();
+                            //console.log( "data: ", JSON.stringify(lists));
+                            resolve(true);
+                        }
+                    });
+                    db.close();
+                })
+                .catch( err => {
+                    console.log('mongo error: ' + err);
                 });
-            });
-            http.success(res, {
-                columns: schema.allbooking(),
-                data: lists
-            });
-            mysqlConn.end();
-            resolve(true);
-         });
-    }); 
+            })
+        }); 
+    });
 }
 
 // set room and vehicle
