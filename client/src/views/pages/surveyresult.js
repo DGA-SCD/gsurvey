@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from "react";
 import { Link, Redirect } from "react-router-dom";
-import { Card, CardBody, CardTitle, Row, Col, Button, Form, CustomInput, FormGroup, Label, Input } from "reactstrap";
+import { Card, CardBody, Row, Col, Button, Form, FormGroup, Label } from "reactstrap";
 import AuthService from '../../services/AuthService';
 import { BACKEND_URL } from "../../services/AppConfig";
 import "../../assets/scss/views/pages/survey/survey.css";
@@ -18,11 +18,6 @@ import ContentSubHeader from "../../components/contentHead/contentSubHeader";
 import $ from "jquery";
 window["$"] = window["jQuery"] = $;
 
-function Follower() {
-   // if(props.isfollwer)
-   return <h1>Welcome User</h1>;
-   // console.log(props.isfollwer);
-}
 
 
 class surveyresult extends Component {
@@ -44,10 +39,14 @@ class surveyresult extends Component {
          totalcostfollow: 0
       };
       this.Auth = new AuthService();
+      this.intervalID = setInterval(() => this.Auth.IsAvailable(), 10000);
    }
 
 
+   componentWillUnmount() {
 
+      clearTimeout(this.intervalID);
+   }
    componentDidMount() {
 
       fetch(BACKEND_URL + "/v1/survey/answers/" + localStorage.getItem("session_userid") + "/seminar-01/1", {
@@ -61,52 +60,34 @@ class surveyresult extends Component {
          },
 
       })
-
-         .then(response => {
-            console.log(response.status);
-            if (response.status !== 200) {
-               this.setState({ redirectToReferrer: false });
-               console.log('chkredirect==>' + this.state.redirectToReferrer);
-
-            }
-            return response.json();
-         })
+         .then(this.Auth._checkStatus)
+         .then((response) => response.json())
 
          .then(res => {
-            //  .then(function(res) {
-            if (res.code === 401000) {
-               localStorage.clear();
-               this.setState({ redirectToReferrer: false });
-               this.props.history.push('/pages/login');
+
+            if (res.data) {
+               console.log(res);
+               this.setState({ dataList: res.data.surveyresult })
+               this.setState({ isfollwer: res.data.surveyresult.detailfollower })
+               //  this.setState({ issurvey: true })
+               console.log('dfsfsfddddddddds-->' + res.data.surveyresult.totalQuantity);
+               this.setState({
+
+                  dataList: res.data.surveyresult,
+                  isfollwer: res.data.surveyresult.detailfollower,
+                  shirtmore: res.data.surveyresult.items,
+                  totalcostshirt: res.data.surveyresult.totalCost === undefined ? '0' : res.data.surveyresult.totalCost,
+                  totalcostfollow: res.data.surveyresult.totalQuantity === undefined ? '0' : res.data.surveyresult.totalQuantity,
+                  issurvey: true
+               });
+               console.log("fdsfsa" + this.state.dataList);
             } else {
-               if (res.data) {
-                  console.log(res);
-                  this.setState({ dataList: res.data.surveyresult })
-                  this.setState({ isfollwer: res.data.surveyresult.detailfollower })
-                  //  this.setState({ issurvey: true })
-                  console.log('dfsfsfddddddddds-->' + res.data.surveyresult.totalQuantity);
-                  this.setState({
+               this.setState({
+                  issurvey: false
 
-                     dataList: res.data.surveyresult,
-                     isfollwer: res.data.surveyresult.detailfollower,
-                     shirtmore: res.data.surveyresult.items,
-                     totalcostshirt: res.data.surveyresult.totalCost === undefined ? '0' : res.data.surveyresult.totalCost,
-                     totalcostfollow: res.data.surveyresult.totalQuantity === undefined ? '0' : res.data.surveyresult.totalQuantity,
-
-
-                     //  number1 = parseInt(this.state.totalcostshirt , 10 ),
-                     //  number2 = parseInt(this.state.totalcostfollow , 10 ) ,
-                     // var num3 = number1 + number2;
-                     issurvey: true
-                  });
-                  console.log("fdsfsa" + this.state.dataList);
-               } else {
-                  this.setState({
-                     issurvey: false
-
-                  });
-               }
+               });
             }
+
          });
 
 
@@ -241,32 +222,38 @@ class surveyresult extends Component {
          return arrString = result.join(", ");
       }
       function follwer_jointoeat(value) {
+         console.log('follwer_jointoeat')
+         console.log(value)
          let result_follower = []
          let arrString_follower
+         if (value !== undefined) {
+            for (let i = 0; i < value.length; i++) {
+               if (value[i] === '1') {
+                  result_follower.push('มื้อกลางวัน(วันที่1)')
+               }
+               else if (value[i] === '2') {
+                  result_follower.push('มื้อเย็น(วันที่1)')
+               }
+               else if (value[i] === '3') {
+                  result_follower.push('มื้อกลางวัน(วันที่2)')
+               }
+               else if (value[i] === '4') {
+                  result_follower.push('มื้อเย็น(วันที่2)')
+               }
+               else if (value[i] === '5') {
+                  result_follower.push('มื้อกลางวัน(วันที่3)')
+               } else if (value[i] === '6') {
+                  result_follower.push('ไม่กินเลยสักมื้อจ้า')
+               }
+               else
+                  result_follower.push('ไม่กินเลยสักมื้อจ้า')
+               //else return <div>-</div>
+            }
 
-         for (let i = 0; i < value.length; i++) {
-            if (value[i] === '1') {
-               result_follower.push('มื้อกลางวัน(วันที่1)')
-            }
-            else if (value[i] === '2') {
-               result_follower.push('มื้อเย็น(วันที่1)')
-            }
-            else if (value[i] === '3') {
-               result_follower.push('มื้อกลางวัน(วันที่2)')
-            }
-            else if (value[i] === '4') {
-               result_follower.push('มื้อเย็น(วันที่2)')
-            }
-            else if (value[i] === '5') {
-               result_follower.push('มื้อกลางวัน(วันที่3)')
-            } else if (value[i] === '6') {
-               result_follower.push('ไม่กินเลยสักมื้อจ้า')
-            }
-            else
-               result_follower.push('ไม่กินเลยสักมื้อจ้า')
-            //else return <div>-</div>
+            return arrString_follower = result_follower.join(", ");
+         } else {
+            return arrString_follower = ' ไม่ทานด้วยจ้าา'
          }
-         return arrString_follower = result_follower.join(", ");
 
 
          // return arrString_follower
@@ -447,7 +434,7 @@ class surveyresult extends Component {
                         <div className="px-3">
                            <Form className="form-bordered form-horizontal">
                               <div className="form-body">
-                                 <h4 className="form-section"><Info size={20} color="#212529" />ข้อมูลส่วนบุคคล</h4>
+                                 <h4 className="form-section"><Info size={20} color="#212529" /> ข้อมูลส่วนบุคคล</h4>
                                  <Row>
                                     <Col md="6">
                                        <FormGroup row>

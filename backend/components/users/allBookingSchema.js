@@ -24,11 +24,11 @@
  * Use for generate header of datable
  */
 module.exports.allbooking = () => { return [
-    { title: 'รหัส', field: 'userId', type: 'string'},
-    { title: 'ชื่อ-สกุล', field: 'fullname', type: 'string'},
-    { title: 'ฝ่าย', field: 'department', type: 'string'},
-    { title: 'ส่วนงาน', field: 'segment', type: 'string'},
-    { title: 'เพื่อนร่วมห้อง', field: 'friend', type: 'string'},
+    { title: 'รหัส', field: 'userId', type: 'string',  editable: 'never'},
+    { title: 'ชื่อ-สกุล', field: 'fullname', type: 'string',  editable: 'never'},
+    { title: 'ฝ่าย', field: 'department', type: 'string',  editable: 'never'},
+    { title: 'ส่วนงาน', field: 'segment', type: 'string',  editable: 'never'},
+    { title: 'เพื่อนร่วมห้อง', field: 'friend', type: 'string',  editable: 'never'},
     { title: 'ห้อง', field: 'room', type: 'string', lookup: {
         2: "1101 Twin Bed (2)",
         3: "1102 Twin Bed (2)",
@@ -280,7 +280,10 @@ module.exports.allbooking = () => { return [
         249: "3716 Double Bed (2)"
     }},
     { title: 'เดินทางโดย', field: 'vehicle', type: 'string', lookup: {
-        0: "ไม่ระบุ", 
-        1: "รถส่วนตัว", 2: "รถตู้", 3: "รถบัสคันที่ 1", 4: "รถบัสคันที่ 2", 5: "รถบัสคันที่ 3"}},
-    { title: 'หมายเหตุ', field: 'remark', type: 'string'}
+        1: "รถบัส(ไม่ระบุ)", 
+        2: "รถส่วนตัว", 3: "รถตู้", 4: "รถบัสคันที่ 1", 5: "รถบัสคันที่ 2", 6: "รถบัสคันที่ 3"}},
+    { title: 'เข้าร่วม', field: 'join', type: 'string'},
+    { title: 'เลือกคู่นอน', field: 'sleepingType', type: 'string',  editable: 'never'},
+    { title: 'หมายเหตุ', field: 'roomRemark', type: 'string',  editable: 'never'},
+    { title: 'หมายเหตุ Admin', field: 'remark', type: 'string'}
 ];}

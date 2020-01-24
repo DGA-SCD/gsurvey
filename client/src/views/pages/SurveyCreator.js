@@ -20,7 +20,7 @@ import "jquery-bar-rating";
 import "icheck/skins/square/blue.css";
 import { BACKEND_URL } from "../../services/AppConfig";
 import * as widgets from "surveyjs-widgets";
-
+import AuthService from '../../services/AuthService';
 SurveyJSCreator.StylesManager.applyTheme("default");
 
 widgets.icheck(SurveyKo, $);
@@ -49,7 +49,12 @@ class SurveyCreator extends Component {
       redirectToReferrer: ''
     };
 
-    //this.Auth = new AuthService();
+    this.Auth = new AuthService();
+    this.intervalID = setInterval(() => this.Auth.IsAvailable(), 10000);
+  }
+  componentWillUnmount() {
+
+    clearTimeout(this.intervalID);
   }
   componentDidMount() {
     let options = { showEmbededSurveyTab: true };
@@ -120,9 +125,7 @@ class SurveyCreator extends Component {
   }
 
   render() {
-    if (this.state.redirectToReferrer === false) {
-      localStorage.clear();
-      console.log("เข้า render surveycreateor");
+    if (!this.Auth.loggedIn()) {
       return (<Redirect to={'login'} />)
     }
     return (

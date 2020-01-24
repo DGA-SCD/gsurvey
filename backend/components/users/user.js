@@ -24,6 +24,7 @@ const express = require('express');
 const crypto = require('crypto');
 const base64url = require('base64url')
 const mysql = require('mysql');
+const helperMySQL = require('../helpers/mysql');
 const winston = require('../../commons/logger');
 const http = require('../../commons/http');
 const appConf = require('../../config/production.conf');
@@ -32,6 +33,7 @@ const redis = require("redis");
 const logger = winston.logger;
 const router = express.Router();
 const promise = require('promise');
+const MongoClient = require('mongodb').MongoClient;
 
 // Get User profile 
 function getProfile(req, res){
@@ -384,6 +386,8 @@ function getAllUser(conn){
         u2.Surname as FSurname, \
         b.Vehicle, \
         b.Room, \
+        b.Join, \
+        ss.IsAnswer, \
         b.Remark \
     FROM ( \
         SELECT   \
@@ -397,7 +401,8 @@ function getAllUser(conn){
     ON u.userId = r.UserID \
     ) as t \
     LEFT JOIN user_details as u2 on t.FriendID = u2.UserID \
-    LEFT JOIN booking as b on b.userId = t.userId";
+    LEFT JOIN booking as b on b.userId = t.userId \
+    LEFT JOIN user_stats as ss on ss.userId = t.userId";
 
     return new promise(function(resolve, reject) {
         conn.query(qstr, function(err, result, fields){
@@ -407,7 +412,6 @@ function getAllUser(conn){
             }
             else {
                 conn.end();
-                logger.debug( "qeury result: " + JSON.stringify( result ) );
                 resolve( result );
             }
         });
@@ -438,50 +442,101 @@ function getConnection(){
 
 // Get list booking 
 function getAllBooking(req, res){
+    const qstr = "SELECT \
+        t.*,\
+        u2.Name  as FName,\
+        u2.Surname as FSurname, \
+        b.Vehicle, \
+        b.Room, \
+        b.Join, \
+        ss.IsAnswer, \
+        b.Remark \
+    FROM ( \
+        SELECT   \
+            u.userID, \
+            u.Name, \
+            u.Surname, \
+            u.Department, \
+            u.Segment, \
+            r.FriendID FROM user_details as u \
+    LEFT JOIN roommates as r \
+    ON u.userId = r.UserID \
+    ) as t \
+    LEFT JOIN user_details as u2 on t.FriendID = u2.UserID \
+    LEFT JOIN booking as b on b.userId = t.userId \
+    LEFT JOIN user_stats as ss on ss.userId = t.userId";
 
-    let mysqlConn = getConnection();
+    let mysqlConn = helperMySQL.getConnection();
 
     return new promise((resolve, reject) => {
+         
+         mysqlConn.then( conn => {
+            conn.query(qstr, function( err, allUsers ){
+                console.log("affected row: " + allUsers.length);
+                var lists = [];
 
-        mysqlConn.catch( err => {
-            http.error(res, 500, 500100, "connect to mysql failed: " + err);
-            reject( err );
-        })
-        .then( conn =>{
-            return getAllUser(conn);
-         })    
-        .catch( err => {
-            http.error(res, 500, 500200, "cannot query data from mariadb: " + err);
-            reject( err );
-         }).then( allUsers => {
-            console.log("affected row: " + allUsers.length);
-            var lists = [];
-            allUsers.forEach(e => {
-                
-                let fullFriendName = "";
-                if ( e.FriendID != null && e.FName != null && e.FSurname != null){
-                    fullFriendName = e.FName + " " + e.FSurname;
-                }
+                MongoClient.connect(appConf.mongoDB)
+                .then(  db => {
+                    logger.info("successfully connected MongoDB");
+                    db.db(appConf.MONGODB_dbname).collection('answer').find({},{projection: {'employeeId': '1', 'surveyresult.typeofsleep': '1', 'surveyresult.random_desc': '1'}}).toArray( function (error, results) {
+                        if(error) {
+                            console.log('Error while query answer: ' + error);
+                        } else {
+                            console.log('mongdb results: ', results);
+                            var answer = {};
+                            results.forEach(e => {
+                                let sleepingType = '';
+                                let remark = '';
 
-                lists.push({
-                    userId: e.userID,
-                    fullname: e.Name + " " + e.Surname,
-                    department: e.Department,
-                    segment: e.Segment,
-                    friend: fullFriendName,
-                    room: e.Room,
-                    vehicle: e.Vehicle,
-                    remark: e.Remark,
+                                if ( e.surveyresult != undefined && e.surveyresult.typeofsleep != undefined ) {
+                                    sleepingType = e.surveyresult.typeofsleep;
+                                }
+                                if ( e.surveyresult != undefined && e.surveyresult.random_desc != undefined ) {
+                                    remark = e.surveyresult.random_desc;
+                                }
+
+                                answer[e.employeeId] = {'sleepingType': sleepingType, 'roomRemark': remark};
+
+                            });
+
+                            allUsers.forEach(e => {
+                                let fullFriendName = "";
+                                if ( e.FriendID != null && e.FName != null && e.FSurname != null){
+                                    fullFriendName = e.FName + " " + e.FSurname;
+                                }
+                                
+                                lists.push({
+                                    userId: e.userID,
+                                    fullname: e.Name + " " + e.Surname,
+                                    department: e.Department,
+                                    segment: e.Segment,
+                                    friend: fullFriendName,
+                                    room: e.Room,
+                                    vehicle: e.Vehicle,
+                                    join: (e.IsAnswer == 0)?"ยังไม่ได้ทำ":(e.Join == 1)?"ไป":"ไม่ไป",
+                                    remark: e.Remark,
+                                    roomRemark: (answer[e.userID])?answer[e.userID].roomRemark:'',
+                                    sleepingType: (answer[e.userID])?answer[e.userID].sleepingType:'',
+                                });
+                            });
+                            http.success(res, {
+                                columns: schema.allbooking(),
+                                data: lists
+                            });
+                            conn.end();
+                            //console.log( "data: ", JSON.stringify(lists));
+                            resolve(true);
+                        }
+                        db.close();
+                    });
+                    
+                })
+                .catch( err => {
+                    console.log('mongo error: ' + err);
                 });
-            });
-            http.success(res, {
-                columns: schema.allbooking(),
-                data: lists
-            });
-            mysqlConn.end();
-            resolve(true);
-         });
-    }); 
+            })
+        }); 
+    });
 }
 
 // set room and vehicle
@@ -500,29 +555,57 @@ function setRoomAndVehicle(req, res){
             http.error(res, 500, 500100, "connect to mysql failed: " + err);
             reject( err );
         })
-        .then( conn =>{
-            const qstr = 'UPDATE booking \
-                SET vehicle = ' + vehicleId
-                + ',room = ' + roomId
-                + ',Remark = "' + remark + '"'
-                + ' WHERE UserID = "' + userId + '"';
-            conn.query(qstr, function(err, result, fields) {
-                if( err ) {
-                    logger.error( err );
-                    http.error(res, 500, 50000, err);
-                    conn.end();
-                    reject( err );
-                } else {
-                    logger.debug( JSON.stringify( result ) );
-                    http.success(res);
-                    resolve( true );
+        .then( conn => {
+
+            //Update a staff's room
+            const qstr_update_booking = 'UPDATE booking \
+            SET vehicle = ' + vehicleId
+            + ',room = ' + roomId
+            + ',Remark = "' + remark + '"'
+            + ' WHERE UserID = "' + userId + '"';
+
+            helperMySQL.query(conn, qstr_update_booking).then( result => {
+
+                logger.debug("query status: " + JSON.stringify(result));
+                if ( result == undefined ){
+                    http.error(res, 500, 500200, "cannot query data from mariadb");
+                    reject( "cannot query data from mariadb" );
+                }else{
+                    const myRoommate = "SELECT FriendId FROM roommates WHERE UserId = '" + userId + "'";
+                    helperMySQL.query(conn, myRoommate).then( friend => {
+
+                        logger.debug("query status: " + JSON.stringify(friend));
+                        if( friend[0] == undefined && friend[0].FriendID == null ) {
+                            http.success(res);
+                            resolve(true);
+                        } else {
+                            //Update a friend's room
+                            const qstr_update_friend_booking = 'UPDATE booking \
+                            SET room = ' + roomId
+                            + ' WHERE UserID = "' + friend[0].FriendId + '"';
+
+                            helperMySQL.query(conn, qstr_update_friend_booking).then( status => {
+                                logger.debug("query status: " + JSON.stringify(status));
+                                http.success(res);
+                                resolve(true);
+                            })
+                            .catch( err => {
+                                http.error(res, 500, 500200, "cannot query data from mariadb: " + err);
+                                reject( err );
+                            });
+                        }
+                    })
+                    .catch( err => {
+                        http.error(res, 500, 500200, "cannot query data from mariadb: " + err);
+                        reject( err );
+                    });
                 }
+            })
+            .catch( err => {
+                http.error(res, 500, 500200, "cannot query data from mariadb: " + err);
+                reject( err );
             });
-        })    
-        .catch( err => {
-            http.error(res, 500, 500200, "cannot query data from mariadb: " + err);
-            reject( err );
-         });
+        })
     });
 }
 

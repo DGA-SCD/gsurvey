@@ -34,8 +34,6 @@ class UserProfile extends Component {
       this.state = {
          dataList: [],
          name: "",
-
-
          user_id: "",
          activeTab: "2",
          redirectToReferrer: ''
@@ -43,9 +41,13 @@ class UserProfile extends Component {
       const { history } = this.props;
 
       this.Auth = new AuthService();
+      this.intervalID = setInterval(() => this.Auth.IsAvailable(), 10000);
    }
 
+   componentWillUnmount() {
 
+      clearTimeout(this.intervalID);
+   }
 
 
    toggle = tab => {
@@ -59,20 +61,12 @@ class UserProfile extends Component {
 
 
    render() {
-      if (localStorage.getItem("userData") == '') {
+      if (!this.Auth.loggedIn()) {
          return (<Redirect to={'login'} />)
       }
 
 
-      console.log("render");
       let dataList = JSON.parse(localStorage.getItem("userData"));
-      // if (!this.Auth.loggedIn()) {
-      //    return (<Redirect to={'login'}/>)
-      // }
-
-      //  console.log('dfsfdfsfsfssfd--->'+this.Auth_checkStatus);
-
-      // else{
 
 
       return (
