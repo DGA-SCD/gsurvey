@@ -6,6 +6,8 @@ const path = require('path')
 global.appRoot = path.resolve(__dirname);
 const user = require('./components/users/index.js');
 const survey = require('./components/surveys/index.js');
+const gsurveyAdmin = require('./components/gsurveys/admin/index.js');
+const gsurveyUser = require('./components/gsurveys/users/index.js');
 const auth = require('./components/auth/index.js');
 const report = require('./components/admin/index.js');
 const conf = require('./config/production.conf');
@@ -36,5 +38,9 @@ app.use('/v1/users', user);
 app.use('/v1/survey', survey);
 app.use('/v1/reports', report);
 app.use('/v1/stats', report);
+
+app.use('/v2/auth', auth);
+app.use('/v2/survey/admin', gsurveyAdmin);
+app.use('/v2/survey/users', gsurveyUser);
 
 module.exports = app;
