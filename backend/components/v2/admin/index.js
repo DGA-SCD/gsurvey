@@ -160,7 +160,7 @@ function getSurveyById(req, res) {
     };
 
     mongo.find(filters, appConf.surveyCollections.survey).then(results => {
-            http.success(res, results);
+            http.success(res, results[0]);
             return true;
         })
         .catch(err => {
