@@ -30,6 +30,7 @@ const MongoClient = require('mongodb').MongoClient
 const redis = require("redis");
 const logger = winston.logger;
 const router = express.Router();
+const mongo = require('../../helpers/mongodb');
 
 
 
@@ -64,68 +65,7 @@ router.use(function (req, res, next) {
 
 /** Survey Management Services */
 
-function storeToMongodb(res, filters, survey) {
-    new promise((resolve, reject) => {
-        MongoClient.connect(appConf.mongoDB, {
-                useNewUrlParser: true
-            }).then(db => {
-                logger.debug("mongodb connected");
-                db.db(appConf.MONGODB_dbname)
-                    .collection(appConf.SurveyCollections.survey).findOneAndReplace(filters, survey, {
-                        upsert: true
-                    }, function (err, result) {
-                        if (err) {
-                            logger.error('Error occurred while inserting: ' + err);
-                            http.error(res, 500, 50000, "Error occurred while inserting: " + err);
-                            db.close();
-                            reject(err);
-                        } else {
-                            logger.debug('inserted answer record: ' + JSON.stringify(result));
-                            http.success(res);
-                            db.close();
-                            resolve(true);
-                        }
-                    })
-            })
-            .catch(function (err) {
-                logger.error("Failed to connection MongoDB:" + err);
-                http.error(res, 500, 50000, "Failed to connection MongoDB:" + err);
-                reject(err);
-            });
-    })
-}
-
-function queryFromMongodb(res, filters){
-    return new promise((resolve, reject) => {
-        MongoClient.connect(appConf.mongoDB, {
-                useNewUrlParser: true
-            }).then(db => {
-                logger.debug("mongodb connected");
-                db.db(appConf.MONGODB_dbname)
-                    .collection(appConf.SurveyCollections.survey).find(filters).toArray(function (err, results) {
-                        if (err) {
-                            logger.error('Error occurred while querying: ' + err);
-                            http.error(res, 500, 50000, "Error occurred while querying: " + err);
-                            db.close();
-                            reject(err);
-                        } else {
-                            console.log(results);
-                            logger.debug('results: ' + JSON.stringify(results));
-                            http.success(res, results);
-                            db.close();
-                            resolve(true);
-                        }
-                    })
-            })
-            .catch(function (err) {
-                logger.error("Failed to connection MongoDB:" + err);
-                http.error(res, 500, 50000, "Failed to connection MongoDB:" + err);
-                reject(err);
-            });
-    })
-}
-
-function postSurvey(req, res) {
+function saveSurvey(req, res) {
 
     console.log(req.body)
 
@@ -146,7 +86,14 @@ function postSurvey(req, res) {
         version: body.version
     };
 
-    return storeToMongodb(res, filters, survey);
+    mongo.insert(filters, survey, appConf.surveyCollections.survey).then(result => {
+            http.success(res, result);
+            return true;
+        })
+        .catch(err => {
+            http.error(res, 500, 50000, "mongo error: " + err);
+            return false;
+        });
 }
 
 function createEmptySurvey(req, res) {
@@ -168,20 +115,34 @@ function createEmptySurvey(req, res) {
         version: body.version
     };
 
-    return storeToMongodb(res, filters, survey);
+    mongo.insert(filters, survey, appConf.surveyCollections.survey).then(result => {
+            http.success(res, result);
+            return true;
+        })
+        .catch(err => {
+            http.error(res, 500, 50000, "mongo error: " + err);
+            return false;
+        });
 }
 
 function getAllSurveysByOwnerId(req, res) {
     if (req.params.ownerid == 'undefined') {
-        http.error(res, 400, "Not found owerid");
-        return;
+        http.error(res, 400, 40000, "Not found owerid");
+        return false;
     }
 
     var filters = {
         userid: req.params.ownerid
     };
 
-    return queryFromMongodb(res, filters);
+    mongo.find(filters, appConf.surveyCollections.survey).then(results => {
+            http.success(res, results);
+            return true;
+        })
+        .catch(err => {
+            http.error(res, 500, 50000, "mongo error: " + err);
+            return false;
+        });
 
 }
 
@@ -189,30 +150,85 @@ function getSurveyById(req, res) {
 
     console.log(req);
 
-    if( req.params.surveyId == 'undefined' ) {
-        http.error(res, 400, "Not found owerid");
+    if (req.params.surveyId == 'undefined') {
+        http.error(res, 400, 40000, "Not found owerid");
         return;
     }
 
     var filters = {
         surveyid: req.params.surveyId
     };
-    
-    return queryFromMongodb(res, filters);
+
+    mongo.find(filters, appConf.surveyCollections.survey).then(results => {
+            http.success(res, results);
+            return true;
+        })
+        .catch(err => {
+            http.error(res, 500, 50000, "mongo error: " + err);
+            return false;
+        });
 };
+
+function renameSurvey(req, res) {
+
+    var filters = {
+        surveyid: req.body.surveyid,
+        userid: req.body.userid,
+        version: req.body.version
+    };
+
+
+    var data = {
+        $set: {
+            name: req.body.name,
+        }
+    };
+
+    mongo.update(filters, data, appConf.surveyCollections.survey).then(results => {
+            http.success(res, results);
+            return true;
+        })
+        .catch(err => {
+            http.error(res, 500, 50000, "mongo error: " + err);
+            return false;
+        });
+}
+
+function deleteSurvey(req, res) {
+    var filters = {
+        userid: req.body.userid,
+        surveyid: req.body.surveyid,
+        version: req.body.version
+    };
+
+    mongo.remove(filters, true, appConf.surveyCollections.survey).then(result => {
+            http.success(res, {affected: result.result.n});
+            return true;
+        })
+        .catch(err => {
+            http.error(res, 500, 50000, "mongo error: " + err);
+            return false;
+        });
+}
 
 /** Answer Management Services */
 function getAllResultsBySurveyId(req, res) {
     http.success(res, "OK");
 }
 
+function saveResult(req, res) {
+
+
+}
 
 // Survey Management Services
 // /v2/survey/:userID
 router.get('/survey/:surveyId', getSurveyById);
 router.get('/survey/owner/:ownerid', getAllSurveysByOwnerId);
-router.post('/survey', postSurvey);
-router.post('/survey/create', createEmptySurvey)
+router.post('/survey', saveSurvey);
+router.post('/survey/create', createEmptySurvey);
+router.put('/survey', renameSurvey);
+router.delete('/survey', deleteSurvey);
 
 // /v2/results
 router.get('/results', getAllResultsBySurveyId); /* requires Question ID */
