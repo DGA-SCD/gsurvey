@@ -109,6 +109,7 @@ function queryFromMongodb(res, filters){
                             db.close();
                             reject(err);
                         } else {
+                            console.log(results);
                             logger.debug('results: ' + JSON.stringify(results));
                             http.success(res, results);
                             db.close();
@@ -133,7 +134,7 @@ function postSurvey(req, res) {
     var survey = {
         userid: body.userid,
         name: body.name,
-        id: body.id,
+        surveyid: body.surveyid,
         version: body.version,
         pages: body.pages
     }
@@ -141,7 +142,7 @@ function postSurvey(req, res) {
     var filters = {
         userid: body.userid,
         name: body.name,
-        id: body.id,
+        surveyid: body.surveyid,
         version: body.version
     };
 
@@ -156,14 +157,14 @@ function createEmptySurvey(req, res) {
     var survey = {
         userid: body.userid,
         name: body.name,
-        id: body.id,
+        surveyid: body.surveyid,
         version: body.version
     }
 
     var filters = {
         userid: body.userid,
         name: body.name,
-        id: body.id,
+        surveyid: body.surveyid,
         version: body.version
     };
 
@@ -173,6 +174,7 @@ function createEmptySurvey(req, res) {
 function getAllSurveysByOwnerId(req, res) {
     if (req.params.ownerid == 'undefined') {
         http.error(res, 400, "Not found owerid");
+        return;
     }
 
     var filters = {
@@ -185,12 +187,15 @@ function getAllSurveysByOwnerId(req, res) {
 
 function getSurveyById(req, res) {
 
+    console.log(req);
+
     if( req.params.surveyId == 'undefined' ) {
         http.error(res, 400, "Not found owerid");
+        return;
     }
 
     var filters = {
-        id: req.params.surveyId
+        surveyid: req.params.surveyId
     };
     
     return queryFromMongodb(res, filters);
