@@ -297,7 +297,7 @@ router.get('/surveys/:surveyId', getSurveyById);
 router.get('/surveys/owner/:ownerid', getAllSurveysByOwnerId);
 router.post('/surveys', saveSurvey);
 router.post('/surveys/create', createEmptySurvey);
-router.put('/surveys', renameSurvey);
+router.post('/surveys/rename', renameSurvey);
 router.delete('/surveys', deleteSurvey);
 
 // /v2/results
