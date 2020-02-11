@@ -31,6 +31,7 @@ const redis = require("redis");
 const logger = winston.logger;
 const router = express.Router();
 const mongo = require('../../helpers/mongodb');
+const uuidv4 = require('uuid/v4');
 
 
 
@@ -202,7 +203,9 @@ function deleteSurvey(req, res) {
     };
 
     mongo.remove(filters, true, appConf.surveyCollections.survey).then(result => {
-            http.success(res, {affected: result.result.n});
+            http.success(res, {
+                affected: result.result.n
+            });
             return true;
         })
         .catch(err => {
@@ -213,24 +216,92 @@ function deleteSurvey(req, res) {
 
 /** Answer Management Services */
 function getAllResultsBySurveyId(req, res) {
-    http.success(res, "OK");
+
+    var body = req.body;
+
+    var filters = {
+        surveyid: req.params.surveyId + "",
+        userid: "reserved",
+        version: 1
+    }
+
+    mongo.find(filters, appConf.surveyCollections.result).then(results => {
+            http.success(res, results);
+            return true;
+        })
+        .catch(err => {
+            http.error(res, 500, 50000, "mongo error: " + err);
+            return false;
+        });
+
+}
+
+function getResultById(req, res){
+
+    var body = req.body;
+
+    var filters = {
+        userid: "reserved",
+        resultid: req.params.resultId
+    }
+
+    mongo.find(filters, appConf.surveyCollections.result).then(results => {
+        http.success(res, results);
+        return true;
+    })
+    .catch(err => {
+        http.error(res, 500, 50000, "mongo error: " + err);
+        return false;
+    });
 }
 
 function saveResult(req, res) {
 
+    var body = req.body;
+    var resultid = 'undefined';
 
+    if (body.resultid == 'undefined' || body.resultid == null) {
+        resultid = uuidv4();
+    } else {
+        resultid = body.resultid;
+    }
+
+    var filters = {
+        surveyid: body.surveyid,
+        resultid: resultid,
+        userid: "reserved",
+        version: 1
+    }
+
+    var data = {
+        surveyid: body.surveyid,
+        resultid: resultid,
+        userid: "reserved",
+        result: body.result,
+        version: 1
+    }
+
+    mongo.insert(filters, data, appConf.surveyCollections.result).then(result => {
+            http.success(res, result);
+            return true;
+        })
+        .catch(err => {
+            http.error(res, 500, 50000, "mongo error: " + err);
+            return false;
+        });
 }
 
 // Survey Management Services
 // /v2/survey/:userID
-router.get('/survey/:surveyId', getSurveyById);
-router.get('/survey/owner/:ownerid', getAllSurveysByOwnerId);
-router.post('/survey', saveSurvey);
-router.post('/survey/create', createEmptySurvey);
-router.put('/survey', renameSurvey);
-router.delete('/survey', deleteSurvey);
+router.get('/surveys/:surveyId', getSurveyById);
+router.get('/surveys/owner/:ownerid', getAllSurveysByOwnerId);
+router.post('/surveys', saveSurvey);
+router.post('/surveys/create', createEmptySurvey);
+router.put('/surveys', renameSurvey);
+router.delete('/surveys', deleteSurvey);
 
 // /v2/results
-router.get('/results', getAllResultsBySurveyId); /* requires Question ID */
-
+router.get('/results/surveyid/:surveyId', getAllResultsBySurveyId); /* requires Question ID */
+router.get('/results/:resultId', getResultById)
+router.post('/results', saveResult);
 module.exports = router;
