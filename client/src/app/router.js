@@ -89,7 +89,9 @@ const LazyLogin = lazy(() => import("../views/pages/login"));
 const LazyRegister = lazy(() => import("../views/pages/register"));
 const LazyMaintainance = lazy(() => import("../views/pages/maintainance"));
 const LazyLockScreen = lazy(() => import("../views/pages/lockScreen"));
-
+const LazyMain = lazy(() => import("../views/pages/main"));
+const LazyCreate = lazy(() => import("../views/pages/survey-create"));
+const LazyDisplay = lazy(() => import("../views/pages/display"));
 // Error Pages
 const LazyErrorPage = lazy(() => import("../views/pages/error"));
 
@@ -643,6 +645,18 @@ class Router extends Component {
                      </Suspense>
                   )}
                />
+
+               <FullPageLayout
+                  exact
+                  path="/pages/display"
+                  render={matchprops => (
+                     <Suspense fallback={<Spinner />}>
+                        <LazyDisplay {...matchprops} />
+                     </Suspense>
+                  )}
+               />
+
+
                <MainLayoutRoutes
                   exact
                   path="/pages/horizontal-timeline"
@@ -730,6 +744,15 @@ class Router extends Component {
                   render={matchprops => (
                      <Suspense fallback={<Spinner />}>
                         <LazySurveyCreator {...matchprops} />
+                     </Suspense>
+                  )}
+               />
+               <MainLayoutRoutes
+                  exact
+                  path="/pages/survey-create"
+                  render={matchprops => (
+                     <Suspense fallback={<Spinner />}>
+                        <LazyCreate {...matchprops} />
                      </Suspense>
                   )}
                />
@@ -843,7 +866,15 @@ class Router extends Component {
                      </Suspense>
                   )}
                />
-
+               <MainLayoutRoutes
+                  exact
+                  path="/pages/main"
+                  render={matchprops => (
+                     <Suspense fallback={<Spinner />}>
+                        <LazyMain {...matchprops} />
+                     </Suspense>
+                  )}
+               />
                <ErrorLayoutRoute
                   render={matchprops => (
                      <Suspense fallback={<Spinner />}>
