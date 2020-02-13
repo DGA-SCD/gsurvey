@@ -1,66 +1,61 @@
-@import url('https://fonts.googleapis.com/css?family=Athiti&display=swap');
-body{
-  font-family: 'Athiti', sans-serif!important;
-  
+@import url("https://fonts.googleapis.com/css?family=Athiti&display=swap");
+body {
+  font-family: "Athiti", sans-serif !important;
 }
 .App {
-  font-family: 'Athiti', sans-serif!important;
-  
- 
+  font-family: "Athiti", sans-serif !important;
 }
-/* th.MuiTableCell-root.MTableHeader-header-148.MuiTableCell-paddingCheckbox.MuiTableCell-head{
+th.MuiTableCell-root.MTableHeader-header-148.MuiTableCell-paddingCheckbox.MuiTableCell-head {
   z-index: -1 !important;
-
-} */
-.MuiTable-root .MuiTableCell-body{ 
-  font-family: 'Athiti', sans-serif!important;
-  font-size: 1.00em !important;
 }
-span.MuiTableSortLabel-icon{
+.MuiTable-root .MuiTableCell-body {
+  font-family: "Athiti", sans-serif !important;
+  font-size: 1em !important;
+}
+span.MuiTableSortLabel-icon {
   width: 20px;
   height: 30px;
   opacity: 0;
-  transition: opacity 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,transform 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  transition: opacity 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, transform 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
   margin-left: 4px;
   user-select: none;
   margin-right: 4px;
 }
-
 .MTableHeader-header-148 {
   top: 0;
   z-index: 0 !important;
   position: sticky;
   background-color: #fff;
 }
-.MuiTable-root{
-  font-family: 'Athiti', sans-serif!important;
-  font-size: 1.00em !important;
- 
-
+.MuiTable-root {
+  font-family: "Athiti", sans-serif !important;
+  font-size: 1em !important;
 }
-.MuiTableRow-root .MuiTableRow-head{
-  font-family: 'Athiti', sans-serif!important;
-  font-size: 1.00em !important;
+.MuiTableRow-root .MuiTableRow-head {
+  font-family: "Athiti", sans-serif !important;
+  font-size: 1em !important;
   z-index: -1 !important;
 }
-.sv_main .sv_container .sv_body .sv_p_root .sv_q_title{
-  font-family: 'Athiti', sans-serif!important;
+.sv_main .sv_container .sv_body .sv_p_root .sv_q_title {
+  font-family: "Athiti", sans-serif !important;
 }
-.sv_main .sv_container .sv_body .sv_p_root .sv_p_title{
-  font-family: 'Athiti', sans-serif!important;
+.sv_main .sv_container .sv_body .sv_p_root .sv_p_title {
+  font-family: "Athiti", sans-serif !important;
 }
-
 .sv_main {
-  font-family: 'Athiti', sans-serif!important;
-  font-size: 1.30em !important;
+  font-family: "Athiti", sans-serif !important;
+  font-size: 1em !important;
+}
 
-}
-.por_label{
-  font-size: 0.90em;
-}
-.sv_q_checkbox_inline, .sv_q_radiogroup_inline, .sv_q_imagepicker_inline{
+/*.por_label {
+  font-size: 0.9em;
+} */
+
+
+/* .sv_q_checkbox_inline, .sv_q_radiogroup_inline, .sv_q_imagepicker_inline{
   width:300px;
-}
+} */
+
 
 /* .sv_main, .sv_default_css, .por_root [value~=Remove] {
   background-color :rgb(251, 36, 36) !important;
@@ -70,11 +65,15 @@ span.MuiTableSortLabel-icon{
 /* .sv_q_title{
   font-size: 1.35em !important;
 } */
-.panel-footer, .card-footer {
+
+
+/* 
+.panel-footer,
+.card-footer {
   text-align: right;
 }
-.summary_result_lable{
-  font-size:1.0rem !important;
+.summary_result_lable {
+  font-size: 1rem !important;
   text-align: right;
   padding: 1.2rem;
 }
@@ -82,34 +81,31 @@ span.MuiTableSortLabel-icon{
   animation: App-logo-spin infinite 20s linear;
   height: 80px;
 }
-
 .App-header {
   background-color: #222;
   height: 150px;
   padding: 20px;
   color: white;
 }
-
 .App-title {
   font-size: 1.5em;
-}
+}*/
 
-  .sv_main input[type="button"], .sv_main button {
-    font-size: 0.75em;
-    font-weight: bold;
-    line-height: 2em;
-    border: 1px solid;
-    min-width: 100px;
-    cursor: pointer;
-    padding: 0 2em;
-    border-radius: 4px;
-    padding: 6px 12px;
+.sv_main input[type="button"],
+.sv_main button {
+  font-size: 0.75em;
+  font-weight: bold;
+  line-height: 2em;
+  border: 1px solid;
+  min-width: 100px;
+  cursor: pointer;
+  padding: 0 2em;
+  border-radius: 4px;
+  padding: 6px 12px;
 }
-
 .App-intro {
   font-size: large;
 }
-
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

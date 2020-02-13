@@ -26,7 +26,9 @@ const tableIcons = {
   Export: forwardRef((props, ref) => <SaveAlt {...props} ref={ref} />)
 };
 async function getDataFromAPI() {
-  let response = await fetch(config.BACKEND_GSURVEY+"api/v2/admin/survey/owner/1");
+  let response = await fetch(
+    config.BACKEND_GSURVEY + "api/v2/admin/survey/owner/1"
+  );
   let data = await response.json();
   console.log(JSON.stringify(data, null, "\t"));
 }
@@ -38,20 +40,21 @@ class Main extends Component {
       data: [],
       surveyid: "",
       columns: [],
-     
-      error:""
+
+      error: ""
     };
   }
   async componentDidMount() {
     try {
-      const response = await fetch(config.BACKEND_GSURVEY+"/api/v2/admin/surveys/owner/1");
+      const response = await fetch(
+        config.BACKEND_GSURVEY + "/api/v2/admin/surveys/owner/1"
+      );
 
       const json = await response.json();
       console.log(this.state.data.data);
       this.setState({
         data: json.data,
         columns: [
-          
           { title: "Title", field: "name" },
           {
             title: "albumId",
@@ -62,7 +65,7 @@ class Main extends Component {
                   pathname: "survey-create",
                   state: {
                     surveyid: rowData.surveyid,
-                    name:rowData.name
+                    name: rowData.name
                   }
                 }}
               >
@@ -74,14 +77,21 @@ class Main extends Component {
             title: "vvvvv",
             field: "surveyid",
             render: rowData => (
-              <Link to={{ pathname: 'display', state: { surveyid: rowData.surveyid} }}>My route</Link>
+              <Link
+                to={{
+                  pathname: "display",
+                  state: { surveyid: rowData.surveyid }
+                }}
+              >
+                My route
+              </Link>
               // <Link
               // target="_blank"
               //   to={{
               //     pathname: "display",
               //     state: {
               //       por: "chanika"
-                   
+
               //     }
               //   }}
               // >
@@ -94,9 +104,8 @@ class Main extends Component {
       });
     } catch (error) {
       this.setState({
-        
-        error:error
-      })
+        error: error
+      });
       console.log(error);
     }
   }
@@ -105,7 +114,7 @@ class Main extends Component {
 
     return (
       <MaterialTable
-        title="Render Image Preview"
+        title="แบบสำรวจ G-Survey"
         columns={this.state.columns}
         data={this.state.data}
       />

@@ -67,61 +67,53 @@ class Formcreate extends Component {
       disabled: true,
       showStore: false,
       clickedit: true,
-      name:'',
-      rename:''
+      name: "",
+      rename: ""
     };
   }
-  
-  handleClick = event => {
-    console.log("State ==>", this.state.rename+"..."+this.state.surveyid);
 
+  handleClick = event => {
+    console.log("State ==>", this.state.rename + "..." + this.state.surveyid);
 
     var renamedata = {
-      surveyid:this.state.surveyid,
-      userid: '1',
+      surveyid: this.state.surveyid,
+      userid: "1",
       version: "1",
-      name:this.state.rename === ''?this.state.name:this.state.rename
+      name: this.state.rename === "" ? this.state.name : this.state.rename
     };
-    console.log(renamedata)
+    console.log(renamedata);
     try {
       fetch(config.BACKEND_GSURVEY + "/api/v2/admin/surveys/rename", {
         method: "post",
-       
+
         crossDomain: true,
         headers: {
-       
           "Content-Type": "application/json",
           userid: localStorage.getItem("session_userid"),
           token: localStorage.getItem("token_local")
           // "token" : "3gUMtyWlKatfMk5aLi5PpgQxfTJcA91YlN6Nt8XyiR1CwLs6wGP69FSQs8EKHCsg",
         },
-        body:  JSON.stringify(renamedata)
+        body: JSON.stringify(renamedata)
       })
-      .then(function(response) {
-        if (!response.ok) {
-          throw Error(response.statusText);
-          alert("fail");
-        }else{
-          alert("success");
-         
-         
-        }
-      })
-      .then((responseJson) => {
-        this.startEdit();
-      })
-      }catch (ex) {
-        console.log(ex);
-      }
-     
-     
-
-
-  }
+        .then(function(response) {
+          if (!response.ok) {
+            throw Error(response.statusText);
+            alert("fail");
+          } else {
+            alert("success");
+          }
+        })
+        .then(responseJson => {
+          this.startEdit();
+        });
+    } catch (ex) {
+      console.log(ex);
+    }
+  };
   handleNameChange = event => {
-    this.setState({ rename: event.target.value })
-   
-  console.log(this.state.rename)
+    this.setState({ rename: event.target.value });
+
+    console.log(this.state.rename);
   };
 
   startEdit() {
@@ -133,7 +125,6 @@ class Formcreate extends Component {
   }
 
   async componentDidMount() {
-     
     this.setState({
       surveyid: this.props.location.state.surveyid,
       name: this.props.location.state.name
@@ -146,39 +137,40 @@ class Formcreate extends Component {
     this.surveyCreator.saveSurveyFunc = this.saveMySurvey;
 
     try {
-      console.log("surveyid"+this.props.location.state.surveyid)
-      const response = await  fetch(config.BACKEND_GSURVEY + "/api/v2/admin/surveys/"+this.props.location.state.surveyid, {
-        method: "get",
-        crossDomain: true,
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          userid: localStorage.getItem("session_userid"),
-          token: localStorage.getItem("token_local")
+      console.log("surveyid" + this.props.location.state.surveyid);
+      const response = await fetch(
+        config.BACKEND_GSURVEY +
+          "/api/v2/admin/surveys/" +
+          this.props.location.state.surveyid,
+        {
+          method: "get",
+          crossDomain: true,
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            userid: localStorage.getItem("session_userid"),
+            token: localStorage.getItem("token_local")
             // "token" : "3gUMtyWlKatfMk5aLi5PpgQxfTJcA91YlN6Nt8XyiR1CwLs6wGP69FSQs8EKHCsg",
+          }
         }
-      })
+      );
       if (!response.ok) {
         throw Error(response.statusText);
       }
       const json = await response.json();
       var question = JSON.stringify(json.data);
       //       console.log(question)
-      console.log("jsonnaja"+question);
+      console.log("jsonnaja" + question);
       this.surveyCreator.text = question;
-          this.setState({ json: question});
+      this.setState({ json: question });
     } catch (error) {
       console.log(error);
     }
-}
-
-
-  
+  }
 
   render() {
     console.log("dd.." + this.state.surveyid);
     console.log("display.." + this.state.name);
-    
 
     return (
       <div className="admin">
@@ -190,12 +182,12 @@ class Formcreate extends Component {
                   <Table className="table table-borderless table-sm">
                     <tbody>
                       <tr>
-                        <td width = "400px;">
+                        <td width="400px;">
                           <input
                             type="text"
                             name="name"
                             className="form-control"
-                            onChange = {this.handleNameChange}
+                            onChange={this.handleNameChange}
                             defaultValue={this.state.name}
                             disabled={this.state.disabled ? "disabled" : ""}
                             required
@@ -217,7 +209,9 @@ class Formcreate extends Component {
                           }}
                         >
                           <td className="text-left">
-                            <Button color="success"  onClick={this.handleClick}>Update</Button>
+                            <Button color="success" onClick={this.handleClick}>
+                              Update
+                            </Button>
                           </td>
                           <td className="text-left">
                             <Button
@@ -285,26 +279,26 @@ class Formcreate extends Component {
     );
   }
 
-    saveMySurvey = () => {
-      console.log("======savemysurvey=======");
-      var data = this.surveyCreator.text;
+  saveMySurvey = () => {
+    console.log("======savemysurvey=======");
+    var data = this.surveyCreator.text;
 
-      // console.log(JSON.stringify(data));
-     // var data1 = '{\n"name":"seminar-01",' + data.substring(1);
+    // console.log(JSON.stringify(data));
+    // var data1 = '{\n"name":"seminar-01",' + data.substring(1);
 
-      var jsondata = {
-        userid:"1",
-        name: this.state.name,
-        createdated: new Date(),
-        surveyid:this.state.surveyid,
-        version: "1",
-      };
-      var t = JSON.stringify(jsondata);
-      t = t.substring(0, t.length - 1);
+    var jsondata = {
+      userid: "1",
+      name: this.state.name,
+      createdated: new Date(),
+      surveyid: this.state.surveyid,
+      version: "1"
+    };
+    var t = JSON.stringify(jsondata);
+    t = t.substring(0, t.length - 1);
 
-      var jsondata = t + "," + data.substring(1);
-      console.log(jsondata);
-      try {
+    var jsondata = t + "," + data.substring(1);
+    console.log(jsondata);
+    try {
       fetch(config.BACKEND_GSURVEY + "/api/v2/admin/surveys", {
         method: "post",
         crossDomain: true,
@@ -317,19 +311,18 @@ class Formcreate extends Component {
         },
         body: jsondata
       }).then(function(response) {
-        console.log("res"+response)
+        console.log("res" + response);
         if (!response.ok) {
           throw Error(response.statusText);
           alert("fail");
-        }else{
+        } else {
           alert("success");
         }
-      })
-      }catch (ex) {
-        console.log(ex);
-      }
-     
+      });
+    } catch (ex) {
+      console.log(ex);
     }
+  };
 }
 
 export default Formcreate;
