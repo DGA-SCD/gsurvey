@@ -1,2 +1,4 @@
-package-lock.json
-./src/services/AppConfig.js
+.eslintrc.json
+.vscode-upload.json
+src/services/AppConfig.js
+node_modules/

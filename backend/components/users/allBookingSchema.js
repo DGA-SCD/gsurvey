@@ -283,5 +283,7 @@ module.exports.allbooking = () => { return [
         1: "รถบัส(ไม่ระบุ)", 
         2: "รถส่วนตัว", 3: "รถตู้", 4: "รถบัสคันที่ 1", 5: "รถบัสคันที่ 2", 6: "รถบัสคันที่ 3"}},
     { title: 'เข้าร่วม', field: 'join', type: 'string'},
-    { title: 'หมายเหตุ', field: 'remark', type: 'string'}
+    { title: 'เลือกคู่นอน', field: 'sleepingType', type: 'string',  editable: 'never'},
+    { title: 'หมายเหตุ', field: 'roomRemark', type: 'string',  editable: 'never'},
+    { title: 'หมายเหตุ Admin', field: 'remark', type: 'string'}
 ];}

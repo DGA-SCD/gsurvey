@@ -8,7 +8,7 @@ describe('test query all booking', ()=>{
     const req = mock.mockRequest({},{});
     const res = mock.mockResponse();
     test('should return 200 ok', () =>{
-        user.getAllBooking(req, res)
+        return user.getAllBooking(req, res)
         .then( (res) => {
             expect(res).toBe(true);
         })

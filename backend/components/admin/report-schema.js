@@ -36,6 +36,7 @@ module.exports.cost = () => { return [
     { title: 'วันไป', field: 'checkinDate', type: 'numeric'},
     { title: 'วันกลับ', field: 'checkoutDate', type: 'numeric'},
     { title: 'เงื่อนไขของอาหาร', field: 'staffFood', type: 'string'},
+    { title: 'โรคประจำตัว/แพ้', field: 'staffCongenitalDisease', type: 'string'},
     { title: 'ผู้รับผลประโยชน์', field: 'beneficiary', type: 'string'},
     { title: 'ความสัมพันธ์', field: 'relationship', type: 'string'},
     { title: 'เบอร์ติดต่อฉุกเฉิน', field: 'emergencyContractPhoneNumber', type: 'string'},
