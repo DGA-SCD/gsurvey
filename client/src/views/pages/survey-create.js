@@ -192,8 +192,8 @@ class Formcreate extends Component {
                             disabled={this.state.disabled ? "disabled" : ""}
                             required
                             style={{ width: "400px" }}
-                          />
-                        </td>
+                          />{" "}
+                        </td>{" "}
                         <td className="text-left">
                           <img
                             src={userImagedga}
@@ -201,8 +201,8 @@ class Formcreate extends Component {
                             style={{
                               display: this.state.clickedit ? "block" : "none"
                             }}
-                          />
-                        </td>
+                          />{" "}
+                        </td>{" "}
                         <div
                           style={{
                             display: this.state.showStore ? "block" : "none"
@@ -210,68 +210,68 @@ class Formcreate extends Component {
                         >
                           <td className="text-left">
                             <Button color="success" onClick={this.handleClick}>
-                              Update
-                            </Button>
-                          </td>
+                              Update{" "}
+                            </Button>{" "}
+                          </td>{" "}
                           <td className="text-left">
                             <Button
                               color="warning"
                               onClick={this.startEdit.bind(this)}
                             >
-                              Cancel
-                            </Button>
-                          </td>
-                        </div>
-                      </tr>
+                              Cancel{" "}
+                            </Button>{" "}
+                          </td>{" "}
+                        </div>{" "}
+                      </tr>{" "}
                       {/* <tr>
-                        <td>
-                          <input
-                            type="text"
-                            name="surveyid"
-                            className="form-control"
-                            defaultValue={this.state.surveyid}
-                            disabled={this.state.disabled ? "disabled" : ""}
-                            required
-                            style={{ width: "200px" }}
-                          />
-                        </td>
-                        <td className="text-right">
-                          <img
-                            src={userImagedga}
-                            onClick={this.handleGameClik.bind(this)}
-                          />
-                        </td>
-                        <td>
-                          <div
-                            className="form-actions"
-                            style={{
-                              display: this.state.showStore ? "block" : "none"
-                            }}
-                          >
-                            <Button color="success">Update</Button>
-                            <Button color="warning">Cancel</Button>
-                          </div>
-                        </td>
-                      </tr> */}
-                    </tbody>
-                  </Table>
-                </Col>
-              </Row>
+                                <td>
+                                  <input
+                                    type="text"
+                                    name="surveyid"
+                                    className="form-control"
+                                    defaultValue={this.state.surveyid}
+                                    disabled={this.state.disabled ? "disabled" : ""}
+                                    required
+                                    style={{ width: "200px" }}
+                                  />
+                                </td>
+                                <td className="text-right">
+                                  <img
+                                    src={userImagedga}
+                                    onClick={this.handleGameClik.bind(this)}
+                                  />
+                                </td>
+                                <td>
+                                  <div
+                                    className="form-actions"
+                                    style={{
+                                      display: this.state.showStore ? "block" : "none"
+                                    }}
+                                  >
+                                    <Button color="success">Update</Button>
+                                    <Button color="warning">Cancel</Button>
+                                  </div>
+                                </td>
+                              </tr> */}{" "}
+                    </tbody>{" "}
+                  </Table>{" "}
+                </Col>{" "}
+              </Row>{" "}
               {/* <input
-                type="text"
-                name="surveyid"
-                className="form-control"
-                defaultValue={this.state.surveyid}
-                disabled={this.state.disabled ? "disabled" : ""}
-                required
-                style={{ width: "200px" }}
-              />
-              <img
-                src={userImagedga}
-                onClick={this.handleGameClik.bind(this)}
-              /> */}
-            </FormGroup>
-          </Col>
+                        type="text"
+                        name="surveyid"
+                        className="form-control"
+                        defaultValue={this.state.surveyid}
+                        disabled={this.state.disabled ? "disabled" : ""}
+                        required
+                        style={{ width: "200px" }}
+                      />
+                      <img
+                        src={userImagedga}
+                        onClick={this.handleGameClik.bind(this)}
+                      /> */}{" "}
+            </FormGroup>{" "}
+          </Col>{" "}
         </Row>
 
         <div id="surveyCreatorContainer" />
