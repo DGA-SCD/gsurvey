@@ -8,9 +8,10 @@ import Cookies from "universal-cookie";
 import ReactDOM from "react-dom";
 //import Async from "react-async";
 import axios from "axios";
-import AuthService from "../../services/AuthService";
+//import AuthService from "../../services/AuthService";
 import * as config from "../../services/AppConfig";
 import * as Survey from "survey-react";
+import queryString from "query-string";
 import "survey-react/survey.css";
 
 import "../../assets/scss/views/pages/survey/survey.css";
@@ -91,19 +92,22 @@ class Display extends Component {
       name: ""
     };
 
-    this.Auth = new AuthService();
-    this.intervalID = setInterval(() => this.Auth.IsAvailable(), 10000);
+    // this.Auth = new AuthService();
+    // this.intervalID = setInterval(() => this.Auth.IsAvailable(), 10000);
   }
   // componentWillUnmount() {
   //   clearTimeout(this.intervalID);
   // }
 
   async componentDidMount() {
-    console.log("props" + this.props);
-    console.log("surveyid" + this.props.location.state.surveyid);
+    let url = this.props.location.search;
+    let params = queryString.parse(url);
+    console.log(params.surveyid);
+    // let url = this.props.location.search;
+    // console.log("propsddd" + this.props);
+    // console.log("surveyid" + this.props.location.state.surveyid);
     this.setState({
-      surveyid: this.props.location.state.surveyid,
-      name: this.props.location.state.name
+      surveyid: params.surveyid
     });
 
     const options = {
@@ -122,11 +126,9 @@ class Display extends Component {
     };
 
     try {
-      console.log("surveyid" + this.props.location.state.surveyid);
+      // console.log("surveyid" + this.props.location.state.surveyid);
       const response = await fetch(
-        config.BACKEND_GSURVEY +
-          "/api/v2/admin/surveys/" +
-          this.props.location.state.surveyid,
+        config.BACKEND_GSURVEY + "/api/v2/admin/surveys/" + params.surveyid,
         options
       );
       if (!response.ok) {
@@ -134,10 +136,9 @@ class Display extends Component {
       }
       const json = await response.json();
       var question = JSON.stringify(json.data);
-
-      console.log("jsonnaja" + question);
-
-      this.setState({ question: question });
+      console.log(json);
+      this.setState({ question: question, name: json.data.name });
+      console.log("name" + this.state.name);
     } catch (error) {
       console.log(error);
     }
@@ -177,11 +178,6 @@ class Display extends Component {
   }
 
   render() {
-    // if (this.props.location.state.surveyid) {
-    //   return <Redirect to="/login" />;
-    // }
-    console.log("dd.." + this.state.surveyid);
-    console.log("display.." + this.state.name);
     var divStyle = {
       background: "#eee",
       padding: "100px"
@@ -196,15 +192,6 @@ class Display extends Component {
     if (this.state.question) {
       var survey = new Survey.Model(this.state.question);
 
-      // survey.onUpdateQuestionCssClasses.add(function(survey, options) {
-      //   var classes = options.cssClasses;
-
-      //   classes.root = "por_root";
-      //   classes.item = "por_item";
-      //   classes.label = "por_label";
-      // });
-      //loadState(survey);
-
       survey.clearInvisibleValues = "onHidden";
       survey.showQuestionNumbers = "off";
       survey.onAfterRenderQuestion.add(function(sender, options) {});
@@ -217,7 +204,7 @@ class Display extends Component {
                 <div className="App">
                   <Card>
                     <CardBody>
-                      <CardTitle>แบบสำรวจงานสัมมนา</CardTitle>
+                      <CardTitle>แบบสำรวจ {this.state.name}</CardTitle>
 
                       <Survey.Survey
                         model={survey}

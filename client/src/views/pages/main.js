@@ -135,11 +135,11 @@ class Main extends Component {
                 console.log({ rowData });
                 this.props.history.push({
                   pathname: "display",
-
-                  state: {
-                    surveyid: rowData.surveyid,
-                    name: rowData.name
-                  }
+                  search: "?surveyid=" + rowData.surveyid
+                  // state: {
+                  //   surveyid: rowData.surveyid,
+                  //   name: rowData.name
+                  // }
                 });
               }
             },
@@ -225,10 +225,9 @@ class Main extends Component {
           }}
           components={{}}
           options={{
-            grouping: true,
             actionsColumnIndex: -1,
             sorting: true,
-            grouping: true,
+
             exportButton: true,
             exportAllData: true
           }}
