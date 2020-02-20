@@ -102,6 +102,27 @@ function createEmptySurvey(req, res) {
 
     var body = req.body
 
+    if( body.userid === undefined ){
+        http.error(res, 400, 40000, 'require "userid"');
+        return;
+    }
+
+    if( body.name === undefined ){
+        http.error(res, 400, 40000, 'require "name"');
+        return;
+    }
+
+    if( body.surveyid === undefined ){
+        http.error(res, 400, 40000, 'require "surveyid"');
+        return;
+    }
+
+    if( body.version === undefined ){
+        http.error(res, 400, 40000, 'require "version"');
+        return;
+    }
+
+
     var survey = {
         userid: body.userid,
         name: body.name,
@@ -149,7 +170,17 @@ function getAllSurveysByOwnerId(req, res) {
 
 function getSurveyById(req, res) {
 
-    console.log(req);
+    var userid = 'undefined';
+    var version = '1';
+
+    if (req.query.uid === undefined ) {
+        http.error(res, 400, 40000, "Not found user id");
+        return;
+    }
+
+    if (req.query.v === undefined ) {
+       version = req.query.v;
+    }
 
     if (req.params.surveyId == 'undefined') {
         http.error(res, 400, 40000, "Not found owerid");
@@ -157,7 +188,9 @@ function getSurveyById(req, res) {
     }
 
     var filters = {
-        surveyid: req.params.surveyId
+        surveyid: req.params.surveyId,
+        version: version,
+        userid: userid,
     };
 
     mongo.find(filters, appConf.surveyCollections.survey).then(results => {
@@ -217,12 +250,21 @@ function deleteSurvey(req, res) {
 /** Answer Management Services */
 function getAllResultsBySurveyId(req, res) {
 
-    var body = req.body;
+    var userid = 'undefined';
+    var version = '1';
+
+    if (req.query.uid !== undefined) {
+        userid = req.query.uid;
+    }
+
+    if (req.query.v !== undefined) {
+        version = req.query.v;
+    }
 
     var filters = {
         surveyid: req.params.surveyId + "",
-        userid: "reserved",
-        version: 1
+        userid: userid,
+        version: version
     }
 
     mongo.find(filters, appConf.surveyCollections.result).then(results => {
@@ -236,7 +278,7 @@ function getAllResultsBySurveyId(req, res) {
 
 }
 
-function getResultById(req, res){
+function getResultById(req, res) {
 
     var body = req.body;
 
@@ -246,39 +288,50 @@ function getResultById(req, res){
     }
 
     mongo.find(filters, appConf.surveyCollections.result).then(results => {
-        http.success(res, results);
-        return true;
-    })
-    .catch(err => {
-        http.error(res, 500, 50000, "mongo error: " + err);
-        return false;
-    });
+            http.success(res, results);
+            return true;
+        })
+        .catch(err => {
+            http.error(res, 500, 50000, "mongo error: " + err);
+            return false;
+        });
 }
 
 function saveResult(req, res) {
 
     var body = req.body;
     var resultid = 'undefined';
+    var userid = 'undefined';
+    var version = '1';
 
-    if (body.resultid == 'undefined' || body.resultid == null) {
+    if (body.resultid === undefined || body.resultid == null) {
         resultid = uuidv4();
     } else {
         resultid = body.resultid;
     }
 
+    if (body.userid !== undefined) {
+        userid = body.userid;
+    }
+
+    if (body.version !== undefined) {
+        version = body.version;
+    }
+
     var filters = {
         surveyid: body.surveyid,
         resultid: resultid,
-        userid: "reserved",
-        version: 1
+        version: version,
+        userid: userid,
+
     }
 
     var data = {
         surveyid: body.surveyid,
         resultid: resultid,
-        userid: "reserved",
-        result: body.result,
-        version: 1
+        version: version,
+        userid: userid,
+        result: body.result
     }
 
     mongo.insert(filters, data, appConf.surveyCollections.result).then(result => {
