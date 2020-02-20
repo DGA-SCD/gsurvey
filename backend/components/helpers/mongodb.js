@@ -4,14 +4,22 @@ const appConf = require('../../config/production.conf');
 const logger = winston.logger;
 const promise = require('promise');
 
+function findWithProjector(filters, collection, projector) {
+    return _find(filters, collection, projector);
+}
+
 function find(filters, collection) {
+    return _find(filters, collection, {projection: {_id: 0}});
+}
+
+function _find(filters, collection, projector) {
     return new promise((resolve, reject) => {
         MongoClient.connect(appConf.mongoDB, {
                 useNewUrlParser: true
             }).then(db => {
                 logger.debug("mongodb connected");
                 db.db(appConf.MONGODB_dbname)
-                    .collection(collection).find(filters).toArray(function (err, results) {
+                    .collection(collection).find(filters, projector).toArray(function (err, results) {
                         if (err) {
                             logger.error('Error occurred while querying: ' + err);
                             db.close();
@@ -116,6 +124,7 @@ function remove(filters, justOne, collection) {
 }
 
 module.exports = {
+    findWithProjector,
     find,
     insert,
     update,

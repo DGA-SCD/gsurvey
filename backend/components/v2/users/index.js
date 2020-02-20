@@ -19,7 +19,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-
+"use strict";
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const winston = require('../../../commons/logger');
@@ -28,6 +28,8 @@ const appConf = require('../../../config/production.conf');
 const redis = require("redis");
 const logger = winston.logger;
 const router = express.Router();
+const mongo = require('../../helpers/mongodb');
+const uuidv4 = require('uuid/v4');
 
 router.use(function (req, res, next) {
     logger.info('calling users api ' + req.path);
@@ -58,21 +60,96 @@ router.use(function (req, res, next) {
     next();
 });
 
-getQuestionByQID = (req, res) => {
-    http.success(res, "OK");
+function getSurveyById(req, res) {
+
+    if (req.query.sid === undefined) {
+        http.error(res, 400, 40000, "Not found surveyid");
+        return;
+    }
+
+    if (req.query.uid === undefined ) {
+        http.error(res, 400, 40000, "Not found userid");
+        return;
+    }
+
+    if (req.query.v === undefined ) {
+        http.error(res, 400, 40000, "Not found version");
+        return;
+    }
+
+    var filters = {
+        surveyid: req.query.sid,
+        version: req.query.v,
+        userid: req.query.uid
+    };
+
+    mongo.find(filters, appConf.surveyCollections.survey).then(results => {
+            http.success(res, results[0]);
+            return true;
+        })
+        .catch(err => {
+            http.error(res, 500, 50000, "mongodb error: " + err);
+            return false;
+        });
+};
+
+function saveResult(req, res) {
+
+    var body = req.body;
+    var resultid = 'undefined';
+
+    if (body.surveyid === undefined) {
+        http.error(res, 400, 40000, "Not found surveyid");
+        return;
+    }
+
+    if (body.userid === undefined ) {
+        http.error(res, 400, 40000, "Not found userid");
+        return;
+    }
+
+    if (body.version === undefined ) {
+        http.error(res, 400, 40000, "Not found version");
+        return;
+    }
+
+    if (body.resultid == 'undefined' || body.resultid == null) {
+        resultid = uuidv4();
+    } else {
+        resultid = body.resultid;
+    }
+
+    var filters = {
+        surveyid: body.surveyid,
+        resultid: resultid,
+        userid: body.userid,
+        version: body.version
+    }
+
+    var data = {
+        surveyid: body.surveyid,
+        resultid: resultid,
+        userid: body.userid,
+        result: body.result,
+        version: body.version
+    }
+
+    mongo.insert(filters, data, appConf.surveyCollections.result).then(result => {
+            http.success(res, result);
+            return true;
+        })
+        .catch(err => {
+            http.error(res, 500, 50000, "mongodb error: " + err);
+            return false;
+        });
 }
 
-postAnswer = (req, res) => {
-    http.success(res, "OK");
-}
 
-// Survey Management Services
-// Questions
-// /v2/survey/questions/:userID
-router.get('/questions/:qID', getQuestionByQID);
+// /api/v2/users/surveys
+router.get('/surveys', getSurveyById);
 
-// /v2/survey/answers
-router.post('/answers', postAnswer); /* requires Question ID and Question Owner */
+// /api/v2/users
+router.post('/results', saveResult); /* requires Question ID and Question Owner */
 
 
 module.exports = router;
