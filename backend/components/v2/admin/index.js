@@ -174,12 +174,14 @@ function getSurveyById(req, res) {
     var version = '1';
 
     if (req.query.uid === undefined ) {
-        http.error(res, 400, 40000, "Not found user id");
+        http.error(res, 400, 40000, "Not found userid");
         return;
+    }else {
+        userid = req.query.uid + "";
     }
 
     if (req.query.v === undefined ) {
-       version = req.query.v;
+       version = req.query.v + "";
     }
 
     if (req.params.surveyId == 'undefined') {
