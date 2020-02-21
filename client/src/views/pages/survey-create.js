@@ -24,7 +24,7 @@ import "jquery-ui/themes/base/all.css";
 import "nouislider/distribute/nouislider.css";
 import "select2/dist/css/select2.css";
 import "bootstrap-slider/dist/css/bootstrap-slider.css";
-
+import { toastr } from "react-redux-toastr";
 import "jquery-bar-rating/dist/themes/css-stars.css";
 import "jquery-bar-rating/dist/themes/fontawesome-stars.css";
 
@@ -53,7 +53,13 @@ widgets.sortablejs(SurveyKo);
 widgets.ckeditor(SurveyKo);
 widgets.autocomplete(SurveyKo, $);
 widgets.bootstrapslider(SurveyKo);
-
+const toastrOptions = {
+  timeOut: 2000, // by setting to 0 it will prevent the auto close
+  position: "top-right",
+  // showCloseButton: true, // false by default
+  // closeOnToastrClick: true, // false by default, this will close the toastr when user clicks on it
+  progressBar: true
+};
 class Formcreate extends Component {
   surveyCreator;
 
@@ -67,63 +73,62 @@ class Formcreate extends Component {
       disabled: true,
       showStore: false,
       clickedit: true,
-      name:'',
-      rename:''
+      name: "",
+      rename: "",
+      vesion: ""
     };
   }
-  
-  handleClick = event => {
-    console.log("State ==>", this.state.rename+"..."+this.state.surveyid);
 
+  handleClick = event => {
+    console.log("State ==>", this.state.rename + "..." + this.state.surveyid);
 
     var renamedata = {
-      surveyid:this.state.surveyid,
-      userid: '1',
+      surveyid: this.state.surveyid,
+      userid: "1",
       version: "1",
-      name:this.state.rename === ''?this.state.name:this.state.rename
+      name: this.state.rename === "" ? this.state.name : this.state.rename
     };
-    console.log(renamedata)
+    console.log(renamedata);
     try {
       fetch(config.BACKEND_GSURVEY + "/api/v2/admin/surveys/rename", {
         method: "post",
-       
+
         crossDomain: true,
         headers: {
-       
           "Content-Type": "application/json",
           userid: localStorage.getItem("session_userid"),
           token: localStorage.getItem("token_local")
           // "token" : "3gUMtyWlKatfMk5aLi5PpgQxfTJcA91YlN6Nt8XyiR1CwLs6wGP69FSQs8EKHCsg",
         },
-        body:  JSON.stringify(renamedata)
+        body: JSON.stringify(renamedata)
       })
-      .then(function(response) {
-        if (!response.ok) {
-          throw Error(response.statusText);
-          alert("fail");
-        }else{
-          alert("success");
-         
-         
-        }
-      })
-      .then((responseJson) => {
-        this.startEdit();
-      })
-      }catch (ex) {
-        console.log(ex);
-      }
-     
-     
-
-
-  }
+        .then(function(response) {
+          if (!response.ok) {
+            throw Error(response.statusText);
+            alert("fail");
+          } else {
+            toastr.success("แก้ไขข้อมูลเรียบร้อยแล้ว", toastrOptions);
+          }
+        })
+        .then(responseJson => {
+          this.startEdit();
+        });
+    } catch (ex) {
+      console.log(ex);
+    }
+  };
   handleNameChange = event => {
-    this.setState({ rename: event.target.value })
-   
-  console.log(this.state.rename)
+    this.setState({ rename: event.target.value });
+
+    console.log(this.state.rename);
   };
 
+  increment() {
+    console.log("increment");
+    this.setState({
+      version: (parseInt(this.state.version) + parseInt(1)).toString()
+    });
+  }
   startEdit() {
     this.setState({
       showStore: !this.state.showStore,
@@ -133,10 +138,11 @@ class Formcreate extends Component {
   }
 
   async componentDidMount() {
-     
+    console.log("didmount   " + JSON.stringify(this.props));
     this.setState({
       surveyid: this.props.location.state.surveyid,
-      name: this.props.location.state.name
+      name: this.props.location.state.name,
+      version: this.props.location.state.version
     });
     let options = { showEmbededSurveyTab: true };
     this.surveyCreator = new SurveyJSCreator.SurveyCreator(
@@ -146,39 +152,46 @@ class Formcreate extends Component {
     this.surveyCreator.saveSurveyFunc = this.saveMySurvey;
 
     try {
-      console.log("surveyid"+this.props.location.state.surveyid)
-      const response = await  fetch(config.BACKEND_GSURVEY + "/api/v2/admin/surveys/"+this.props.location.state.surveyid, {
-        method: "get",
-        crossDomain: true,
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          userid: localStorage.getItem("session_userid"),
-          token: localStorage.getItem("token_local")
+      console.log("surveyid" + this.props.location.state.surveyid);
+      console.log("userid" + this.props.location.state.userid);
+      console.log("version" + this.props.location.state.version);
+      const response = await fetch(
+        config.BACKEND_GSURVEY +
+          "/api/v2/admin/surveys/" +
+          this.props.location.state.surveyid +
+          "?uid=" +
+          this.props.location.state.userid +
+          "&v=" +
+          this.props.location.state.version,
+        {
+          method: "get",
+          crossDomain: true,
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            userid: localStorage.getItem("session_userid"),
+            token: localStorage.getItem("token_local")
             // "token" : "3gUMtyWlKatfMk5aLi5PpgQxfTJcA91YlN6Nt8XyiR1CwLs6wGP69FSQs8EKHCsg",
+          }
         }
-      })
+      );
       if (!response.ok) {
         throw Error(response.statusText);
       }
       const json = await response.json();
       var question = JSON.stringify(json.data);
       //       console.log(question)
-      console.log("jsonnaja"+question);
+      console.log("jsonnaja" + question);
       this.surveyCreator.text = question;
-          this.setState({ json: question});
+      this.setState({ json: question });
     } catch (error) {
       console.log(error);
     }
-}
-
-
-  
+  }
 
   render() {
     console.log("dd.." + this.state.surveyid);
-    console.log("display.." + this.state.name);
-    
+    console.log("display.." + this.state.version);
 
     return (
       <div className="admin">
@@ -190,12 +203,12 @@ class Formcreate extends Component {
                   <Table className="table table-borderless table-sm">
                     <tbody>
                       <tr>
-                        <td width = "400px;">
+                        <td width="400px;">
                           <input
                             type="text"
                             name="name"
                             className="form-control"
-                            onChange = {this.handleNameChange}
+                            onChange={this.handleNameChange}
                             defaultValue={this.state.name}
                             disabled={this.state.disabled ? "disabled" : ""}
                             required
@@ -217,7 +230,9 @@ class Formcreate extends Component {
                           }}
                         >
                           <td className="text-left">
-                            <Button color="success"  onClick={this.handleClick}>Update</Button>
+                            <Button color="success" onClick={this.handleClick}>
+                              Update
+                            </Button>
                           </td>
                           <td className="text-left">
                             <Button
@@ -229,53 +244,10 @@ class Formcreate extends Component {
                           </td>
                         </div>
                       </tr>
-                      {/* <tr>
-                        <td>
-                          <input
-                            type="text"
-                            name="surveyid"
-                            className="form-control"
-                            defaultValue={this.state.surveyid}
-                            disabled={this.state.disabled ? "disabled" : ""}
-                            required
-                            style={{ width: "200px" }}
-                          />
-                        </td>
-                        <td className="text-right">
-                          <img
-                            src={userImagedga}
-                            onClick={this.handleGameClik.bind(this)}
-                          />
-                        </td>
-                        <td>
-                          <div
-                            className="form-actions"
-                            style={{
-                              display: this.state.showStore ? "block" : "none"
-                            }}
-                          >
-                            <Button color="success">Update</Button>
-                            <Button color="warning">Cancel</Button>
-                          </div>
-                        </td>
-                      </tr> */}
                     </tbody>
                   </Table>
                 </Col>
               </Row>
-              {/* <input
-                type="text"
-                name="surveyid"
-                className="form-control"
-                defaultValue={this.state.surveyid}
-                disabled={this.state.disabled ? "disabled" : ""}
-                required
-                style={{ width: "200px" }}
-              />
-              <img
-                src={userImagedga}
-                onClick={this.handleGameClik.bind(this)}
-              /> */}
             </FormGroup>
           </Col>
         </Row>
@@ -285,26 +257,28 @@ class Formcreate extends Component {
     );
   }
 
-    saveMySurvey = () => {
-      console.log("======savemysurvey=======");
-      var data = this.surveyCreator.text;
+  saveMySurvey = () => {
+    console.log("======savemysurvey=======");
+    var data = this.surveyCreator.text;
+    // var va = parseInt(this.state.version);
+    //  let countversion = this.increment();
+    console.log("funion" + this.increment());
+    console.log("save" + this.state.version);
+    // var data1 = '{\n"name":"seminar-01",' + data.substring(1);
 
-      // console.log(JSON.stringify(data));
-     // var data1 = '{\n"name":"seminar-01",' + data.substring(1);
+    var jsondata = {
+      userid: "1",
+      name: this.state.name,
+      createdated: new Date(),
+      surveyid: this.state.surveyid,
+      version: this.state.version.toString()
+    };
+    var t = JSON.stringify(jsondata);
+    t = t.substring(0, t.length - 1);
 
-      var jsondata = {
-        userid:"1",
-        name: this.state.name,
-        createdated: new Date(),
-        surveyid:this.state.surveyid,
-        version: "1",
-      };
-      var t = JSON.stringify(jsondata);
-      t = t.substring(0, t.length - 1);
-
-      var jsondata = t + "," + data.substring(1);
-      console.log(jsondata);
-      try {
+    var jsondata = t + "," + data.substring(1);
+    console.log(jsondata);
+    try {
       fetch(config.BACKEND_GSURVEY + "/api/v2/admin/surveys", {
         method: "post",
         crossDomain: true,
@@ -317,19 +291,21 @@ class Formcreate extends Component {
         },
         body: jsondata
       }).then(function(response) {
-        console.log("res"+response)
+        console.log("res" + response);
         if (!response.ok) {
           throw Error(response.statusText);
-          alert("fail");
-        }else{
-          alert("success");
+          toastr.error(
+            "ไม่สามารถเพิ่มข้อมูลได้ ติดต่อผู้ดูแลระบบ",
+            toastrOptions
+          );
+        } else {
+          toastr.success("เพิ่มข้อมูลเรียบร้อยแล้ว", toastrOptions);
         }
-      })
-      }catch (ex) {
-        console.log(ex);
-      }
-     
+      });
+    } catch (ex) {
+      console.log(ex);
     }
+  };
 }
 
 export default Formcreate;

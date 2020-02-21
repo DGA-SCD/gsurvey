@@ -1,48 +1,63 @@
-@import url('https://fonts.googleapis.com/css?family=Athiti&display=swap');
-body{
-  font-family: 'Athiti', sans-serif!important;
-  
+@import url("https://fonts.googleapis.com/css?family=Athiti&display=swap");
+body {
+  font-family: "Athiti", sans-serif !important;
 }
 .App {
-  font-family: 'Athiti', sans-serif!important;
-  
- 
+  font-family: "Athiti", sans-serif !important;
 }
-.admin .svd_container .svd-dark-bg-color{
-    font-size: 0.6rem !important;
+.admin h5 {
+  font-size: 1rem;
 }
-.admin .svd_survey_designer .svd_container .sv_default_css .svd_properties .svd_object_editor .form-control{
-    font-size: 0.9rem !important;
+.admin .svd_container .svd-dark-bg-color {
+  font-family: "Athiti", sans-serif !important;
+  font-size: 1.1em !important;
 }
-.svd_container.sv_default_css #surveyjs .sv_row .svd_question{
+.svd_container.sv_default_css #surveyjs .sv_row .svd_question {
   padding-left: 20px;
   padding-bottom: 20px;
+  font-size: 1.2em;
 }
-/* .card ,.sv_container{
-    font-size: 0.6rem;
-    font-weight: 300;
-} */
+.svd_container .svd_question .sv_q_radiogroup_label span {
+  font-weight: 400;
+}
+#surveyjsExample .svd-simulator-main .svd-simulator-content .sv_p_root .sv_row {
+  padding: 30px 30px !important;
+  font-size: 1em;
+}
+#surveyjsExample .svd-simulator-main .svd-simulator-content .sv_p_root .sv_row .sv_select_wrapper select {
+  width: 80%;
+  padding: 10px 10px;
+  border-radius: 5px;
+  font-size: 1em;
+}
+.svd_questions_editor .sv_p_root .sv_row select {
+  width: 80%;
+  padding: 10px 10px;
+  border-radius: 5px;
+  font-size: 1em;
+}
+.select-items-editor .svda-select-items-editor .svda-select-items-content {
+  font-family: "Athiti", sans-serif !important;
+  font-size: 1em;
+}
+.sv_main input[type="button"],
+.sv_main button {
+  font-size: 0.5em;
+  font-weight: bold;
+  line-height: 2em;
+  border: 1px solid;
+  min-width: 100px;
+  cursor: pointer;
+  padding: 0 2em;
+  border-radius: 4px;
+  padding: 6px 12px;
+}
 
-/* .svd_container *{
-    font-size: 1em;
-} */
-  /* .sv_main input[type="button"], .sv_main button {
-    font-size: 0.5em;
-    font-weight: bold;
-    line-height: 2em;
-    border: 1px solid;
-    min-width: 100px;
-    cursor: pointer;
-    padding: 0 2em;
-    border-radius: 4px;
-    padding: 6px 12px;
-} */
-
-@keyframes App-logo-spin {
+/* @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
   }
   to {
     transform: rotate(360deg);
   }
-}
+} */
