@@ -34,6 +34,8 @@ import { toastr } from "react-redux-toastr";
 import * as widgets from "surveyjs-widgets";
 
 import "icheck/skins/square/blue.css";
+import Footer from "../../layouts/components/footer/footer.js";
+
 import { throws } from "assert";
 window["$"] = window["jQuery"] = $;
 //require("../../../node_modules_/icheck");
@@ -89,7 +91,9 @@ class Display extends Component {
       allResponses: [],
       allTimeInfo: "",
       surveyid: "",
-      name: ""
+      name: "",
+      userid: "",
+      version: ""
     };
 
     // this.Auth = new AuthService();
@@ -102,14 +106,14 @@ class Display extends Component {
   async componentDidMount() {
     let url = this.props.location.search;
     let params = queryString.parse(url);
-    console.log(params.surveyid);
-    // let url = this.props.location.search;
-    // console.log("propsddd" + this.props);
-    // console.log("surveyid" + this.props.location.state.surveyid);
-    this.setState({
-      surveyid: params.surveyid
-    });
+    console.log("dfsklfjslfslkd" + JSON.stringify(this.props));
 
+    this.setState({
+      surveyid: params.surveyid,
+      userid: this.props.location.state.userid,
+      version: this.props.location.state.version
+    });
+    console.log(this.state.userid);
     const options = {
       async: true,
       mode: "cors",
@@ -128,7 +132,13 @@ class Display extends Component {
     try {
       // console.log("surveyid" + this.props.location.state.surveyid);
       const response = await fetch(
-        config.BACKEND_GSURVEY + "/api/v2/admin/surveys/" + params.surveyid,
+        config.BACKEND_GSURVEY +
+          "/api/v2/users/surveys?sid=" +
+          params.surveyid +
+          "&v=" +
+          this.props.location.state.version +
+          "&uid=" +
+          this.props.location.state.userid,
         options
       );
       if (!response.ok) {
@@ -180,7 +190,7 @@ class Display extends Component {
   render() {
     var divStyle = {
       background: "#eee",
-      padding: "100px"
+      padding: "30px"
     };
 
     var storageName = "SurveyJS_LoadState";
@@ -204,8 +214,7 @@ class Display extends Component {
                 <div className="App">
                   <Card>
                     <CardBody>
-                      <CardTitle>แบบสำรวจ {this.state.name}</CardTitle>
-
+                      <CardTitle> แบบสำรวจ {this.state.name} </CardTitle>
                       <Survey.Survey
                         model={survey}
                         onComplete={this.onComplete}
@@ -217,10 +226,11 @@ class Display extends Component {
               </Col>
             </Row>
           </Fragment>
+          <Footer />
         </div>
       );
     }
-    return <div>Loading...</div>;
+    return <div> Loading... </div>;
   }
 }
 
