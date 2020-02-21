@@ -9,6 +9,7 @@ const survey = require('./components/surveys/index.js');
 const gsurveyAdmin = require('./components/v2/admin/index.js');
 const gsurveyUser = require('./components/v2/users/index.js');
 const auth = require('./components/auth/index.js');
+const auth2 = require('./components/v2/auth/index.js');
 const report = require('./components/admin/index.js');
 const conf = require('./config/production.conf');
 const app = express();
@@ -39,7 +40,7 @@ app.use('/v1/survey', survey);
 app.use('/v1/reports', report);
 app.use('/v1/stats', report);
 
-app.use('/api/v2/auth', auth);
+app.use('/api/v2/auth', auth2);
 app.use('/api/v2/admin', gsurveyAdmin);
 app.use('/api/v2/users', gsurveyUser);
 

@@ -31,7 +31,9 @@ const redis = require("redis");
 const logger = winston.logger;
 const router = express.Router();
 const mongo = require('../../helpers/mongodb');
+const users = require('./user');
 const uuidv4 = require('uuid/v4');
+const auth = require('../../helpers/auth');
 
 
 
@@ -61,7 +63,32 @@ router.use(function (req, res, next) {
     // to the API (e.g. in case you use sessions)
     res.setHeader('Access-Control-Allow-Credentials', true);
 
-    next();
+    var userName, tokenId;
+
+    if ( req.signedCookies['username'] !== undefined && req.signedCookies['token'] !== undefined ) {
+        userName = req.signedCookies['username'];
+        tokenId = req.signedCookies['token'];
+        logger.info("Found token in cookies");
+    } else if ( req.headers['username'] !== undefined && req.headers['token'] !== undefined ) {
+        logger.info("Not found token in cookies. Using the token on header, instead");
+        userName = req.headers['username'];
+        tokenId = req.headers['token'];
+    } else {
+        logger.error("Not found token");
+        http.error(res, 401, 401000, "authorization required");
+        return;
+    }
+
+    logger.debug('read cookies user name: ' + userName + ' token: ' + tokenId);
+    
+    auth.verifyToken( userName, tokenId, function (err) {
+        if( err ){
+            http.error(res, 401, 401000, "Invalid token");
+        }else{
+            req.USERNAME = userName;
+            next();
+        }
+    })
 });
 
 /** Survey Management Services */
@@ -180,11 +207,11 @@ function getSurveyById(req, res) {
         userid = req.query.uid + "";
     }
 
-    if (req.query.v === undefined ) {
+    if (req.query.v !== undefined ) {
        version = req.query.v + "";
     }
 
-    if (req.params.surveyId == 'undefined') {
+    if (req.params.surveyId === undefined) {
         http.error(res, 400, 40000, "Not found owerid");
         return;
     }
@@ -359,4 +386,8 @@ router.delete('/surveys', deleteSurvey);
 router.get('/results/surveyid/:surveyId', getAllResultsBySurveyId); /* requires Question ID */
 router.get('/results/:resultId', getResultById)
 router.post('/results', saveResult);
+
+// /v2/users
+router.get('/users/profile', users.getProfile);
+
 module.exports = router;
