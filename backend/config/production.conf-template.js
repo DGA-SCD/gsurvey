@@ -8,7 +8,7 @@ module.exports = {
     MYSQL_port: 3306,
     MYSQL_user: "root",
     MYSQL_password: "",
-    MYSQL_database: "seminar_stag",
+    MYSQL_database: "gsurvey",
 
     REDIS_host: "127.0.0.1",
     REDIS_port: 6379,
