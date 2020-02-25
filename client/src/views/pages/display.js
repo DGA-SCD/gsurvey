@@ -68,7 +68,7 @@ const toastrConfirmOptions = {
       method: "delete",
       crossDomain: true,
       url:
-        config.BACKEND_URL +
+        config.BACKEND_GSURVEY +
         "/v1/users/roommates/" +
         localStorage.getItem("session_userid")
     }).done(res => {
@@ -92,7 +92,7 @@ class Display extends Component {
       allTimeInfo: "",
       surveyid: "",
       name: "",
-      userid: "",
+      uid: "",
       version: ""
     };
 
@@ -106,14 +106,13 @@ class Display extends Component {
   async componentDidMount() {
     let url = this.props.location.search;
     let params = queryString.parse(url);
-    console.log("dfsklfjslfslkd" + JSON.stringify(this.props));
 
-    this.setState({
-      surveyid: params.surveyid,
-      userid: this.props.location.state.userid,
-      version: this.props.location.state.version
-    });
-    console.log(this.state.userid);
+    var uid = this.props.location.state.userid;
+
+    console.log("uid" + uid);
+    console.log(" params.surveyid" + params.surveyid);
+    localStorage.setItem("uid", this.props.location.state.userid);
+    localStorage.setItem("surveyid", params.surveyid);
     const options = {
       async: true,
       mode: "cors",
@@ -128,17 +127,18 @@ class Display extends Component {
         Accept: "application/json"
       }
     };
-
+    this.setState({
+      surveyid: params.surveyid,
+      uid: uid,
+      version: "1"
+    });
     try {
-      // console.log("surveyid" + this.props.location.state.surveyid);
       const response = await fetch(
         config.BACKEND_GSURVEY +
           "/api/v2/users/surveys?sid=" +
           params.surveyid +
-          "&v=" +
-          this.props.location.state.version +
-          "&uid=" +
-          this.props.location.state.userid,
+          "&v=1&uid=" +
+          uid,
         options
       );
       if (!response.ok) {
@@ -148,29 +148,32 @@ class Display extends Component {
       var question = JSON.stringify(json.data);
       console.log(json);
       this.setState({ question: question, name: json.data.name });
-      console.log("name" + this.state.name);
     } catch (error) {
       console.log(error);
     }
   }
 
   onComplete(result) {
+    localStorage.getItem("uid");
+    console.log(localStorage.getItem("uid"));
+    console.log(localStorage.getItem("surveyid"));
+
     const cookies = new Cookies();
     cookies.remove("cookiesurvey");
-    console.log("Complete! ================" + JSON.stringify(result));
+    console.log("Complete! ================" + JSON.stringify(result.data));
 
     var data = {
-      name: "seminar-01",
-      employeeId: localStorage.getItem("session_userid"),
+      surveyid: localStorage.getItem("surveyid"),
+      userid: localStorage.getItem("uid"),
       version: "1",
-      surveyresult: result.data
+      result: result.data
     };
     console.log("------------------");
     console.log(data);
 
     $.ajax({
       type: "POST",
-      url: config.BACKEND_URL + "/v1/survey/answers",
+      url: config.BACKEND_GSURVEY + "/api/v2/users/results",
       contentType: "application/json",
       data: JSON.stringify(data), //no further stringification
       headers: {
@@ -181,8 +184,7 @@ class Display extends Component {
       },
       success: function(response) {
         console.log(response);
-
-        document.location = "surveyresult";
+        localStorage.clear();
       }
     });
   }

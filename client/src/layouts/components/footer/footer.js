@@ -6,11 +6,11 @@ import templateConfig from "../../../templateConfig";
 import { Camera, PhoneCall } from "react-feather";
 
 const Footer = props => (
-  <div class="row">
-    <div class="col-md-12">
+  <div className="row">
+    <div className="col-md-12">
       <footer>
-        <div class="row">
-          <div class="col-md-1 col-xs-2">
+        <div className="row">
+          <div className="col-md-1 col-xs-2">
             <p>
               <img
                 src={dgalogo}
@@ -23,13 +23,13 @@ const Footer = props => (
               />
             </p>
           </div>
-          <div class="col-md-6 col-xs-7" style={{ paddingLeft: "2.0rem" }}>
+          <div className="col-md-6 col-xs-7" style={{ paddingLeft: "2.0rem" }}>
             <p>สำนักงานพัฒนารัฐบาลดิจิทัล (องค์การมหาชน) (สพร.)</p>
             <p>
               Digital Government Development Agency (Public Organization) (DGA)
             </p>
           </div>
-          <div class="col-md-5  col-xs-3" style={{ textAlign: "right" }}>
+          <div className="col-md-5  col-xs-3" style={{ textAlign: "right" }}>
             <p>
               <b>DGA CONTACT CENTER</b>
             </p>
