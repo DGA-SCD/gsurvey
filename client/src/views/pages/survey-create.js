@@ -161,8 +161,7 @@ class Formcreate extends Component {
           this.props.location.state.surveyid +
           "?uid=" +
           this.props.location.state.userid +
-          "&v=" +
-          this.props.location.state.version,
+          "&v=1",
         {
           method: "get",
           crossDomain: true,
@@ -262,16 +261,13 @@ class Formcreate extends Component {
     var data = this.surveyCreator.text;
     // var va = parseInt(this.state.version);
     //  let countversion = this.increment();
-    console.log("funion" + this.increment());
-    console.log("save" + this.state.version);
+
     // var data1 = '{\n"name":"seminar-01",' + data.substring(1);
 
     var jsondata = {
-      userid: "1",
-      name: this.state.name,
-      createdated: new Date(),
       surveyid: this.state.surveyid,
-      version: this.state.version.toString()
+      version: "1",
+      userid: "1"
     };
     var t = JSON.stringify(jsondata);
     t = t.substring(0, t.length - 1);

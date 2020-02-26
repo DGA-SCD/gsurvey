@@ -242,7 +242,7 @@ class Main extends Component {
                       userid: oldData.userid,
                       surveyid: oldData.surveyid,
 
-                      version: oldData.version
+                      version: "1"
                     };
 
                     jsondel = JSON.stringify(jsondel);
@@ -290,6 +290,9 @@ class Main extends Component {
             pageSize: 10,
             exportButton: true,
             exportAllData: true
+          }}
+          localization={{
+            body: { editRow: { deleteText: "คุณต้องการลบแบบสอบถามนี้ ?" } }
           }}
         />
       </div>
