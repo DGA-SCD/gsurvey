@@ -163,15 +163,17 @@ class Main extends Component {
             },
             {
               icon: "description",
-              tooltip: "Result",
+              tooltip: "View Result",
               onClick: (event, rowData) => {
-                console.log({ rowData });
+                // this.handleClickOpen(rowData);
                 this.props.history.push({
-                  pathname: "display",
-
+                  pathname: "result",
+                  search: "?surveyid=" + rowData.surveyid,
                   state: {
                     surveyid: rowData.surveyid,
-                    name: rowData.name
+                    name: rowData.name,
+                    version: rowData.version,
+                    userid: rowData.userid
                   }
                 });
               }
