@@ -155,6 +155,7 @@ class Formcreate extends Component {
       console.log("surveyid" + this.props.location.state.surveyid);
       console.log("userid" + this.props.location.state.userid);
       console.log("version" + this.props.location.state.version);
+      console.log("name" + this.props.location.state.name);
       const response = await fetch(
         config.BACKEND_GSURVEY +
           "/api/v2/admin/surveys/" +
@@ -179,8 +180,8 @@ class Formcreate extends Component {
       }
       const json = await response.json();
       var question = JSON.stringify(json.data);
-      //       console.log(question)
-      console.log("jsonnaja" + question);
+      console.log(question);
+
       this.surveyCreator.text = question;
       this.setState({ json: question });
     } catch (error) {
@@ -189,7 +190,7 @@ class Formcreate extends Component {
   }
 
   render() {
-    console.log("dd.." + this.state.surveyid);
+    console.log("ddทททททท.." + this.state.surveyid);
     console.log("display.." + this.state.version);
 
     return (
@@ -259,21 +260,20 @@ class Formcreate extends Component {
   saveMySurvey = () => {
     console.log("======savemysurvey=======");
     var data = this.surveyCreator.text;
-    // var va = parseInt(this.state.version);
-    //  let countversion = this.increment();
-
-    // var data1 = '{\n"name":"seminar-01",' + data.substring(1);
 
     var jsondata = {
       surveyid: this.state.surveyid,
+      name: this.state.name,
       version: "1",
       userid: "1"
     };
     var t = JSON.stringify(jsondata);
     t = t.substring(0, t.length - 1);
 
-    var jsondata = t + "," + data.substring(1);
-    console.log(jsondata);
+    var senddata = t + "," + data.substring(1);
+
+    console.log("datanaka___________" + senddata);
+
     try {
       fetch(config.BACKEND_GSURVEY + "/api/v2/admin/surveys", {
         method: "post",
@@ -285,7 +285,7 @@ class Formcreate extends Component {
           token: localStorage.getItem("token_local")
           // "token" : "3gUMtyWlKatfMk5aLi5PpgQxfTJcA91YlN6Nt8XyiR1CwLs6wGP69FSQs8EKHCsg",
         },
-        body: jsondata
+        body: senddata
       }).then(function(response) {
         console.log("res" + response);
         if (!response.ok) {
