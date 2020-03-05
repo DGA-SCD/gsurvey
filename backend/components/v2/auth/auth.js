@@ -199,6 +199,7 @@ function login(req, res) {
                 res.cookie('token', token, options);
 
                 http.success(res, {
+                    userid: userDetails.user_id,
                     user: userDetails.username,
                     name: userDetails.firstname,
                     surname: userDetails.lastname,
