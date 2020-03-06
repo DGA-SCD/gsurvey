@@ -13,6 +13,11 @@ import "font-awesome/css/font-awesome.min.css";
 import "./index.scss";
 import Spinner from "./components/spinner/spinner";
 
+/* Setup google analytic */
+import ReactGA from 'react-ga';
+ReactGA.initialize('UA-159912324-1');
+ReactGA.pageview(window.location.pathname + window.location.search);
+
 const LazyApp = lazy(() => import("./app/app"));
 
 ReactDOM.render(
