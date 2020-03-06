@@ -107,11 +107,11 @@ class Display extends Component {
     let url = this.props.location.search;
     let params = queryString.parse(url);
 
-    var uid = this.props.location.state.userid;
-
-    console.log("uid" + uid);
+    // var uid = this.props.location.state.userid;
+    console.log(params);
+    //   console.log("uid" + uid);
     console.log(" params.surveyid" + params.surveyid);
-    localStorage.setItem("uid", this.props.location.state.userid);
+    localStorage.setItem("uid", params.uid);
     localStorage.setItem("surveyid", params.surveyid);
     const options = {
       async: true,
@@ -129,7 +129,7 @@ class Display extends Component {
     };
     this.setState({
       surveyid: params.surveyid,
-      uid: uid,
+      uid: params.uid,
       version: "1"
     });
     try {
@@ -138,7 +138,7 @@ class Display extends Component {
           "/api/v2/users/surveys?sid=" +
           params.surveyid +
           "&v=1&uid=" +
-          uid,
+          params.uid,
         options
       );
       if (!response.ok) {
@@ -154,10 +154,6 @@ class Display extends Component {
   }
 
   onComplete(result) {
-    localStorage.getItem("uid");
-    console.log(localStorage.getItem("uid"));
-    console.log(localStorage.getItem("surveyid"));
-
     const cookies = new Cookies();
     cookies.remove("cookiesurvey");
     console.log("Complete! ================" + JSON.stringify(result.data));
