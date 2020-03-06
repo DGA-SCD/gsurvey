@@ -1,6 +1,7 @@
 import React, { Component, useState, forwardRef } from "react";
 import * as config from "../../services/AppConfig";
 import { BrowserRouter, Route, Link } from "react-router-dom";
+import Settimeout from "../../services/Settimeout";
 //import async from "react-async";
 import axios from "axios";
 import Formcreate from "survey-creator";
@@ -153,7 +154,8 @@ class Main extends Component {
                 console.log("pageview" + rowData);
                 this.props.history.push({
                   pathname: "display",
-                  search: "?surveyid=" + rowData.surveyid,
+                  search:
+                    "?surveyid=" + rowData.surveyid + "&uid=" + rowData.userid,
                   state: {
                     version: rowData.version,
                     userid: rowData.userid

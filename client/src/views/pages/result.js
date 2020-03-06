@@ -34,7 +34,6 @@ import { toastr } from "react-redux-toastr";
 //import AuthService from '../../services/AuthService';
 //import withRequest from "../../services/withRequest";
 import { array } from "prop-types";
-import DataTable, { createTheme } from "react-data-table-component";
 const toastrOptions = {
   timeOut: 2000, // by setting to 0 it will prevent the auto close
   position: "top-right",
