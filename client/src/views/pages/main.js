@@ -1,7 +1,7 @@
 import React, { Component, useState, forwardRef } from "react";
 import * as config from "../../services/AppConfig";
 import { BrowserRouter, Route, Link } from "react-router-dom";
-import Settimeout from "../../services/Settimeout";
+//import Settimeout from "../../services/Settimeout";
 //import async from "react-async";
 import axios from "axios";
 import Formcreate from "survey-creator";
