@@ -1,6 +1,7 @@
 import React, { Component, useState, forwardRef } from "react";
 import * as config from "../../services/AppConfig";
 import { BrowserRouter, Route, Link } from "react-router-dom";
+
 //import Settimeout from "../../services/Settimeout";
 //import async from "react-async";
 import axios from "axios";
@@ -83,9 +84,18 @@ class Main extends Component {
 
   async callallSurvey() {
     console.log("button clicked!");
+
     try {
+      var user = JSON.parse(localStorage.getItem("userData"));
+
+      const requestOptions = {
+        method: "GET",
+        credentials: "include"
+      };
+
       const response = await fetch(
-        config.BACKEND_GSURVEY + "/api/v2/admin/surveys/owner/1"
+        config.BACKEND_GSURVEY + "/api/v2/admin/surveys/owner/" + user.userid,
+        requestOptions
       );
 
       const json = await response.json();
@@ -97,7 +107,7 @@ class Main extends Component {
         data: json.data,
         columns: [
           { title: "Title", field: "name" },
-          { title: "Title", field: "version" }
+          { title: "version", field: "version" }
         ]
       });
     } catch (error) {

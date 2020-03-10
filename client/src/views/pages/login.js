@@ -33,47 +33,111 @@ class Login extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      userData: [],
       username: "",
 
       password: "",
 
-      redirectToReferrer: false,
       useridError: false,
       passError: false,
-      errors: {
-        username: "",
-
-        password: ""
-      }
+      fields: {},
+      errors: {}
     };
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleChange = this.handleChange.bind(this);
     this.handlePassChange = this.handlePassChange.bind(this);
     this.handleUseridChange = this.handleUseridChange.bind(this);
   }
   handlePassChange = event => {
     this.setState({ password: event.target.value });
+    console.log(this.state.password);
   };
   handleUseridChange = event => {
+    console.log(this.state.username);
     this.setState({ username: event.target.value });
   };
+
+  handleChange(e) {
+    let fields = this.state.fields;
+    fields[e.target.name] = e.target.value;
+    this.setState({
+      fields
+    });
+  }
+
   handleSubmit(e) {
     e.preventDefault();
+    console.log("dfs" + JSON.stringify(this.state.fields));
+    if (this.validateForm()) {
+      console.log(this.state.errors);
+      // let fields = {};
+      // fields["username"] = "";
 
-    userService.login(this.state.username, this.state.password).then(
-      user => {
-        //console.log(user);
-        this.setState({
-          passError: false
-        });
-        // this.props.history.push("main");
-        // const { from } = this.props.location.state || {
-        //   from: { pathname: "main" }
-        // };
-        // this.props.history.push(from);
-      },
-      error => this.setState({ error, loading: false })
-    );
+      // fields["password"] = "";
+      // this.setState({ fields: fields });
+      console.log("dfs" + this.state.fields);
+      userService
+        .login(this.state.fields.username, this.state.fields.password)
+        .then(
+          user => {
+            console.log(user);
+            this.setState({
+              passError: true
+            });
+            console.log(this.state);
+            // this.props.history.push("main");
+            // const { from } = this.props.location.state || {
+            //   from: { pathname: "main" }
+            // };
+            // this.props.history.push(from);
+          },
+          error => this.setState({ error, loading: false })
+        );
+    }
+  }
+
+  validateForm() {
+    let fields = this.state.fields;
+    let errors = {};
+    let formIsValid = true;
+    console.log("validateForm");
+    console.log(fields["username"]);
+    if (fields["username"] === "") {
+      formIsValid = false;
+      console.log(fields["username"] + "por");
+      errors["username"] = "*Please enter your email-ID.";
+    }
+
+    if (typeof fields["username"] !== "undefined") {
+      //regular expression for email validation
+      var pattern = new RegExp(
+        /^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i
+      );
+      if (!pattern.test(fields["username"])) {
+        formIsValid = false;
+        errors["username"] = "*Please enter valid email-ID.";
+      }
+    }
+
+    if (!fields["password"]) {
+      formIsValid = false;
+      errors["password"] = "*Please enter your password.";
+    }
+
+    // if (typeof fields["password"] !== "undefined") {
+    //   if (
+    //     !fields["password"].match(
+    //       /^.*(?=.{8,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%&]).*$/
+    //     )
+    //   ) {
+    //     formIsValid = false;
+    //     errors["password"] = "*Please enter secure and strong password.";
+    //   }
+    // }
+
+    this.setState({
+      errors: errors
+    });
+    return formIsValid;
   }
 
   render() {
@@ -81,6 +145,11 @@ class Login extends Component {
       fontSize: "13px",
       color: "white",
       textAlign: "left"
+    };
+    const errorstyle = {
+      fontSize: "15px",
+      textAlign: "left",
+      color: "red"
     };
 
     // console.log(this.state.redirectToReferrer);
@@ -121,11 +190,12 @@ class Login extends Component {
                       <input
                         type="textbox"
                         name="username"
+                        value={this.state.fields.username}
                         className="form-control"
                         placeholder="Your email"
-                        onChange={this.handleUseridChange}
-                        required
+                        onChange={this.handleChange}
                       />
+                      <div style={errorstyle}>{this.state.errors.username}</div>
                     </Col>
                   </FormGroup>
                   <FormGroup>
@@ -135,12 +205,12 @@ class Login extends Component {
                         className="form-control"
                         name="password"
                         id="password"
-                        placeholder="02Aug19xx"
-                        onChange={this.handlePassChange}
+                        value={this.state.fields.password}
+                        placeholder="Your Password"
+                        onChange={this.handleChange}
                         // onBlur={this.handleChange}
-
-                        required
                       />
+                      <div style={errorstyle}>{this.state.errors.password}</div>
                     </Col>
                   </FormGroup>
                   <FormGroup> </FormGroup>
