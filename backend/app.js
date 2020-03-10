@@ -28,9 +28,11 @@ app.use(express.json())
  * Support OPTIONS
  */
 app.options("/*", function(req, res, next){
-    res.header('Access-Control-Allow-Origin', '*');
+    // Website you wish to allow to connect
+    res.setHeader('Access-Control-Allow-Origin', conf.access_control_allow.origin);
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With, userid, token');
+    res.setHeader('Access-Control-Allow-Credentials', conf.access_control_allow.credentials);
     res.send(200);
   });
 
