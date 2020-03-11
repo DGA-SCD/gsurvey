@@ -45,7 +45,7 @@ router.use(cookieParser(appConf.cookies.secreteKey, {
 
 router.use(function (req, res, next) {
     // Website you wish to allow to connect
-    res.setHeader('Access-Control-Allow-Origin', req.headers.Origin || appConf.access_control_allow.origin);
+    res.setHeader('Access-Control-Allow-Origin', req.headers.origin || appConf.access_control_allow.origin);
 
     // Request methods you wish to allow
     res.setHeader('Access-Control-Allow-Methods', appConf.access_control_allow.methods);
