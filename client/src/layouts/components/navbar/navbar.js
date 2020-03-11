@@ -1,8 +1,11 @@
 // import external modules
 import React, { Fragment, Component } from "react";
-import { Link, Redirect } from "react-router-dom";
+import { Link, Redirect, Route, withRouter } from "react-router-dom";
+//import { Route , withRouter} from 'react-router-dom';
 import AuthService from "../../../services/AuthService";
-// import { hashHistory } from 'react-router;'
+//import { IdleTimeOutModal } from "./IdleModal";
+import IdleTimer from "react-idle-timer";
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import {
   Form,
   Media,
@@ -42,98 +45,171 @@ class ThemeNavbar extends Component {
   };
   constructor(props) {
     super(props);
-    this.logout = this.logout.bind(this);
-    this.toggle = this.toggle.bind(this);
-    this.state = {
-      isOpen: false,
-      // redirectToReferrer: false,
-      datauser: ""
-    };
-    this.Auth = new AuthService();
-  }
-  // componentDidMount(){
-  //    console.log('navbar');
-  //    console.log(this.Auth.loggedIn());
 
-  // }
+    this.state = {
+      timeout: 1000 * 60 * 15,
+      isOpen: false,
+
+      showModal: false,
+      userLoggedIn: false,
+      isTimedOut: false
+
+      // redirectToReferrer: false,
+      // datauser: ""
+    };
+
+    this.idleTimer = null;
+    this.onAction = this._onAction.bind(this);
+    this.onActive = this._onActive.bind(this);
+    this.onIdle = this._onIdle.bind(this);
+    this.handleClose = this.handleClose.bind(this);
+    this.handleLogout = this.handleLogout.bind(this);
+    // this.Auth = new AuthService();
+  }
+
   toggle() {
     this.setState({
       isOpen: !this.state.isOpen
     });
   }
-  logout() {
-    localStorage.clear();
-    this.setState({ redirectToReferrer: false });
+
+  _onAction(e) {
+    console.log("user did something", e);
+    this.setState({ isTimedOut: false });
   }
 
+  _onActive(e) {
+    console.log("user is active", e);
+    this.setState({ isTimedOut: false });
+    console.log("time remaining", this.idleTimer.getRemainingTime());
+  }
+
+  _onIdle(e) {
+    console.log("user is idle", e);
+    console.log("last active", this.idleTimer.getLastActiveTime());
+    const isTimedOut = this.state.isTimedOut;
+    console.log(this.state.isTimedOut);
+    if (isTimedOut) {
+      console.log("isTimedOut");
+      localStorage.removeItem("userData");
+    } else {
+      console.log("por");
+      this.setState({ showModal: true });
+      this.idleTimer.reset();
+      this.setState({ isTimedOut: true });
+    }
+  }
+  handleClose() {
+    this.setState({ showModal: false });
+  }
+
+  handleLogout() {
+    this.setState({ showModal: false });
+    localStorage.removeItem("userData");
+  }
+
+  toggle = () => {
+    this.setState({
+      modal: !this.state.modal
+    });
+  };
+
   render() {
-    if (!this.Auth.loggedIn()) {
+    if (!localStorage.getItem("userData")) {
       return <Redirect to={"login"} />;
     }
+    const { match } = this.props;
 
     return (
-      <Navbar className="navbar navbar-expand-lg navbar-light bg-faded">
-        <div className="container-fluid px-0">
-          <div className="navbar-header">
-            <Menu
-              size={14}
-              className="navbar-toggle d-lg-none float-left"
-              onClick={this.handleClick.bind(this)}
-              data-toggle="collapse"
-            />
+      <div>
+        <IdleTimer
+          ref={ref => {
+            this.idleTimer = ref;
+          }}
+          element={document}
+          onActive={this.onActive}
+          onIdle={this.onIdle}
+          onAction={this.onAction}
+          debounce={250}
+          timeout={this.state.timeout}
+        />
+        <Modal isOpen={this.state.showModal}>
+          <ModalHeader toggle={this.toggle}>session ของท่านหมดอายุ</ModalHeader>
+          <ModalBody>
+            session ของท่านหมดอายุ ท่านยังต้องการอยู่ในระบบต่อหรือไม่
+          </ModalBody>
+          <ModalFooter>
+            <Button color="secondary" onClick={this.handleLogout}>
+              ออกจากระบบ
+            </Button>
+            <Button color="success" onClick={this.handleClose}>
+              อยู่ในระบบต่อ
+            </Button>
+          </ModalFooter>
+        </Modal>
+        <Navbar className="navbar navbar-expand-lg navbar-light bg-faded">
+          <div className="container-fluid px-0">
+            <div className="navbar-header">
+              <Menu
+                size={14}
+                className="navbar-toggle d-lg-none float-left"
+                onClick={this.handleClick.bind(this)}
+                data-toggle="collapse"
+              />
 
-            {/* <Moon size={20} color="#333" className="m-2 cursor-pointer"/> */}
-            <MoreVertical
-              className="mt-1 navbar-toggler black no-border float-right"
-              size={50}
-              onClick={this.toggle}
-            />
-          </div>
+              {/* <Moon size={20} color="#333" className="m-2 cursor-pointer"/> */}
+              <MoreVertical
+                className="mt-1 navbar-toggler black no-border float-right"
+                size={50}
+                onClick={this.toggle}
+              />
+            </div>
 
-          <div className="navbar-container">
-            <Collapse isOpen={this.state.isOpen} navbar>
-              <Nav className="ml-auto float-right" navbar>
-                <UncontrolledDropdown nav inNavbar className="pr-1">
-                  <DropdownToggle nav>
-                    <img
-                      src={userImagedga}
-                      alt="logged-in-user"
-                      className="rounded-circle width-50"
-                    />
-                  </DropdownToggle>
-                  <DropdownMenu right>
-                    <DropdownItem>
-                      <span className="font-small-3">
-                        {localStorage.getItem("userlogin")}
-                        <span className="text-muted">(Guest)</span>
-                      </span>
-                    </DropdownItem>
-                    <DropdownItem divider />
-
-                    <Link to="/pages/user-profile" className="p-0">
+            <div className="navbar-container">
+              <Collapse isOpen={this.state.isOpen} navbar>
+                <Nav className="ml-auto float-right" navbar>
+                  <UncontrolledDropdown nav inNavbar className="pr-1">
+                    <DropdownToggle nav>
+                      <img
+                        src={userImagedga}
+                        alt="logged-in-user"
+                        className="rounded-circle width-50"
+                      />
+                    </DropdownToggle>
+                    <DropdownMenu right>
                       <DropdownItem>
-                        <User size={16} className="mr-1" /> My Profile
+                        <span className="font-small-3">
+                          {localStorage.getItem("userlogin")}
+                          <span className="text-muted">(Guest)</span>
+                        </span>
                       </DropdownItem>
-                    </Link>
+                      <DropdownItem divider />
 
-                    <DropdownItem divider />
+                      <Link to="/pages/user-profile" className="p-0">
+                        <DropdownItem>
+                          <User size={16} className="mr-1" /> My Profile
+                        </DropdownItem>
+                      </Link>
 
-                    <Link
-                      to="/pages/login"
-                      onClick={this.logout}
-                      className="p-0"
-                    >
-                      <DropdownItem>
-                        <LogOut size={16} className="mr-1" /> Logout
-                      </DropdownItem>
-                    </Link>
-                  </DropdownMenu>
-                </UncontrolledDropdown>
-              </Nav>
-            </Collapse>
+                      <DropdownItem divider />
+
+                      <Link
+                        to="/pages/login"
+                        onClick={this.handleLogout}
+                        className="p-0"
+                      >
+                        <DropdownItem>
+                          <LogOut size={16} className="mr-1" /> Logout
+                        </DropdownItem>
+                      </Link>
+                    </DropdownMenu>
+                  </UncontrolledDropdown>
+                </Nav>
+              </Collapse>
+            </div>
           </div>
-        </div>
-      </Navbar>
+        </Navbar>
+      </div>
     );
   }
 }
