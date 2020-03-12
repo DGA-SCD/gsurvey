@@ -68,13 +68,6 @@ class Login extends Component {
     e.preventDefault();
     console.log("dfs" + JSON.stringify(this.state.fields));
     if (this.validateForm()) {
-      console.log(this.state.errors);
-      // let fields = {};
-      // fields["username"] = "";
-
-      // fields["password"] = "";
-      // this.setState({ fields: fields });
-      console.log("dfs" + this.state.fields);
       userService
         .login(this.state.fields.username, this.state.fields.password)
         .then(
@@ -90,7 +83,14 @@ class Login extends Component {
             // };
             // this.props.history.push(from);
           },
-          error => this.setState({ error, loading: false })
+          error => {
+            this.setState({ error, loading: false });
+            console.log("error");
+            toastr.error(
+              "ไม่สามารถเข้าระบบได้ ติดต่อผู้ดูแลระบบ",
+              toastrOptions
+            );
+          }
         );
     }
   }
@@ -222,7 +222,7 @@ class Login extends Component {
                         block
                         className="btn-pink btn-raised"
                       >
-                        เข้ าสู่ ระบบ
+                        เข้าสู่ระบบ
                       </Button>
                     </Col>
                   </FormGroup>

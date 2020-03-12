@@ -1,5 +1,6 @@
 import * as config from "./AppConfig";
 import { toastr } from "react-redux-toastr";
+
 const toastrOptions = {
   timeOut: 2000, // by setting to 0 it will prevent the auto close
   position: "top-right",
@@ -31,9 +32,9 @@ const login = function(username, password) {
   });
 };
 
-function logout() {
-  // remove user from local storage to log user out
-  localStorage.removeItem("userData");
+function clearStrogae() {
+  localStorage.clear();
+  window.location.replace("login");
 }
 
 function handleResponse(response) {
@@ -42,8 +43,8 @@ function handleResponse(response) {
     if (!response.ok) {
       if (response.status === 401 || response.status === 404) {
         // auto logout if 401 response returned from api
-        toastr.error("เช็ค username หรือ password", toastrOptions);
-        logout();
+        // toastr.error("เช็ค username หรือ password", toastrOptions);
+        clearStrogae();
         //location.reload(true);
       }
 
@@ -56,5 +57,6 @@ function handleResponse(response) {
 }
 
 export const userService = {
-  login
+  login,
+  clearStrogae
 };
