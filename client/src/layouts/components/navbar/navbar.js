@@ -2,7 +2,8 @@
 import React, { Fragment, Component } from "react";
 import { Link, Redirect, Route, withRouter } from "react-router-dom";
 //import { Route , withRouter} from 'react-router-dom';
-import AuthService from "../../../services/AuthService";
+//import AuthService from "../../../services/AuthService";
+
 //import { IdleTimeOutModal } from "./IdleModal";
 import IdleTimer from "react-idle-timer";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
@@ -47,7 +48,7 @@ class ThemeNavbar extends Component {
     super(props);
 
     this.state = {
-      timeout: 1000 * 60 * 15,
+      timeout: 1000 * 60 * 60,
       isOpen: false,
 
       showModal: false,

@@ -62,28 +62,11 @@ const toastrOptions = {
   progressBar: false
 };
 
-const toastrConfirmOptions = {
-  onOk: () =>
-    $.ajax({
-      method: "delete",
-      crossDomain: true,
-      url:
-        config.BACKEND_GSURVEY +
-        "/v1/users/roommates/" +
-        localStorage.getItem("session_userid")
-    }).done(res => {
-      console.log(res);
-    }),
-
-  onCancel: () => console.log("CANCEL: clicked")
-};
-
 class Display extends Component {
   constructor(props) {
     super(props);
     //console.log('load');
     this.state = {
-      session_userid: "",
       json: "",
       answers: "",
       myfriend: "none",
@@ -119,10 +102,8 @@ class Display extends Component {
       crossDomain: true,
       cache: "no-cache",
       method: "GET",
+      credentials: "include",
       headers: {
-        userid: localStorage.getItem("session_userid"),
-        token: localStorage.getItem("token_local"),
-        // "token" : "3gUMtyWlKatfMk5aLi5PpgQxfTJcA91YlN6Nt8XyiR1CwLs6wGP69FSQs8EKHCsg",
         "Content-Type": "application/json",
         Accept: "application/json"
       }
@@ -142,7 +123,7 @@ class Display extends Component {
         options
       );
       if (!response.ok) {
-        throw Error(response.statusText);
+        toastr.error("ไม่สารมารถเปิดแบบสำรวจได้", toastrOptions);
       }
       const json = await response.json();
       var question = JSON.stringify(json.data);
@@ -173,13 +154,12 @@ class Display extends Component {
       contentType: "application/json",
       data: JSON.stringify(data), //no further stringification
       headers: {
-        userId: localStorage.getItem("session_userid"),
-        token: localStorage.getItem("token_local"),
         "Content-Type": "application/json",
         Accept: "application/json"
       },
       success: function(response) {
         console.log(response);
+        toastr.success("บันทึกข้อมูลเรียบร้อยแล้ว", toastrOptions);
         localStorage.clear();
       }
     });

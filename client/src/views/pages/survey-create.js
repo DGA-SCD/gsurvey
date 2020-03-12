@@ -1,21 +1,8 @@
 import React, { Component } from "react";
 import * as config from "../../services/AppConfig";
+import { userService } from "../../services/UserAuth";
 import { Link, Redirect } from "react-router-dom";
-import {
-  Card,
-  CardBody,
-  CardTitle,
-  Row,
-  Col,
-  Button,
-  Alert,
-  Form,
-  CustomInput,
-  FormGroup,
-  Label,
-  Table,
-  Input
-} from "reactstrap";
+import { Row, Col, Button, FormGroup, Table, Input } from "reactstrap";
 import * as SurveyJSCreator from "survey-creator";
 import * as SurveyKo from "survey-knockout";
 import "survey-creator/survey-creator.css";
@@ -95,16 +82,14 @@ class Formcreate extends Component {
 
         crossDomain: true,
         headers: {
-          "Content-Type": "application/json",
-          userid: localStorage.getItem("session_userid"),
-          token: localStorage.getItem("token_local")
-          // "token" : "3gUMtyWlKatfMk5aLi5PpgQxfTJcA91YlN6Nt8XyiR1CwLs6wGP69FSQs8EKHCsg",
+          "Content-Type": "application/json"
         },
+        credentials: "include",
         body: JSON.stringify(renamedata)
       })
         .then(function(response) {
           if (!response.ok) {
-            throw Error(response.statusText);
+            toastr.error("ไม่สามารถแก้ไขข้อมูลได้", toastrOptions);
             alert("fail");
           } else {
             toastr.success("แก้ไขข้อมูลเรียบร้อยแล้ว", toastrOptions);
@@ -168,15 +153,16 @@ class Formcreate extends Component {
           crossDomain: true,
           headers: {
             Accept: "application/json",
-            "Content-Type": "application/json",
-            userid: localStorage.getItem("session_userid"),
-            token: localStorage.getItem("token_local")
-            // "token" : "3gUMtyWlKatfMk5aLi5PpgQxfTJcA91YlN6Nt8XyiR1CwLs6wGP69FSQs8EKHCsg",
-          }
+            "Content-Type": "application/json"
+          },
+          credentials: "include"
         }
       );
+      console.log(response);
       if (!response.ok) {
-        throw Error(response.statusText);
+        console.log("podfdsdf");
+        userService.clearStrogae();
+        // throw Error(response.statusText);
       }
       const json = await response.json();
       var question = JSON.stringify(json.data);
@@ -190,9 +176,6 @@ class Formcreate extends Component {
   }
 
   render() {
-    console.log("ddทททททท.." + this.state.surveyid);
-    console.log("display.." + this.state.version);
-
     return (
       <div className="admin">
         <Row>
@@ -258,21 +241,19 @@ class Formcreate extends Component {
   }
 
   saveMySurvey = () => {
-    console.log("======savemysurvey=======");
+    var user = JSON.parse(localStorage.getItem("userData"));
     var data = this.surveyCreator.text;
 
     var jsondata = {
       surveyid: this.state.surveyid,
       name: this.state.name,
       version: "1",
-      userid: "1"
+      userid: user.userid
     };
     var t = JSON.stringify(jsondata);
     t = t.substring(0, t.length - 1);
 
     var senddata = t + "," + data.substring(1);
-
-    console.log("datanaka___________" + senddata);
 
     try {
       fetch(config.BACKEND_GSURVEY + "/api/v2/admin/surveys", {
@@ -280,20 +261,15 @@ class Formcreate extends Component {
         crossDomain: true,
         headers: {
           Accept: "application/json",
-          "Content-Type": "application/json",
-          userid: localStorage.getItem("session_userid"),
-          token: localStorage.getItem("token_local")
-          // "token" : "3gUMtyWlKatfMk5aLi5PpgQxfTJcA91YlN6Nt8XyiR1CwLs6wGP69FSQs8EKHCsg",
+          "Content-Type": "application/json"
         },
+        credentials: "include",
         body: senddata
       }).then(function(response) {
         console.log("res" + response);
         if (!response.ok) {
-          throw Error(response.statusText);
-          toastr.error(
-            "ไม่สามารถเพิ่มข้อมูลได้ ติดต่อผู้ดูแลระบบ",
-            toastrOptions
-          );
+          toastr.error("ไม่สามารถเพิ่มข้อมูลได้", toastrOptions);
+          userService.clearStrogae();
         } else {
           toastr.success("เพิ่มข้อมูลเรียบร้อยแล้ว", toastrOptions);
         }
