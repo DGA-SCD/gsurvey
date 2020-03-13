@@ -122,18 +122,34 @@ class Main extends Component {
         } else {
           //.then(this._checkResponse(response1))
           console.log("response1.data");
-          var myArray = JSON.parse(JSON.stringify(response1.data.pages))[0]
-            .elements;
+          console.log(response1.data);
+          const arr = [];
+          var newarry = response1.data.pages.map(function(item) {
+            item.elements.forEach(function(key) {
+              arr.push({
+                title: key.name,
+                field: key.name
+              });
+              // console.log(arr);
+            });
+            return arr;
+          });
+          console.log(newarry[0]);
+          // var myArray = JSON.parse(JSON.stringify(response1.data.pages))[0]
+          //   .elements;
 
-          const result = myArray.map(({ name, title }) => ({ name, title }));
+          // const result = myArray.map(({ name, title }) => ({ name, title }));
+          // console.log("result");
+          // console.log(result);
+          // var t = JSON.parse(
+          //   JSON.stringify(result)
+          //     .split('"name":')
+          //     .join('"field":')
+          // );
+          // console.log("t");
+          // console.log(t);
 
-          var t = JSON.parse(
-            JSON.stringify(result)
-              .split('"name":')
-              .join('"field":')
-          );
-
-          const tmp = Object.values(t);
+          const tmp = Object.values(newarry[0]);
 
           this.setState({
             columns: tmp
@@ -175,11 +191,19 @@ class Main extends Component {
             columns={this.state.columns}
             data={this.state.data}
             options={{
-              actionsColumnIndex: -1,
               sorting: true,
               pageSize: 10,
               exportButton: true,
-              exportAllData: true
+              exportAllData: true,
+              doubleHorizontalScroll: true,
+              headerStyle: {
+                backgroundColor: "#00ADFF",
+                color: "#FFF",
+                font: "Athiti !important"
+              },
+              rowStyle: {
+                font: "Athiti !important"
+              }
             }}
           />
         </div>
