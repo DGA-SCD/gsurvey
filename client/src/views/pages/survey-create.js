@@ -248,13 +248,13 @@ class Formcreate extends Component {
       surveyid: this.state.surveyid,
       name: this.state.name,
       version: "1",
-      userid: user.userid
+      userid: "" + user.userid
     };
     var t = JSON.stringify(jsondata);
     t = t.substring(0, t.length - 1);
 
     var senddata = t + "," + data.substring(1);
-
+    console.log(senddata);
     try {
       fetch(config.BACKEND_GSURVEY + "/api/v2/admin/surveys", {
         method: "post",
@@ -266,7 +266,7 @@ class Formcreate extends Component {
         credentials: "include",
         body: senddata
       }).then(function(response) {
-        console.log("res" + response);
+        console.log("res" + JSON.stringify(response));
         if (!response.ok) {
           toastr.error("ไม่สามารถเพิ่มข้อมูลได้", toastrOptions);
           userService.clearStrogae();
