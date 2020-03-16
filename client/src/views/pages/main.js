@@ -186,14 +186,16 @@ class Main extends Component {
                     const obj = JSON.parse(JSON.stringify(newData));
 
                     var jsondata = {
-                      userid: "1",
+                      userid:
+                        "" +
+                        JSON.parse(localStorage.getItem("userData")).userid,
                       name: obj.name,
                       surveyid: "NewSurvey" + this.state.datetime,
                       version: "1"
                     };
 
                     jsondata = JSON.stringify(jsondata);
-
+                    console.log(jsondata);
                     fetch(
                       config.BACKEND_GSURVEY + "/api/v2/admin/surveys/create",
                       //"https://jsonplaceholder.typicode.com/users",
