@@ -59,7 +59,7 @@ class Main extends Component {
       columns: [],
       _columns: [],
       datetime: "",
-      error: ""
+      error: false
     };
   }
 
@@ -67,6 +67,15 @@ class Main extends Component {
     var uid = this.props.location.state.userid;
     let url = this.props.location.search;
     let params = queryString.parse(url);
+    var options = {
+      method: "get",
+      crossDomain: true,
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      credentials: "include"
+    };
 
     var url1 =
       config.BACKEND_GSURVEY +
@@ -83,68 +92,89 @@ class Main extends Component {
       uid +
       "&v=1";
 
-    var apiRequest1 = fetch(url1).then(function(response) {
-      if (response.status === 200) {
-        return response.json();
-      } else {
-        response.json().then(function(object) {
-          console.log(object.type, object.message);
-        });
-      }
-    });
-    var apiRequest2 = fetch(url2).then(function(response) {
-      if (response.status === 200) {
-        return response.json();
-      } else {
-        response.json().then(function(object) {
-          console.log(object.type, object.message);
-        });
-      }
-    });
+    var apiRequest1 = fetch(url1, options)
+      .then(function(response) {
+        if (response.ok) {
+          return response.json();
+        }
+      })
+      .catch(error => {
+        this.setState({ error: error });
+      });
+    var apiRequest2 = fetch(url2, options)
+      .then(function(response) {
+        if (response.ok) {
+          return response.json();
+        }
+      })
+      .catch(error => {
+        this.setState({ error: error });
+      });
 
     Promise.all([apiRequest1, apiRequest2])
       .then(allResponses => {
         const response1 = allResponses[0];
         const response2 = allResponses[1];
-
-        //.then(this._checkResponse(response1))
-        console.log("response1.data");
-        var myArray = JSON.parse(JSON.stringify(response1.data.pages))[0]
-          .elements;
-
-        const result = myArray.map(({ name, title }) => ({ name, title }));
-
-        var t = JSON.parse(
-          JSON.stringify(result)
-            .split('"name":')
-            .join('"field":')
-        );
-
-        const tmp = Object.values(t);
-
-        this.setState({
-          columns: tmp
-        });
-        //  console.log(response2);
-        var answer = response2.data;
-
-        var data = answer.map(function(s) {
-          Object.keys(s.result).forEach(function(key) {
-            if (typeof s.result[key] == "object") {
-              console.log("ypeof s[key]====");
-              console.log(typeof s[key]);
-              var v = JSON.stringify(s.result[key]);
-              var res = v.replace(/"/g, "'");
-
-              console.log(v);
-              s.result[key] = res;
-            }
+        console.log(allResponses[0]);
+        console.log(allResponses[1]);
+        if (allResponses[0] === undefined || allResponses[1] === undefined) {
+          toastr.error("ไม่สารมารถเปิดผลแบบสำรวจได้", toastrOptions);
+        } else {
+          //.then(this._checkResponse(response1))
+          console.log("response1.data");
+          console.log(response1.data);
+          const arr = [];
+          var newarry = response1.data.pages.map(function(item) {
+            item.elements.forEach(function(key) {
+              arr.push({
+                title: key.name,
+                field: key.name
+              });
+              // console.log(arr);
+            });
+            return arr;
           });
-          return s.result;
-        });
-        this.setState({
-          data: data
-        });
+          console.log(newarry[0]);
+          // var myArray = JSON.parse(JSON.stringify(response1.data.pages))[0]
+          //   .elements;
+
+          // const result = myArray.map(({ name, title }) => ({ name, title }));
+          // console.log("result");
+          // console.log(result);
+          // var t = JSON.parse(
+          //   JSON.stringify(result)
+          //     .split('"name":')
+          //     .join('"field":')
+          // );
+          // console.log("t");
+          // console.log(t);
+
+          const tmp = Object.values(newarry[0]);
+
+          this.setState({
+            columns: tmp
+          });
+          //  console.log(response2);
+          var answer = response2.data;
+
+          var data = answer.map(function(s) {
+            Object.keys(s.result).forEach(function(key) {
+              if (typeof s.result[key] == "object") {
+                console.log("ypeof s[key]====");
+                console.log(typeof s[key]);
+                var v = JSON.stringify(s.result[key]);
+                var res = v.replace(/"/g, "'");
+
+                console.log(v);
+                s.result[key] = res;
+              }
+            });
+            return s.result;
+          });
+          this.setState({
+            data: data
+          });
+        }
       })
       .catch(error => {
         this.setState({
@@ -161,11 +191,19 @@ class Main extends Component {
             columns={this.state.columns}
             data={this.state.data}
             options={{
-              actionsColumnIndex: -1,
               sorting: true,
               pageSize: 10,
               exportButton: true,
-              exportAllData: true
+              exportAllData: true,
+              doubleHorizontalScroll: true,
+              headerStyle: {
+                backgroundColor: "#00ADFF",
+                color: "#FFF",
+                font: "Athiti !important"
+              },
+              rowStyle: {
+                font: "Athiti !important"
+              }
             }}
           />
         </div>

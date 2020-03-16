@@ -1,13 +1,13 @@
 # survey
 It's survey platform which use full stack architectur with _MongoDB-Express-Node-React_ (**MERN**)
 ## Fontend
-  We uses React + surveyjs to develop dynamic survey form.
+  We use React + surveyjs to develop dynamic survey form.
   
 ## Backend
-  We uses Node.js to run as backend API services.
+  We use Node.js to run as backend API services.
   
 ## Database
-  We uses mongoDB to store answers.
+  We use mongoDB to store answers.
   ![](images/mongodb.png)
   
   ```

@@ -1,26 +1,12 @@
 import React, { Component, useState, forwardRef } from "react";
 import * as config from "../../services/AppConfig";
 import { BrowserRouter, Route, Link } from "react-router-dom";
-
+import { userService } from "../../services/UserAuth";
 //import Settimeout from "../../services/Settimeout";
 //import async from "react-async";
 import axios from "axios";
 import Formcreate from "survey-creator";
-import {
-  Card,
-  CardBody,
-  CardTitle,
-  Row,
-  Col,
-  Button,
-  Alert,
-  Form,
-  CustomInput,
-  FormGroup,
-  Label,
-  Table,
-  Input
-} from "reactstrap";
+import { Button } from "reactstrap";
 import MaterialTable from "material-table";
 import DeleteOutline from "@material-ui/icons/DeleteOutline";
 import Edit from "@material-ui/icons/Edit";
@@ -59,7 +45,7 @@ class Main extends Component {
       surveyid: "",
       columns: [],
       datetime: "",
-      error: ""
+      error: false
     };
   }
 
@@ -73,21 +59,11 @@ class Main extends Component {
       }
     });
   };
-  getMax(arr, prop) {
-    var max;
-    for (var i = 0; i < arr.length; i++) {
-      if (max == null || parseInt(arr[i][prop]) > parseInt(max[prop]))
-        max = arr[i];
-    }
-    return max;
-  }
 
   async callallSurvey() {
-    console.log("button clicked!");
-
     try {
       var user = JSON.parse(localStorage.getItem("userData"));
-
+      //  if (user) {
       const requestOptions = {
         method: "GET",
         credentials: "include"
@@ -97,19 +73,22 @@ class Main extends Component {
         config.BACKEND_GSURVEY + "/api/v2/admin/surveys/owner/" + user.userid,
         requestOptions
       );
+      if (response.ok) {
+        const json = await response.json();
+        console.log("callallsurvey" + JSON.stringify(json));
 
-      const json = await response.json();
-      console.log("callallsurvey" + JSON.stringify(json));
+        console.log("==========result==========");
 
-      console.log("==========result==========");
-
-      this.setState({
-        data: json.data,
-        columns: [
-          { title: "Title", field: "name" },
-          { title: "version", field: "version" }
-        ]
-      });
+        this.setState({
+          data: json.data,
+          columns: [
+            { title: "Title", field: "name" },
+            { title: "version", field: "version" }
+          ]
+        });
+      } else {
+        userService.clearStrogae();
+      }
     } catch (error) {
       this.setState({
         error: error
@@ -192,7 +171,11 @@ class Main extends Component {
             }
           ]}
           icons={{
-            Add: () => <Button color="success">Add New Survey</Button>
+            Add: () => (
+              <div>
+                <Button color="success">Add New Survey</Button>
+              </div>
+            )
           }}
           editable={{
             onRowAdd: newData =>
@@ -223,18 +206,18 @@ class Main extends Component {
                         headers: {
                           "Content-type": "application/json; charset=UTF-8"
                         },
+                        credentials: "include",
                         body: jsondata
                       }
                     )
                       .then(response => {
                         if (!response.ok) {
-                          throw new Error("Network response was not ok.");
+                          toastr.error(
+                            "ไม่สารมารถสร้างฟอร์มได้",
+                            toastrOptions
+                          );
                         } else {
                           this.callallSurvey();
-                          // const data = this.state.data;
-                          // data.push(newData);
-                          // console.log("respne" + data);
-                          // this.setState({ data }, () => resolve());
                         }
                       })
                       .catch(err => {
@@ -268,6 +251,7 @@ class Main extends Component {
                         method: "delete",
                         crossDomain: true,
                         cache: "no-cache",
+                        credentials: "include",
                         headers: {
                           "Content-type": "application/json; charset=UTF-8"
                         },
@@ -276,7 +260,7 @@ class Main extends Component {
                     )
                       .then(response => {
                         if (!response.ok) {
-                          throw new Error("Network response was not ok.");
+                          toastr.error("ไม่สามารถลบข้อมูลได้", toastrOptions);
                         } else {
                           toastr.success(
                             "ลบข้อมูลเรียบร้อยแล้ว",
