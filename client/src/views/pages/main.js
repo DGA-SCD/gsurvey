@@ -21,6 +21,7 @@ import { toastr } from "react-redux-toastr";
 //import AuthService from '../../services/AuthService';
 //import withRequest from "../../services/withRequest";
 import { array } from "prop-types";
+import zIndex from "@material-ui/core/styles/zIndex";
 const toastrOptions = {
   timeOut: 2000, // by setting to 0 it will prevent the auto close
   position: "top-right",
@@ -81,10 +82,7 @@ class Main extends Component {
 
         this.setState({
           data: json.data,
-          columns: [
-            { title: "Title", field: "name" },
-            { title: "version", field: "version" }
-          ]
+          columns: [{ title: "Title", field: "name" }]
         });
       } else {
         userService.clearStrogae();
@@ -188,14 +186,16 @@ class Main extends Component {
                     const obj = JSON.parse(JSON.stringify(newData));
 
                     var jsondata = {
-                      userid: "1",
+                      userid:
+                        "" +
+                        JSON.parse(localStorage.getItem("userData")).userid,
                       name: obj.name,
                       surveyid: "NewSurvey" + this.state.datetime,
                       version: "1"
                     };
 
                     jsondata = JSON.stringify(jsondata);
-
+                    console.log(jsondata);
                     fetch(
                       config.BACKEND_GSURVEY + "/api/v2/admin/surveys/create",
                       //"https://jsonplaceholder.typicode.com/users",
@@ -287,7 +287,13 @@ class Main extends Component {
             sorting: true,
             pageSize: 10,
             exportButton: true,
-            exportAllData: true
+            exportAllData: true,
+            headerStyle: {
+              backgroundColor: "#1fa2ff",
+              color: "#FFF",
+              zIndex: 0,
+              font: "Athiti"
+            }
           }}
           localization={{
             body: { editRow: { deleteText: "คุณต้องการลบแบบสอบถามนี้ ?" } }

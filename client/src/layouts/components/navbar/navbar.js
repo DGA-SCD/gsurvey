@@ -75,19 +75,19 @@ class ThemeNavbar extends Component {
   }
 
   _onAction(e) {
-    console.log("user did something", e);
+    // console.log("user did something", e);
     this.setState({ isTimedOut: false });
   }
 
   _onActive(e) {
-    console.log("user is active", e);
+    // console.log("user is active", e);
     this.setState({ isTimedOut: false });
     console.log("time remaining", this.idleTimer.getRemainingTime());
   }
 
   _onIdle(e) {
-    console.log("user is idle", e);
-    console.log("last active", this.idleTimer.getLastActiveTime());
+    // console.log("user is idle", e);
+    //  console.log("last active", this.idleTimer.getLastActiveTime());
     const isTimedOut = this.state.isTimedOut;
     console.log(this.state.isTimedOut);
     if (isTimedOut) {
@@ -134,7 +134,7 @@ class ThemeNavbar extends Component {
           debounce={250}
           timeout={this.state.timeout}
         />
-        <Modal isOpen={this.state.showModal}>
+        {/* <Modal isOpen={this.state.showModal}>
           <ModalHeader toggle={this.toggle}>session ของท่านหมดอายุ</ModalHeader>
           <ModalBody>
             session ของท่านหมดอายุ ท่านยังต้องการอยู่ในระบบต่อหรือไม่
@@ -147,7 +147,7 @@ class ThemeNavbar extends Component {
               อยู่ในระบบต่อ
             </Button>
           </ModalFooter>
-        </Modal>
+        </Modal> */}
         <Navbar className="navbar navbar-expand-lg navbar-light bg-faded">
           <div className="container-fluid px-0">
             <div className="navbar-header">
@@ -186,7 +186,7 @@ class ThemeNavbar extends Component {
                       </DropdownItem>
                       <DropdownItem divider />
 
-                      <Link to="/pages/user-profile" className="p-0">
+                      <Link to="#" className="p-0">
                         <DropdownItem>
                           <User size={16} className="mr-1" /> My Profile
                         </DropdownItem>
