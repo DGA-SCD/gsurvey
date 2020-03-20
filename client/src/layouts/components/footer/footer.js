@@ -10,7 +10,7 @@ const Footer = props => (
     <div className="col-md-12">
       <footer>
         <div className="row">
-          <div className="col-md-1 col-xs-2">
+          <div className="col-md-1.5 col-xs-2" style={{ paddingLeft: "15px" }}>
             <p>
               <img
                 src={dgalogo}
@@ -23,16 +23,17 @@ const Footer = props => (
               />
             </p>
           </div>
-          <div className="col-md-6 col-xs-7" style={{ paddingLeft: "2.0rem" }}>
+          <div className="col-md-8 col-xs-8">
             <p>สำนักงานพัฒนารัฐบาลดิจิทัล (องค์การมหาชน) (สพร.)</p>
             <p>
               Digital Government Development Agency (Public Organization) (DGA)
             </p>
           </div>
-          <div className="col-md-5  col-xs-3" style={{ textAlign: "right" }}>
-            <p>
-              <b>DGA CONTACT CENTER</b>
-            </p>
+          <div
+            className="col-md-2.5  col-xs-2"
+            style={{ paddingTop: "10px", paddingLeft: "15px" ,textAlign:"right" }}
+          >
+            DGA CONTACT CENTER
             <p>
               <PhoneCall size={16} color={"red"} />
               &nbsp;&nbsp; โทรศัพท์ : 026126060

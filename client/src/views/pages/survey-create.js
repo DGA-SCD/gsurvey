@@ -124,11 +124,16 @@ class Formcreate extends Component {
 
   async componentDidMount() {
     console.log("didmount   " + JSON.stringify(this.props));
-    this.setState({
-      surveyid: this.props.location.state.surveyid,
-      name: this.props.location.state.name,
-      version: this.props.location.state.version
-    });
+    if (this.props.location.state) {
+      this.setState({
+        surveyid: this.props.location.state.surveyid,
+        name: this.props.location.state.name,
+        version: this.props.location.state.version
+      });
+    } else {
+      userService.clearStrogae();
+    }
+
     let options = { showEmbededSurveyTab: true };
     this.surveyCreator = new SurveyJSCreator.SurveyCreator(
       "surveyCreatorContainer",
@@ -160,7 +165,6 @@ class Formcreate extends Component {
       );
       console.log(response);
       if (!response.ok) {
-        console.log("podfdsdf");
         userService.clearStrogae();
         // throw Error(response.statusText);
       }

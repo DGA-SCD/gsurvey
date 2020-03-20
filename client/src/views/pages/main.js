@@ -82,7 +82,7 @@ class Main extends Component {
 
         this.setState({
           data: json.data,
-          columns: [{ title: "Title", field: "name" }]
+          columns: [{ title: "ชื่อแบบสำรวจ", field: "name" }]
         });
       } else {
         userService.clearStrogae();
@@ -109,6 +109,7 @@ class Main extends Component {
   }
   render() {
     return (
+      
       <div>
         <MaterialTable
           icons={tableIcons}
@@ -281,6 +282,7 @@ class Main extends Component {
                 }, 1000);
               })
           }}
+
           components={{}}
           options={{
             actionsColumnIndex: -1,
@@ -293,7 +295,8 @@ class Main extends Component {
               color: "#FFF",
               zIndex: 0,
               font: "Athiti"
-            }
+            },
+            addRowPosition:"first"
           }}
           localization={{
             body: { editRow: { deleteText: "คุณต้องการลบแบบสอบถามนี้ ?" } }
