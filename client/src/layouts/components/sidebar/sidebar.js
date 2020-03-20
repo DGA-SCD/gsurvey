@@ -16,7 +16,8 @@ import { sidebarImage, sidebarImageUrl, sidebarBgColor, sidebarCollapsed, sideba
 class Sidebar extends Component {
    state = {
       collapsedSidebar: templateConfig.sidebar.collapsed,
-      width: window.innerWidth
+      width: window.innerWidth,
+      display:''
    };
    updateWidth = () => {
       this.setState(prevState => ({
@@ -41,13 +42,15 @@ class Sidebar extends Component {
    }
    handleMouseEnter = e => {
       this.setState(prevState => ({
-         collapsedSidebar: false
+         collapsedSidebar: false,
+         display:''
       }));
    };
 
    handleMouseLeave = e => {
       this.setState(prevState => ({
-         collapsedSidebar: true
+         collapsedSidebar: true,
+         display:'none'
       }));
    };
 
@@ -71,7 +74,7 @@ class Sidebar extends Component {
                   onMouseEnter={context.foldedContent ? this.handleMouseEnter : null}
                   onMouseLeave={context.foldedContent ? this.handleMouseLeave : null}
                >
-                  <SidebarHeader toggleSidebarMenu={this.props.toggleSidebarMenu} sidebarBgColor={this.props.color} />
+                  <SidebarHeader toggleSidebarMenu={this.props.toggleSidebarMenu} display = {this.state.display} sidebarBgColor={this.props.color} />
                   <PerfectScrollbar className="sidebar-content">
                      <SideMenuContent collapsedSidebar={this.state.collapsedSidebar} toggleSidebarMenu={this.props.toggleSidebarMenu} />
                   </PerfectScrollbar>
