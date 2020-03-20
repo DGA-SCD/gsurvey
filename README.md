@@ -1,4 +1,4 @@
-# survey
+# gsurvey
 It's survey platform which use full stack architectur with _MongoDB-Express-Node-React_ (**MERN**)
 ## Fontend
   We use React + surveyjs to develop dynamic survey form.
@@ -23,5 +23,3 @@ If you use `npm start`, then start both client with port:`3000` and server with 
 ```bash
 npm start
 ```
-
-credit by scd
