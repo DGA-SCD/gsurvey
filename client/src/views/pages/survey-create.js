@@ -65,7 +65,6 @@ class Formcreate extends Component {
       vesion: ""
     };
   }
-
   handleClick = event => {
     console.log("State ==>", this.state.rename + "..." + this.state.surveyid);
 
@@ -190,7 +189,12 @@ class Formcreate extends Component {
                   <Table className="table table-borderless table-sm">
                     <tbody>
                       <tr>
-                        <td width="400px;">
+                        <td>
+                          <Link to="main" className="btn btn-info">
+                            กลับหน้าหลัก
+                          </Link>
+                        </td>
+                        <td>
                           <input
                             type="text"
                             name="name"
@@ -199,7 +203,7 @@ class Formcreate extends Component {
                             defaultValue={this.state.name}
                             disabled={this.state.disabled ? "disabled" : ""}
                             required
-                            style={{ width: "400px" }}
+                            //style={{ width: "300px" }}
                           />
                         </td>
                         <td className="text-left">
@@ -218,7 +222,7 @@ class Formcreate extends Component {
                         >
                           <td className="text-left">
                             <Button color="success" onClick={this.handleClick}>
-                              Update
+                              แก้ไข
                             </Button>
                           </td>
                           <td className="text-left">
@@ -226,7 +230,7 @@ class Formcreate extends Component {
                               color="warning"
                               onClick={this.startEdit.bind(this)}
                             >
-                              Cancel
+                              ยกเลิก
                             </Button>
                           </td>
                         </div>

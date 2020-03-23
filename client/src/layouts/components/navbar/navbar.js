@@ -188,7 +188,8 @@ class ThemeNavbar extends Component {
 
                       <Link to="#" className="p-0">
                         <DropdownItem>
-                          <User size={16} className="mr-1" /> My Profile
+                          <User size={16} className="mr-1" />
+                          ประวัติของฉัน
                         </DropdownItem>
                       </Link>
 
@@ -200,7 +201,7 @@ class ThemeNavbar extends Component {
                         className="p-0"
                       >
                         <DropdownItem>
-                          <LogOut size={16} className="mr-1" /> Logout
+                          <LogOut size={16} className="mr-1" /> ออกจากระบบ
                         </DropdownItem>
                       </Link>
                     </DropdownMenu>

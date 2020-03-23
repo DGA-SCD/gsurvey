@@ -82,7 +82,12 @@ class Main extends Component {
 
         this.setState({
           data: json.data,
-          columns: [{ title: "ชื่อแบบสำรวจ", field: "name" }]
+          columns: [
+            {
+              title: "ชื่อแบบสำรวจ",
+              field: "name"
+            }
+          ]
         });
       } else {
         userService.clearStrogae();
@@ -109,7 +114,6 @@ class Main extends Component {
   }
   render() {
     return (
-      
       <div>
         <MaterialTable
           icons={tableIcons}
@@ -119,7 +123,7 @@ class Main extends Component {
           actions={[
             {
               icon: "edit",
-              tooltip: "Edit Your Survey",
+              tooltip: "แก้ไขแบบสำรวจ",
               onClick: (event, rowData) => {
                 // this.handleClickOpen(rowData);
                 this.props.history.push({
@@ -136,7 +140,7 @@ class Main extends Component {
             },
             {
               icon: "pageview",
-              tooltip: "View Your Survey",
+              tooltip: "ดูแบบสำรวจที่สร้าง",
               onClick: (event, rowData) => {
                 console.log("rowData" + JSON.stringify(rowData));
                 console.log("pageview" + rowData);
@@ -153,7 +157,7 @@ class Main extends Component {
             },
             {
               icon: "description",
-              tooltip: "View Result",
+              tooltip: "ดูผลแบบสำรวจ",
               onClick: (event, rowData) => {
                 // this.handleClickOpen(rowData);
                 this.props.history.push({
@@ -172,7 +176,12 @@ class Main extends Component {
           icons={{
             Add: () => (
               <div>
-                <Button color="success">Add New Survey</Button>
+                <Button color="success">เพิ่มแบบสำรวจ</Button>
+              </div>
+            ),
+            Export: () => (
+              <div>
+                <Button color="info">นำข้อมูลออก</Button>
               </div>
             )
           }}
@@ -282,7 +291,6 @@ class Main extends Component {
                 }, 1000);
               })
           }}
-
           components={{}}
           options={{
             actionsColumnIndex: -1,
@@ -296,10 +304,27 @@ class Main extends Component {
               zIndex: 0,
               font: "Athiti"
             },
-            addRowPosition:"first"
+            addRowPosition: "first"
           }}
           localization={{
-            body: { editRow: { deleteText: "คุณต้องการลบแบบสอบถามนี้ ?" } }
+            body: {
+              editRow: {
+                deleteText: "คุณต้องการลบแบบสอบถามนี้ ?",
+                cancelTooltip: "ยกเลิก",
+                saveTooltip: "ยืนยัน"
+              },
+              deleteTooltip: "ลบแบบสำรวจ"
+            },
+            toolbar: {
+              searchPlaceholder: "ค้นหาแบบสำรวจ"
+            },
+            pagination: {
+              nextTooltip: "หน้าถัดไป",
+              previousTooltip: "หน้าก่อนหน้า",
+              lastTooltip: "หน้าสุดท้าย",
+              firstTooltip: "หน้าแรก",
+              labelRowsSelect: "แถว"
+            }
           }}
         />
       </div>

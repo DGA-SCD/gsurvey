@@ -104,7 +104,7 @@ class Login extends Component {
     if (fields["username"] === "") {
       formIsValid = false;
       console.log(fields["username"] + "por");
-      errors["username"] = "*Please enter your email-ID.";
+      errors["username"] = "*กรุณากรอกชื่อผู้ใช้งาน";
     }
 
     if (typeof fields["username"] !== "undefined") {
@@ -114,13 +114,13 @@ class Login extends Component {
       );
       if (!pattern.test(fields["username"])) {
         formIsValid = false;
-        errors["username"] = "*Please enter valid email-ID.";
+        errors["username"] = "*กรุณากรอกอีเมลให้ถูกต้อง.";
       }
     }
 
     if (!fields["password"]) {
       formIsValid = false;
-      errors["password"] = "*Please enter your password.";
+      errors["password"] = "*กรุณากรอกรหัสผ่าน.";
     }
 
     // if (typeof fields["password"] !== "undefined") {
@@ -192,7 +192,7 @@ class Login extends Component {
                         name="username"
                         value={this.state.fields.username}
                         className="form-control"
-                        placeholder="Your email"
+                        placeholder="อีเมลผู้ใช้งาน"
                         onChange={this.handleChange}
                       />
                       <div style={errorstyle}>{this.state.errors.username}</div>
@@ -206,7 +206,7 @@ class Login extends Component {
                         name="password"
                         id="password"
                         value={this.state.fields.password}
-                        placeholder="Your Password"
+                        placeholder="รหัสผ่าน"
                         onChange={this.handleChange}
                         // onBlur={this.handleChange}
                       />
