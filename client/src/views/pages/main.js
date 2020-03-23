@@ -157,7 +157,7 @@ class Main extends Component {
             },
             {
               icon: "description",
-              tooltip: "ดูผลแบบสำรวจ",
+              tooltip: "ดูผลสำรวจ",
               onClick: (event, rowData) => {
                 // this.handleClickOpen(rowData);
                 this.props.history.push({

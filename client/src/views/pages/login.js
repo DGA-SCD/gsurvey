@@ -104,7 +104,7 @@ class Login extends Component {
     if (fields["username"] === "") {
       formIsValid = false;
       console.log(fields["username"] + "por");
-      errors["username"] = "*กรุณากรอกชื่อผู้ใช้งาน";
+      errors["username"] = "*กรุณากรอกอีเมล์ผู้ใช้งาน";
     }
 
     if (typeof fields["username"] !== "undefined") {
@@ -114,7 +114,7 @@ class Login extends Component {
       );
       if (!pattern.test(fields["username"])) {
         formIsValid = false;
-        errors["username"] = "*กรุณากรอกอีเมลให้ถูกต้อง.";
+        errors["username"] = "*กรุณากรอกอีเมล์ให้ถูกต้อง.";
       }
     }
 
