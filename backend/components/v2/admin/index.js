@@ -50,7 +50,7 @@ router.use(cookieParser(appConf.cookies.secreteKey, {
 }));
 
 router.use(function (req, res, next) {
-    
+
     console.log(req.headers);
 
     // Website you wish to allow to connect
@@ -68,11 +68,11 @@ router.use(function (req, res, next) {
 
     var userName, tokenId;
 
-    if ( req.signedCookies['username'] !== undefined && req.signedCookies['token'] !== undefined ) {
+    if (req.signedCookies['username'] !== undefined && req.signedCookies['token'] !== undefined) {
         userName = req.signedCookies['username'];
         tokenId = req.signedCookies['token'];
         logger.info("Found token in cookies");
-    } else if ( req.headers['username'] !== undefined && req.headers['token'] !== undefined ) {
+    } else if (req.headers['username'] !== undefined && req.headers['token'] !== undefined) {
         logger.info("Not found token in cookies. Using the token on header, instead");
         userName = req.headers['username'];
         tokenId = req.headers['token'];
@@ -83,11 +83,11 @@ router.use(function (req, res, next) {
     }
 
     logger.debug('read cookies user name: ' + userName + ' token: ' + tokenId);
-    
-    auth.verifyToken( userName, tokenId, function (err) {
-        if( err ){
+
+    auth.verifyToken(userName, tokenId, function (err) {
+        if (err) {
             http.error(res, 401, 401000, "Invalid token");
-        }else{
+        } else {
             req.USERNAME = userName;
             next();
         }
@@ -102,12 +102,22 @@ function saveSurvey(req, res) {
 
     var body = req.body
 
+    var searchFilters = {
+        userid: body.userid,
+        surveyid: body.surveyid,
+        version: body.version,
+    };
+
+    let resultProvmises = mongo.find(searchFilters, appConf.surveyCollections.survey, {});
+
     var survey = {
         userid: body.userid,
         name: body.name,
         surveyid: body.surveyid,
         version: body.version,
-        pages: body.pages
+        pages: body.pages,
+        created_at: new Date(),
+        modified_at: new Date(),
     }
 
     var filters = {
@@ -117,14 +127,35 @@ function saveSurvey(req, res) {
         version: body.version
     };
 
-    mongo.insert(filters, survey, appConf.surveyCollections.survey).then(result => {
-            http.success(res, result);
-            return true;
+    resultProvmises.then(results => {
+            return Promise.resolve(results);
         })
         .catch(err => {
-            http.error(res, 500, 50000, "mongo error: " + err);
-            return false;
-        });
+            mongo.insert(filters, survey, appConf.surveyCollections.survey).then(result => {
+                    http.success(res, result);
+                    return true;
+                })
+                .catch(err => {
+                    http.error(res, 500, 50000, "mongo error: " + err);
+                    return false;
+                });
+        })
+        .then(results => {
+            if (results[0] !== undefined && results[0].created_at !== undefined) {
+                console.log("created at : " + results[0].created_at);
+                survey.created_at = results[0].created_at;
+            }
+            mongo.insert(filters, survey, appConf.surveyCollections.survey).then(result => {
+                    http.success(res, result);
+                    return true;
+                })
+                .catch(err => {
+                    http.error(res, 500, 50000, "mongo error: " + err);
+                    return false;
+                });
+        })
+
+
 }
 
 function createEmptySurvey(req, res) {
@@ -132,22 +163,22 @@ function createEmptySurvey(req, res) {
 
     var body = req.body
 
-    if( body.userid === undefined ){
+    if (body.userid === undefined) {
         http.error(res, 400, 40000, 'require "userid"');
         return;
     }
 
-    if( body.name === undefined ){
+    if (body.name === undefined) {
         http.error(res, 400, 40000, 'require "name"');
         return;
     }
 
-    if( body.surveyid === undefined ){
+    if (body.surveyid === undefined) {
         http.error(res, 400, 40000, 'require "surveyid"');
         return;
     }
 
-    if( body.version === undefined ){
+    if (body.version === undefined) {
         http.error(res, 400, 40000, 'require "version"');
         return;
     }
@@ -157,7 +188,9 @@ function createEmptySurvey(req, res) {
         userid: body.userid,
         name: body.name,
         surveyid: body.surveyid,
-        version: body.version
+        version: body.version,
+        created_at: new Date(),
+        modified_at: new Date(),
     }
 
     var filters = {
@@ -187,7 +220,11 @@ function getAllSurveysByOwnerId(req, res) {
         userid: req.params.ownerid
     };
 
-    mongo.find(filters, appConf.surveyCollections.survey).then(results => {
+    var sort = {
+        created_at: -1
+    };
+
+    mongo.find(filters, appConf.surveyCollections.survey, sort).then(results => {
             http.success(res, results);
             return true;
         })
@@ -203,15 +240,15 @@ function getSurveyById(req, res) {
     var userid = 'undefined';
     var version = '1';
 
-    if (req.query.uid === undefined ) {
+    if (req.query.uid === undefined) {
         http.error(res, 400, 40000, "Not found userid");
         return;
-    }else {
+    } else {
         userid = req.query.uid + "";
     }
 
-    if (req.query.v !== undefined ) {
-       version = req.query.v + "";
+    if (req.query.v !== undefined) {
+        version = req.query.v + "";
     }
 
     if (req.params.surveyId === undefined) {
@@ -247,6 +284,7 @@ function renameSurvey(req, res) {
     var data = {
         $set: {
             name: req.body.name,
+            modified_at: new Date(),
         }
     };
 
@@ -297,9 +335,13 @@ function getAllResultsBySurveyId(req, res) {
         surveyid: req.params.surveyId + "",
         userid: userid,
         version: version
-    }
+    };
 
-    mongo.find(filters, appConf.surveyCollections.result).then(results => {
+    var sort = {
+        created_at: -1
+    };
+
+    mongo.find(filters, appConf.surveyCollections.result, sort).then(results => {
             http.success(res, results);
             return true;
         })
@@ -315,7 +357,6 @@ function getResultById(req, res) {
     var body = req.body;
 
     var filters = {
-        userid: "reserved",
         resultid: req.params.resultId
     }
 
@@ -363,7 +404,9 @@ function saveResult(req, res) {
         resultid: resultid,
         version: version,
         userid: userid,
-        result: body.result
+        result: body.result,
+        created_at: new Date(),
+        modified_at: new Date(),
     }
 
     mongo.insert(filters, data, appConf.surveyCollections.result).then(result => {

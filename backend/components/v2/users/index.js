@@ -83,7 +83,7 @@ function getSurveyById(req, res) {
         userid: req.query.uid
     };
 
-    mongo.find(filters, appConf.surveyCollections.survey).then(results => {
+    mongo.find(filters, appConf.surveyCollections.survey, {}).then(results => {
             http.success(res, results[0]);
             return true;
         })
@@ -131,8 +131,10 @@ function saveResult(req, res) {
         resultid: resultid,
         userid: body.userid,
         result: body.result,
-        version: body.version
-    }
+        version: body.version,
+        created_at: new Date(),
+        modified_at: new Date(),
+    };
 
     mongo.insert(filters, data, appConf.surveyCollections.result).then(result => {
             http.success(res, result);
