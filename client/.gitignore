@@ -1,3 +1,4 @@
+package-lock.json
 .eslintrc.json
 .vscode-upload.json
 src/services/AppConfig.js
