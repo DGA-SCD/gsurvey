@@ -154,7 +154,7 @@ class Main extends Component {
           this.setState({
             columns: tmp
           });
-          //  console.log(response2);
+          console.log(response2);
           var answer = response2.data;
 
           var data = answer.map(function(s) {
@@ -186,10 +186,20 @@ class Main extends Component {
     if (this.state.columns && this.state.columns.length) {
       return (
         <div>
+          <Link to="main" className="btn btn-info">
+            กลับหน้าหลัก
+          </Link>
           <MaterialTable
             title="ผลรวมแบบสอบถาม"
             columns={this.state.columns}
             data={this.state.data}
+            icons={{
+              Export: () => (
+                <div>
+                  <Button color="info">นำข้อมูลออก</Button>
+                </div>
+              )
+            }}
             options={{
               sorting: true,
               pageSize: 10,
@@ -205,12 +215,20 @@ class Main extends Component {
                 font: "Athiti !important"
               }
             }}
+            localization={{
+              toolbar: {
+                searchPlaceholder: "ค้นหาผลแบบสำรวจ"
+              }
+            }}
           />
         </div>
       );
     }
     return (
       <div>
+        <Link to="main" className="btn btn-info">
+          กลับหน้าหลัก
+        </Link>
         <Row>
           <Col xs="12">
             <div className="App">
