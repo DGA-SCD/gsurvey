@@ -138,7 +138,18 @@ function login(req, res) {
 
     var ctx = req.body;
     const username = ctx.username;
+
+    if( username === undefined ){
+        http.error(res, 401, 401000, "not found username");
+        return;
+    }
+
     const password = ctx.password;
+    if( password === undefined ){
+        http.error(res, 401, 401000, "not found password");
+        return;
+    }
+
     var token = base64url(crypto.randomBytes(48));
 
     let mysql = getConnection();

@@ -4,29 +4,34 @@ const appConf = require('../../config/production.conf');
 const logger = winston.logger;
 const promise = require('promise');
 
-function findWithProjector(filters, collection, projector) {
-    return _find(filters, collection, projector);
+function findWithProjector(filters, collection, projector, sort) {
+    return _find(filters, collection, projector, sort);
 }
 
-function find(filters, collection) {
-    return _find(filters, collection, {projection: {_id: 0}});
+
+function find(filters, collection, sort) {
+    return _find(filters, collection, {
+        projection: {
+            _id: 0
+        }
+    }, sort);
 }
 
-function _find(filters, collection, projector) {
+function _find(filters, collection, projector, sort) {
     return new promise((resolve, reject) => {
         MongoClient.connect(appConf.mongoDB, {
-                useNewUrlParser: true
+                useNewUrlParser: true,
+                useUnifiedTopology: true
             }).then(db => {
                 logger.debug("mongodb connected");
                 db.db(appConf.MONGODB_dbname)
-                    .collection(collection).find(filters, projector).toArray(function (err, results) {
+                    .collection(collection).find(filters, projector).sort(sort).toArray(function (err, results) {
                         if (err) {
                             logger.error('Error occurred while querying: ' + err);
                             db.close();
                             reject(err);
                         } else {
-                            console.log(results);
-                            logger.debug('results: ' + JSON.stringify(results));
+                            logger.debug('search results: ' + JSON.stringify(results));
                             db.close();
                             resolve(results);
                         }
@@ -42,7 +47,8 @@ function _find(filters, collection, projector) {
 function insert(filters, data, collection) {
     return new promise((resolve, reject) => {
         MongoClient.connect(appConf.mongoDB, {
-                useNewUrlParser: true
+                useNewUrlParser: true,
+                useUnifiedTopology: true
             }).then(db => {
                 logger.debug("mongodb connected");
                 db.db(appConf.MONGODB_dbname)
@@ -70,7 +76,8 @@ function insert(filters, data, collection) {
 function update(filters, data, collection) {
     return new promise((resolve, reject) => {
         MongoClient.connect(appConf.mongoDB, {
-                useNewUrlParser: true
+                useNewUrlParser: true,
+                useUnifiedTopology: true
             }).then(db => {
                 logger.debug("mongodb connected");
                 db.db(appConf.MONGODB_dbname)
@@ -98,7 +105,8 @@ function update(filters, data, collection) {
 function remove(filters, justOne, collection) {
     return new promise((resolve, reject) => {
         MongoClient.connect(appConf.mongoDB, {
-                useNewUrlParser: true
+                useNewUrlParser: true,
+                useUnifiedTopology: true
             }).then(db => {
                 logger.debug("mongodb connected");
                 db.db(appConf.MONGODB_dbname)
