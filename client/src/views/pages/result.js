@@ -135,42 +135,33 @@ class Main extends Component {
             return arr;
           });
           console.log(newarry[0]);
-          // var myArray = JSON.parse(JSON.stringify(response1.data.pages))[0]
-          //   .elements;
-
-          // const result = myArray.map(({ name, title }) => ({ name, title }));
-          // console.log("result");
-          // console.log(result);
-          // var t = JSON.parse(
-          //   JSON.stringify(result)
-          //     .split('"name":')
-          //     .join('"field":')
-          // );
-          // console.log("t");
-          // console.log(t);
 
           const tmp = Object.values(newarry[0]);
 
           this.setState({
             columns: tmp
           });
-          //  console.log(response2);
-          var answer = response2.data;
 
+          var answer = response2.data.filter(function(x, k) {
+            if (Object.entries(x.result).length !== 0) {
+              return x.result;
+            }
+          });
+
+          console.log("answer");
+          console.log(answer);
           var data = answer.map(function(s) {
             Object.keys(s.result).forEach(function(key) {
               if (typeof s.result[key] == "object") {
-                console.log("ypeof s[key]====");
-                console.log(typeof s[key]);
                 var v = JSON.stringify(s.result[key]);
                 var res = v.replace(/"/g, "'");
 
-                console.log(v);
                 s.result[key] = res;
               }
             });
             return s.result;
           });
+
           this.setState({
             data: data
           });
