@@ -1,0 +1,1 @@
+PORT=3001 pm2 start --name gsurvey-stag-backend --instances 4 ./bin/www/server.js

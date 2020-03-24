@@ -1,0 +1,1 @@
+PORT=3002 pm2 start --name gsurvey-stag-client --instances 4 server.js
