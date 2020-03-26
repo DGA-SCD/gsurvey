@@ -4,7 +4,7 @@ import { NavLink } from "react-router-dom";
 import { ToggleLeft, ToggleRight, X } from "react-feather";
 // import internal(own) modules
 import { FoldedContentConsumer } from "../../../../utility/context/toggleContentContext";
-import Logo from "../../../../assets/img/logo3.png";
+import Logo from "../../../../assets/img/logo_gsurvey.png";
 import LogoDark from "../../../../assets/img/logo-dark.png";
 import templateConfig from "../../../../templateConfig";
 
@@ -14,15 +14,14 @@ class SidebarHeader extends Component {
   };
 
   render() {
-  
-    console.log(JSON.stringify(this.props.display))
+    console.log(JSON.stringify(this.props.display));
     return (
       <FoldedContentConsumer>
         {context => (
           <div className="sidebar-header">
             <div className="logo clearfix">
               <NavLink to="#" className="logo-text float-center">
-                {this.props.display === 'none' ? (
+                {this.props.display === "none" ? (
                   <div className="logo-img" style={{ display: "none" }}>
                     {templateConfig.sidebar.backgroundColor === "white" ? (
                       this.props.sidebarBgColor === "" ||
@@ -39,9 +38,7 @@ class SidebarHeader extends Component {
                   </div>
                 ) : (
                   <div className="logo-img">
-                 
                     <img src={Logo} alt="logo" />
-                  
                   </div>
                 )}
                 {/* <span className="text align-right">Survey</span> */}

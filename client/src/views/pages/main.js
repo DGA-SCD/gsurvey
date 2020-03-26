@@ -313,17 +313,26 @@ class Main extends Component {
                 cancelTooltip: "ยกเลิก",
                 saveTooltip: "ยืนยัน"
               },
-              deleteTooltip: "ลบแบบสำรวจ"
+              deleteTooltip: "ลบแบบสำรวจ",
+              addTooltip: "เพิ่มแบบสำรวจ",
+              emptyDataSourceMessage: "ยังไม่มีข้อมูล ณ ขณะนี้"
+            },
+            header: {
+              actions: ""
             },
             toolbar: {
-              searchPlaceholder: "ค้นหาแบบสำรวจ"
+              searchPlaceholder: "ค้นหาแบบสำรวจ",
+              exportName: "ดึงข้อมูลเป็น csv",
+              exportAriaLabel: "นำข้อมูลออก",
+              exportTitle: "นำข้อมุลออก"
             },
             pagination: {
               nextTooltip: "หน้าถัดไป",
               previousTooltip: "หน้าก่อนหน้า",
               lastTooltip: "หน้าสุดท้าย",
               firstTooltip: "หน้าแรก",
-              labelRowsSelect: "แถว"
+              labelRowsSelect: "แถว",
+              labelDisplayedRows: "{from}-{to} จาก {count}"
             }
           }}
         />

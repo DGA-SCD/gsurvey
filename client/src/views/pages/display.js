@@ -67,7 +67,9 @@ class Display extends Component {
     super(props);
     //console.log('load');
     this.state = {
+      isDesktop: false,
       json: "",
+      rotate: "90",
       answers: "",
       myfriend: "none",
       question: "",
@@ -78,6 +80,7 @@ class Display extends Component {
       uid: "",
       version: ""
     };
+    this.updatePredicate = this.updatePredicate.bind(this);
 
     // this.Auth = new AuthService();
     // this.intervalID = setInterval(() => this.Auth.IsAvailable(), 10000);
@@ -87,6 +90,9 @@ class Display extends Component {
   // }
 
   async componentDidMount() {
+    this.updatePredicate();
+    window.addEventListener("resize", this.updatePredicate);
+
     let url = this.props.location.search;
     let params = queryString.parse(url);
 
@@ -134,6 +140,13 @@ class Display extends Component {
     }
   }
 
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.updatePredicate);
+  }
+  updatePredicate() {
+    this.setState({ isDesktop: window.innerWidth > 479 });
+  }
+
   onComplete(result) {
     const cookies = new Cookies();
     cookies.remove("cookiesurvey");
@@ -166,6 +179,7 @@ class Display extends Component {
   }
 
   render() {
+    const isDesktop = this.state.isDesktop;
     var divStyle = {
       background: "#eee",
       padding: "30px"
@@ -174,18 +188,33 @@ class Display extends Component {
     var storageName = "SurveyJS_LoadState";
     var timerId = 0;
     Survey.StylesManager.applyTheme("orange");
-
+    Survey.surveyStrings.emptySurvey =
+      "ยังไม่มีการสร้างชุดคำถามสำหรับแบบสำรวจนี้";
     if (this.state.answers) var t = this.state.answers.surveyresult;
 
     if (this.state.question) {
       var survey = new Survey.Model(this.state.question);
-
+      survey.locale = "th";
+      survey.completedHtml = "ขอบคุณสำหรับคำตอบของท่าน";
+      survey.completeText = "ส่งคำตอบ";
+      survey.pagePrevText = "หน้าก่อนหน้า";
+      survey.pageNextText = "หน้าถัดไป";
       survey.clearInvisibleValues = "onHidden";
       survey.showQuestionNumbers = "off";
       survey.onAfterRenderQuestion.add(function(sender, options) {});
 
       return (
         <div style={divStyle}>
+          <div>
+            {isDesktop ? (
+              <div></div>
+            ) : (
+              <div style={{ textAlign: "center", color: "#e64a19" }}>
+                โปรดหมุนโทรศัพท์ของท่านเพื่อแสดงผลในแนวนอน
+              </div>
+            )}
+          </div>
+
           <Fragment>
             <Row>
               <Col xs="12">
