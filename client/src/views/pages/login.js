@@ -4,7 +4,7 @@ import React, { Component } from "react";
 import { NavLink, Redirect } from "react-router-dom";
 import { userService } from "../../services/UserAuth";
 import * as config1 from "../../services/AppConfig";
-import Logo from "../../assets/img/logo3.png";
+import Logo from "../../assets/img/logo_gsurvey_login.png";
 import { toastr } from "react-redux-toastr";
 import {
   Row,
@@ -172,7 +172,8 @@ class Login extends Component {
                 <h2
                   className=""
                   style={{
-                    color: "white"
+                    color: "white",
+                    paddingTop: "20px"
                   }}
                 >
                   เข้าสู่ระบบ

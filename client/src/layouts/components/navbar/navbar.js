@@ -181,17 +181,19 @@ class ThemeNavbar extends Component {
                       <DropdownItem>
                         <span className="font-small-3">
                           {localStorage.getItem("userlogin")}
-                          <span className="text-muted">(Guest)</span>
+                          <span className="text-muted">
+                            {JSON.parse(localStorage.getItem("userData")).role}
+                          </span>
                         </span>
                       </DropdownItem>
-                      <DropdownItem divider />
+                      {/* <DropdownItem divider /> */}
 
-                      <Link to="#" className="p-0">
+                      {/* <Link to="#" className="p-0">
                         <DropdownItem>
                           <User size={16} className="mr-1" />
                           ประวัติของฉัน
                         </DropdownItem>
-                      </Link>
+                      </Link> */}
 
                       <DropdownItem divider />
 

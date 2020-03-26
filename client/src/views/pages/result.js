@@ -208,7 +208,21 @@ class Main extends Component {
             }}
             localization={{
               toolbar: {
-                searchPlaceholder: "ค้นหาผลแบบสำรวจ"
+                searchPlaceholder: "ค้นหาแบบสำรวจ",
+                exportName: "ดึงข้อมูลเป็น csv",
+                exportAriaLabel: "นำข้อมูลออก",
+                exportTitle: "นำข้อมุลออก"
+              },
+              pagination: {
+                nextTooltip: "หน้าถัดไป",
+                previousTooltip: "หน้าก่อนหน้า",
+                lastTooltip: "หน้าสุดท้าย",
+                firstTooltip: "หน้าแรก",
+                labelRowsSelect: "แถว",
+                labelDisplayedRows: "{from}-{to} จาก {count}"
+              },
+              body: {
+                emptyDataSourceMessage: "ยังไม่มีคำตอบ สำหรับแบบสำรวจนี้"
               }
             }}
           />
