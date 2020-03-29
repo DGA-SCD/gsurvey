@@ -1,6 +1,7 @@
 import React, { Component, useState, forwardRef } from "react";
 import * as config from "../../services/AppConfig";
 import { BrowserRouter, Route, Link } from "react-router-dom";
+
 import { userService } from "../../services/UserAuth";
 //import Settimeout from "../../services/Settimeout";
 //import async from "react-async";
@@ -14,7 +15,7 @@ import AddBox from "@material-ui/icons/AddBox";
 import Check from "@material-ui/icons/Check";
 import Clear from "@material-ui/icons/Clear";
 import SaveAlt from "@material-ui/icons/SaveAlt";
-import VisibilityIcon from "@material-ui/icons/Visibility";
+import PageviewIcon from "@material-ui/icons/Pageview";
 import { fontSize } from "@material-ui/system";
 import "../../assets/scss/views/pages/survey/survey.css";
 import { toastr } from "react-redux-toastr";
@@ -49,7 +50,6 @@ class Main extends Component {
       error: false
     };
   }
-
   handleClickOpen = row => {
     return this.props.history.push({
       pathname: "survey-create",
@@ -86,6 +86,12 @@ class Main extends Component {
             {
               title: "ชื่อแบบสำรวจ",
               field: "name"
+            },
+            {
+              title: "วันที่แก้ไข",
+              field: "modified_at",
+              type: "datetime",
+              editable: "never"
             }
           ]
         });
@@ -122,7 +128,7 @@ class Main extends Component {
           data={this.state.data}
           actions={[
             {
-              icon: "edit",
+              icon: () => <Edit />,
               tooltip: "แก้ไขแบบสำรวจ",
               onClick: (event, rowData) => {
                 // this.handleClickOpen(rowData);
@@ -139,20 +145,17 @@ class Main extends Component {
               }
             },
             {
-              icon: "pageview",
+              icon: () => <PageviewIcon />,
               tooltip: "ดูแบบสำรวจที่สร้าง",
+
               onClick: (event, rowData) => {
-                console.log("rowData" + JSON.stringify(rowData));
-                console.log("pageview" + rowData);
-                this.props.history.push({
-                  pathname: "display",
-                  search:
-                    "?surveyid=" + rowData.surveyid + "&uid=" + rowData.userid,
-                  state: {
-                    version: rowData.version,
-                    userid: rowData.userid
-                  }
-                });
+                window.open(
+                  "display?surveyid=" +
+                    rowData.surveyid +
+                    "&uid=" +
+                    rowData.userid,
+                  "_blank"
+                );
               }
             },
             {
