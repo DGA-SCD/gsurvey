@@ -194,6 +194,9 @@ class Display extends Component {
 
     if (this.state.question) {
       var survey = new Survey.Model(this.state.question);
+      Survey.surveyLocalization.locales[
+        Survey.surveyLocalization.defaultLocale
+      ].requiredError = "กรุณากรอกข้อมูลให้ครบถ้วน";
       survey.locale = "th";
       survey.completedHtml = "ขอบคุณสำหรับคำตอบของท่าน";
       survey.completeText = "ส่งคำตอบ";
@@ -201,6 +204,7 @@ class Display extends Component {
       survey.pageNextText = "หน้าถัดไป";
       survey.clearInvisibleValues = "onHidden";
       survey.showQuestionNumbers = "off";
+
       survey.onAfterRenderQuestion.add(function(sender, options) {});
 
       return (

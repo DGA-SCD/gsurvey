@@ -34,7 +34,6 @@ const login = function(username, password) {
 
 function clearStrogae() {
   localStorage.clear();
-  window.location.replace("login");
 }
 
 function handleResponse(response) {
