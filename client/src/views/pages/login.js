@@ -22,7 +22,7 @@ import {
 import { relative } from "path";
 import { config } from "react-transition-group";
 const toastrOptions = {
-  timeOut: 3000, // by setting to 0 it will prevent the auto close
+  timeOut: 5000, // by setting to 0 it will prevent the auto close
   position: "top-right",
   showCloseButton: true, // false by default
   closeOnToastrClick: true, // false by default, this will close the toastr when user clicks on it
@@ -76,7 +76,7 @@ class Login extends Component {
             this.setState({
               passError: true
             });
-            console.log(this.state);
+            // console.log(this.state);
             // this.props.history.push("main");
             // const { from } = this.props.location.state || {
             //   from: { pathname: "main" }
@@ -84,12 +84,18 @@ class Login extends Component {
             // this.props.history.push(from);
           },
           error => {
+            console.log(error);
             this.setState({ error, loading: false });
-            console.log("error");
-            toastr.error(
-              "ไม่สามารถเข้าระบบได้ ติดต่อผู้ดูแลระบบ",
-              toastrOptions
-            );
+            if (error === "Unauthorized") {
+              toastr.error(
+                "ไม่สามารถเข้าระบบได้ โปรดตรวจสอบอีเมลหรือรหัสผ่านของท่าน",
+                toastrOptions
+              );
+            } else
+              toastr.error(
+                "ไม่สามารถเข้าระบบได้ โปรดติดต่อผู้ดูแลระบบ",
+                toastrOptions
+              );
           }
         );
     }
@@ -101,6 +107,7 @@ class Login extends Component {
     let formIsValid = true;
     console.log("validateForm");
     console.log(fields["username"]);
+    console.log(fields["password"]);
     if (fields["username"] === "") {
       formIsValid = false;
       console.log(fields["username"] + "por");
@@ -176,16 +183,15 @@ class Login extends Component {
                     paddingTop: "20px"
                   }}
                 >
-                  เข้าสู่ระบบ
+                  เข้ าสู่ ระบบ{" "}
                 </h2>
-
                 <Form
                   className="pt-2"
                   id="loginForm"
                   method="post"
                   onSubmit={this.handleSubmit}
                 >
-                  <div> </div>
+                  <div> </div>{" "}
                   <FormGroup>
                     <Col md="12">
                       <input
@@ -195,10 +201,13 @@ class Login extends Component {
                         className="form-control"
                         placeholder="อีเมลผู้ใช้งาน"
                         onChange={this.handleChange}
-                      />
-                      <div style={errorstyle}>{this.state.errors.username}</div>
-                    </Col>
-                  </FormGroup>
+                      />{" "}
+                      <div style={errorstyle}>
+                        {" "}
+                        {this.state.errors.username}{" "}
+                      </div>{" "}
+                    </Col>{" "}
+                  </FormGroup>{" "}
                   <FormGroup>
                     <Col md="12">
                       <Input
@@ -210,11 +219,14 @@ class Login extends Component {
                         placeholder="รหัสผ่าน"
                         onChange={this.handleChange}
                         // onBlur={this.handleChange}
-                      />
-                      <div style={errorstyle}>{this.state.errors.password}</div>
-                    </Col>
-                  </FormGroup>
-                  <FormGroup> </FormGroup>
+                      />{" "}
+                      <div style={errorstyle}>
+                        {" "}
+                        {this.state.errors.password}{" "}
+                      </div>{" "}
+                    </Col>{" "}
+                  </FormGroup>{" "}
+                  <FormGroup> </FormGroup>{" "}
                   <FormGroup>
                     <Col md="12">
                       <Button
@@ -223,16 +235,16 @@ class Login extends Component {
                         block
                         className="btn-pink btn-raised"
                       >
-                        เข้าสู่ระบบ
-                      </Button>
-                    </Col>
-                  </FormGroup>
-                </Form>
-              </CardBody>
-              <CardFooter> </CardFooter>
-            </Card>
-          </Col>
-        </Row>
+                        เข้ าสู่ ระบบ{" "}
+                      </Button>{" "}
+                    </Col>{" "}
+                  </FormGroup>{" "}
+                </Form>{" "}
+              </CardBody>{" "}
+              <CardFooter> </CardFooter>{" "}
+            </Card>{" "}
+          </Col>{" "}
+        </Row>{" "}
       </div>
     );
   }
