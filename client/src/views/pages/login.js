@@ -229,7 +229,7 @@ class Login extends Component {
                         block
                         className="btn-pink btn-raised"
                       >
-                        เข้ าสู่ ระบบ
+                        เข้าสู่ระบบ
                       </Button>
                     </Col>
                   </FormGroup>
