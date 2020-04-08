@@ -3,6 +3,5 @@ package-lock.json
 .vscode/
 access.log
 application.log
-config/production.conf.js
 coverage/
 node_modules/
