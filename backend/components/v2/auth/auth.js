@@ -64,7 +64,7 @@ function getUserDetails(conn, userName, password) {
     const qstr = "SELECT * " +
         "FROM users " +
         "JOIN user_profile on users.user_id = user_profile.user_id " +
-        "JOIN department on department.dep_code = user_profile.dep_code " +
+        "JOIN department on department.dep_id = user_profile.dep_id " +
         "JOIN ministry on ministry.ministry_code = user_profile.ministry_code " +
         "JOIN roles on roles.role_id = users.role_id " +
         "WHERE users.username = '" + userName + "' ";
@@ -76,7 +76,11 @@ function getUserDetails(conn, userName, password) {
                 reject(err);
             } else {
                 conn.end();
-                resolve(result[0]);
+                if( result[0].approval_status !== undefined && result[0].approval_status === "waiting") {
+                    reject({code: "UNAPPROVED"});
+                }else{
+                    resolve(result[0]);
+                }
             }
         });
     });
@@ -165,7 +169,11 @@ function login(req, res) {
                 return getUserDetails(mysqlConn, username, password);
             })
             .catch(err => {
-                http.error(res, 500, 500200, "query mysql failed: " + err);
+                if( err.code !== undefined && err.code === "UNAPPROVED") {
+                    http.error(res, 401, 401001, "This user is waiting for approval");
+                }else{
+                    http.error(res, 500, 500200, "query mysql failed: " + err);
+                }
                 reject(err);
             })
             .then(usrDetails => {
