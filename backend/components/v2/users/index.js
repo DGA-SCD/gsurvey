@@ -30,6 +30,8 @@ const logger = winston.logger;
 const router = express.Router();
 const mongo = require('../../helpers/mongodb');
 const uuidv4 = require('uuid/v4');
+const {register} = require('./register');
+const {getMinistries, getDepartments, getOrganizations} = require('./organization');
 
 router.use(function (req, res, next) {
     logger.info('calling users api ' + req.path);
@@ -150,8 +152,19 @@ function saveResult(req, res) {
 // /api/v2/users/surveys
 router.get('/surveys', getSurveyById);
 
-// /api/v2/users
+// /api/v2/users/results
 router.post('/results', saveResult); /* requires Question ID and Question Owner */
 
+// /api/v2/users/register
+router.post('/register', register);
+
+// /api/v2/users/ministry
+router.get('/ministries', getMinistries);
+
+// /api/v2/users/departments?ministryId=1
+router.get('/departments', getDepartments);
+
+// /api/v2/users/organizes/departmentId=1
+router.get('/organizations', getOrganizations);
 
 module.exports = router;

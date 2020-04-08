@@ -62,7 +62,7 @@ function getProfile(req, res) {
             const qstr = "SELECT * " +
                 "FROM users " +
                 "JOIN user_profile on users.user_id = user_profile.user_id " +
-                "JOIN department on department.dep_code = user_profile.dep_code " +
+                "JOIN department on department.dep_id = user_profile.dep_id " +
                 "JOIN ministry on ministry.ministry_code = user_profile.ministry_code " +
                 "JOIN roles on roles.role_id = users.role_id " +
                 "WHERE users.username = '" + userName + "' ";
