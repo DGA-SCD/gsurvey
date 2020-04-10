@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 const useForm = (callback, validateRegister) => {
-  const [account, setaccount] = useState({
+  const initialState = {
     firstname: "",
     lastname: "",
     email: "",
@@ -10,7 +10,9 @@ const useForm = (callback, validateRegister) => {
     dep_id: "",
     org_id: "",
     check: false
-  });
+  };
+  const [account, setaccount] = useState(initialState);
+
   //   const [check, setcheck] = useState(false);
   const [errors, seterrors] = useState({});
   const [issubmit, setissubmit] = useState(false);
@@ -56,6 +58,9 @@ const useForm = (callback, validateRegister) => {
     seterrors(validateRegister(account));
     setissubmit(true);
   };
+  const clearState = () => {
+    setaccount(initialState);
+  };
   useEffect(() => {
     if (Object.keys(errors).length === 0 && issubmit) {
       callback();
@@ -65,6 +70,7 @@ const useForm = (callback, validateRegister) => {
     handleChange,
     handleSubmit,
     handleChecked,
+    clearState,
     account,
     errors
   };

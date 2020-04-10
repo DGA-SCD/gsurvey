@@ -31,6 +31,7 @@ function Register() {
     handleChange,
     handleChecked,
     handleSubmit,
+    clearState,
     account,
     errors
   } = useForm(submit, validateRegister);
@@ -46,7 +47,6 @@ function Register() {
     try {
       fetch(config.BACKEND_GSURVEY + "/api/v2/users/register", {
         method: "post",
-
         crossDomain: true,
         headers: {
           "Content-Type": "application/json"
@@ -61,6 +61,7 @@ function Register() {
               "ทาง DGA ได้รับคำขอการลงทะเบียนของท่านเรียบร้อยแล้ว รอการยืนยันจากผู้ดูแลระบบอีกครั้ง สำหรับการเข้าใช้งานระบบ G-Survey",
               toastrOptions
             );
+            clearState();
             // window.location.replace("/pages/login");
           } else {
             toastr.error(result.desc, toastrOptions);
@@ -159,8 +160,8 @@ function Register() {
             className="d-flex align-items-center justify-content-center"
           >
             <Card
-              className="text-center width-500"
-              style={{ backgroundColor: "#1CBCD8" }}
+              className="text-center width-500 gradient-indigo-purple"
+              // style={{ backgroundColor: "#1CBCD8" }}
             >
               <CardBody>
                 {/* <img src={Logo} alt="logo" /> */}
