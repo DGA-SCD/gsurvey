@@ -84,8 +84,9 @@ const LazyBilling = lazy(() => import("../views/pages/billing"));
 const LazySurveyresult = lazy(() => import("../views/pages/surveyresult"));
 const LazyDashboard = lazy(() => import("../views/pages/dashboard"));
 const LazyResult = lazy(() => import("../views/pages/result"));
+const LazyUserManagement = lazy(() => import("../views/pages/UserManagement"));
 // Full Layout
-const LazyForgotPassword = lazy(() => import("../views/pages/forgotPassword"));
+const LazyForgetPassword = lazy(() => import("../views/pages/forgetpassword"));
 const LazyLogin = lazy(() => import("../views/pages/login"));
 const LazyRegister = lazy(() => import("../views/pages/register"));
 const LazyMaintainance = lazy(() => import("../views/pages/maintainance"));
@@ -639,10 +640,10 @@ class Router extends Component {
                {/* Saperate Pages Views */}
                <FullPageLayout
                   exact
-                  path="/pages/forgot-password"
+                  path="/pages/forgetpassword"
                   render={matchprops => (
                      <Suspense fallback={<Spinner />}>
-                        <LazyForgotPassword {...matchprops} />
+                        <LazyForgetPassword {...matchprops} />
                      </Suspense>
                   )}
                />
@@ -884,6 +885,18 @@ class Router extends Component {
                      </Suspense>
                   )}
                />
+
+               <MainLayoutRoutes
+                  exact
+                  path="/pages/UserManagement"
+                  render={matchprops => (
+                     <Suspense fallback={<Spinner />}>
+                        <LazyUserManagement {...matchprops} />
+                     </Suspense>
+                  )}
+               />
+
+
                <ErrorLayoutRoute
                   render={matchprops => (
                      <Suspense fallback={<Spinner />}>

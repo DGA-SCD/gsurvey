@@ -6,9 +6,9 @@ import { userService } from "../../services/UserAuth";
 import * as config1 from "../../services/AppConfig";
 import Logo from "../../assets/img/logo_gsurvey_login.png";
 import { toastr } from "react-redux-toastr";
+import ForgetPassword from "./forgetpassword";
 import {
   Row,
-  Alert,
   Col,
   Input,
   Form,
@@ -19,8 +19,7 @@ import {
   CardBody,
   CardFooter
 } from "reactstrap";
-import { relative } from "path";
-import { config } from "react-transition-group";
+
 const toastrOptions = {
   timeOut: 5000, // by setting to 0 it will prevent the auto close
   position: "top-right",
@@ -42,11 +41,13 @@ class Login extends Component {
       fields: {},
       errors: {}
     };
+
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handlePassChange = this.handlePassChange.bind(this);
     this.handleUseridChange = this.handleUseridChange.bind(this);
   }
+
   handlePassChange = event => {
     this.setState({ password: event.target.value });
     console.log(this.state.password);
@@ -235,7 +236,20 @@ class Login extends Component {
                   </FormGroup>
                 </Form>
               </CardBody>
-              <CardFooter> </CardFooter>
+              <CardFooter>
+                <div className="float-left">
+                  <ForgetPassword />
+                </div>
+                <div className="float-right">
+                  <NavLink
+                    to="/pages/register"
+                    className="text-white"
+                    target="_blank"
+                  >
+                    ลงทะเบียนผู้ใช้
+                  </NavLink>
+                </div>
+              </CardFooter>
             </Card>
           </Col>
         </Row>
