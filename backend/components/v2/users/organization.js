@@ -38,13 +38,14 @@ function getMinistries(req, res) {
             return mysql.query(conn, qstr)
                 .then(result => {
                     http.success(res, result);
+                    conn.destroy();
                     return Promise.resolve(result.length);
                 })
         })
         .then(l => {
             logger.debug("query ministry: " + l + " records");
         }).catch(err => {
-            http.error(res, 500, 50001, err);
+            http.error(res, 500, 50002, err);
         });
 }
 
@@ -71,7 +72,7 @@ function getDepartments(req, res) {
         .then(l => {
             logger.debug("query department: " + l + " records");
         }).catch(err => {
-            http.error(res, 500, 50001, err);
+            http.error(res, 500, 50002, err);
         });
 }
 
@@ -98,7 +99,7 @@ function getOrganizations(req, res) {
         .then(l => {
             logger.debug("query organization: " + l + " records");
         }).catch(err => {
-            http.error(res, 500, 50001, err);
+            http.error(res, 500, 50002, err);
         });
 }
 

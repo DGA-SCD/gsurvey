@@ -86,7 +86,7 @@ function register(req, res) {
 
     /* insert to user */
     /* insert to user_profile */
-    
+
 
     mysql.getConnection()
         .then(conn => {
@@ -96,15 +96,18 @@ function register(req, res) {
                 });
         })
         .then((conn) => {
-            return mysql.query(conn, "SELECT user_id FROM users where username= '" + username +"' and password='" + password+ "'")
+            return mysql.query(conn, "SELECT user_id FROM users where username= '" + username + "' and password='" + password + "'")
                 .then(result => {
                     console.log(result);
-                    return Promise.resolve({conn: conn, user_id: result[0].user_id});
+                    return Promise.resolve({
+                        conn: conn,
+                        user_id: result[0].user_id
+                    });
                 });
         })
         .then(obj => {
             var qstr_prf_insert = "INSERT INTO user_profile(`user_id`, `dep_id`, `ministry_code`," +
-                "`org_code`, `prefix_id`, `firstname`, `lastname`, `email`, `mobile`, `delete_flag`, `approval_status`, `position`, `office_phone`,`ext`) " + 
+                "`org_code`, `prefix_id`, `firstname`, `lastname`, `email`, `mobile`, `delete_flag`, `approval_status`, `position`, `office_phone`,`ext`) " +
                 " value(" + obj.user_id + "," +
                 req.body.dep_id + ",'" +
                 req.body.min_id + "','" +
@@ -126,7 +129,10 @@ function register(req, res) {
                 from: 'noreply.gsurvey@dga.or.th',
                 to: req.body.email,
                 subject: 'ยืนยันการสมัครใช้งานระบบ G-Survey',
-                text: 'รอการอนุมติ หากอนุมัติแล้วจะมีอีเมล์ส่งมาอีกครั้ง',
+                html: 'ทาง DGA ได้รับคำขอการลงทะเบียนของท่านเรียบร้อยแล้ว\n\n' +
+                    'รอการยืนยันจากผู้ดูแลระบบอีกครั้ง สำหรับการเข้าใช้งานระบบ G-Survey\n\n' +
+                    'ขอแสดงความนับถือ\n' +
+                    'ทีม G-Survey',
             }).then(info => {
                 logger.debug("sent mail to " + req.body.email + " successfully");
             });
@@ -134,9 +140,9 @@ function register(req, res) {
             http.success(res);
         }).catch(err => {
             logger.debug(err);
-            if( err.code !== undefined && err.code === "ER_DUP_ENTRY"){
+            if (err.code !== undefined && err.code === "ER_DUP_ENTRY") {
                 http.error(res, 403, 40300, req.body.email + ' is already exist');
-            }else{
+            } else {
                 http.error(res, 500, 50002, err);
             }
         });

@@ -76,7 +76,7 @@ function getUserDetails(conn, userName, password) {
                 reject(err);
             } else {
                 conn.end();
-                if( result[0].approval_status !== undefined && result[0].approval_status === "waiting") {
+                if( result.length > 0 && result[0].approval_status !== undefined && result[0].approval_status === "waiting") {
                     reject({code: "UNAPPROVED"});
                 }else{
                     resolve(result[0]);
@@ -238,7 +238,7 @@ function login(req, res) {
                 resolve(true);
             })
             .catch(err => {
-                http.error(res, 500, 500000, "server error: " + err);
+                http.error(res, 500, 50002, "server error: " + err);
                 reject(err)
             });
     });
