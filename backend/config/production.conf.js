@@ -33,6 +33,7 @@ const {
     COOKIES_SECRETE_KEY,
 
     TOKEN_EXPIRED_TIME,
+    OTP_EXPIRED_TIME,
 
     SMTP_HOST,
     SMTP_PORT,
@@ -104,7 +105,8 @@ module.exports = {
     },
 
     tokenExpiredTime: TOKEN_EXPIRED_TIME,
-    
+    OTPExpiredTime: (OTP_EXPIRED_TIME || 300),
+
     SMTP_HOST: SMTP_HOST,
     SMTP_PORT: Number(SMTP_PORT),
     SMTP_SECURE: SMTP_SECURE === 'true',

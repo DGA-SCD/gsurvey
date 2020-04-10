@@ -136,7 +136,7 @@ function saveSurvey(req, res) {
                     return true;
                 })
                 .catch(err => {
-                    http.error(res, 500, 50000, "mongo error: " + err);
+                    http.error(res, 500, 50002, "mongo error: " + err);
                     return false;
                 });
         })
@@ -150,7 +150,7 @@ function saveSurvey(req, res) {
                     return true;
                 })
                 .catch(err => {
-                    http.error(res, 500, 50000, "mongo error: " + err);
+                    http.error(res, 500, 50002, "mongo error: " + err);
                     return false;
                 });
         })
@@ -205,7 +205,7 @@ function createEmptySurvey(req, res) {
             return true;
         })
         .catch(err => {
-            http.error(res, 500, 50000, "mongo error: " + err);
+            http.error(res, 500, 50002, "mongo error: " + err);
             return false;
         });
 }
@@ -229,7 +229,7 @@ function getAllSurveysByOwnerId(req, res) {
             return true;
         })
         .catch(err => {
-            http.error(res, 500, 50000, "mongo error: " + err);
+            http.error(res, 500, 50002, "mongo error: " + err);
             return false;
         });
 
@@ -267,7 +267,7 @@ function getSurveyById(req, res) {
             return true;
         })
         .catch(err => {
-            http.error(res, 500, 50000, "mongo error: " + err);
+            http.error(res, 500, 50002, "mongo error: " + err);
             return false;
         });
 };
@@ -293,7 +293,7 @@ function renameSurvey(req, res) {
             return true;
         })
         .catch(err => {
-            http.error(res, 500, 50000, "mongo error: " + err);
+            http.error(res, 500, 50002, "mongo error: " + err);
             return false;
         });
 }
@@ -312,7 +312,7 @@ function deleteSurvey(req, res) {
             return true;
         })
         .catch(err => {
-            http.error(res, 500, 50000, "mongo error: " + err);
+            http.error(res, 500, 50002, "mongo error: " + err);
             return false;
         });
 }
@@ -346,7 +346,7 @@ function getAllResultsBySurveyId(req, res) {
             return true;
         })
         .catch(err => {
-            http.error(res, 500, 50000, "mongo error: " + err);
+            http.error(res, 500, 50002, "mongo error: " + err);
             return false;
         });
 
@@ -365,7 +365,7 @@ function getResultById(req, res) {
             return true;
         })
         .catch(err => {
-            http.error(res, 500, 50000, "mongo error: " + err);
+            http.error(res, 500, 50002, "mongo error: " + err);
             return false;
         });
 }
@@ -414,7 +414,7 @@ function saveResult(req, res) {
             return true;
         })
         .catch(err => {
-            http.error(res, 500, 50000, "mongo error: " + err);
+            http.error(res, 500, 50002, "mongo error: " + err);
             return false;
         });
 }
@@ -435,5 +435,9 @@ router.post('/results', saveResult);
 
 // /v2/users
 router.get('/users/profile', users.getProfile);
+
+// /api/v2/admin/password/change
+router.post('/password/change', users.changePassord);
+
 
 module.exports = router;

@@ -32,6 +32,7 @@ const mongo = require('../../helpers/mongodb');
 const uuidv4 = require('uuid/v4');
 const {register} = require('./register');
 const {getMinistries, getDepartments, getOrganizations} = require('./organization');
+const {sendOTP, resetPassword} = require('../users/password');
 
 router.use(function (req, res, next) {
     logger.info('calling users api ' + req.path);
@@ -90,7 +91,7 @@ function getSurveyById(req, res) {
             return true;
         })
         .catch(err => {
-            http.error(res, 500, 50000, "mongodb error: " + err);
+            http.error(res, 500, 50002, "mongodb error: " + err);
             return false;
         });
 };
@@ -143,7 +144,7 @@ function saveResult(req, res) {
             return true;
         })
         .catch(err => {
-            http.error(res, 500, 50000, "mongodb error: " + err);
+            http.error(res, 500, 50002, "mongodb error: " + err);
             return false;
         });
 }
@@ -166,5 +167,11 @@ router.get('/departments', getDepartments);
 
 // /api/v2/users/organizes/departmentId=1
 router.get('/organizations', getOrganizations);
+
+// /api/v2/users/otp
+router.post('/otp', sendOTP);
+
+// /api/v2/users/password/reset
+router.post('/password/reset', resetPassword);
 
 module.exports = router;

@@ -38,6 +38,14 @@ function getTransport() {
     return mail.createTransport(setting);
 }
 
+/**
+ * 
+ * @param {object} data {"from: 'from_userr at dot com', // sender
+    to: 'to.user at dot com', // list of receivers
+    subject: 'reset password', // Mail subject
+    html: '...' // HTML body"}
+ * @param {object} trans transport
+ */
 function sendMail(data, trans) {
     let transport = trans || getTransport();
     return transport.sendMail(data);

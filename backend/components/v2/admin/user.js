@@ -33,6 +33,9 @@ const logger = winston.logger;
 const router = express.Router();
 const promise = require('promise');
 const MongoClient = require('mongodb').MongoClient;
+const {
+    changePassword
+} = require('../users/password');
 
 // Get User profile 
 function getProfile(req, res) {
@@ -52,7 +55,7 @@ function getProfile(req, res) {
 
         if (err) {
             logger.error("Cannot connect to mariadb");
-            http.error(res, 500, 50000, "Cannot connect to mariadb");
+            http.error(res, 500, 50001, "Cannot connect to mariadb");
             conn.end();
             return;
         } else {
@@ -146,6 +149,15 @@ function getAllUser(conn) {
     });
 }
 
+
+function changePassord(req, res) {
+    req.ctx = {
+        userId: req.signedCookies['userid']
+    }
+    changePassword(req, res);
+}
+
 module.exports = {
-    getProfile
+    getProfile,
+    changePassord,
 };
