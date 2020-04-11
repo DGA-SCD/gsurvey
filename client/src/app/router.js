@@ -87,6 +87,7 @@ const LazyResult = lazy(() => import("../views/pages/result"));
 const LazyUserManagement = lazy(() => import("../views/pages/UserManagement"));
 // Full Layout
 const LazyForgetPassword = lazy(() => import("../views/pages/forgetpassword"));
+const LazyResetPassword = lazy(() => import("../views/pages/resetPassword"));
 const LazyLogin = lazy(() => import("../views/pages/login"));
 const LazyRegister = lazy(() => import("../views/pages/register"));
 const LazyMaintainance = lazy(() => import("../views/pages/maintainance"));
@@ -644,6 +645,15 @@ class Router extends Component {
                   render={matchprops => (
                      <Suspense fallback={<Spinner />}>
                         <LazyForgetPassword {...matchprops} />
+                     </Suspense>
+                  )}
+               />
+               <FullPageLayout
+                  exact
+                  path="/pages/resetPassword"
+                  render={matchprops => (
+                     <Suspense fallback={<Spinner />}>
+                        <LazyResetPassword {...matchprops} />
                      </Suspense>
                   )}
                />
