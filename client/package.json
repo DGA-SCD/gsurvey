@@ -44,6 +44,7 @@
     "react-dropzone": "^5.0.1",
     "react-feather": "^1.1.1",
     "react-ga": "^2.7.0",
+    "react-hook-form": "^5.3.1",
     "react-horizontal-timeline": "^1.5.3",
     "react-idle-timer": "^4.2.12",
     "react-perfect-scrollbar": "^1.1.1",
