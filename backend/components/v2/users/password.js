@@ -76,6 +76,7 @@ function isUserExist(username) {
 }
 
 function sendOTP(req, res) {
+    let return_url;
     //validate input
     if (req.body.email === undefined || req.body.email === "") {
         http.error(res, 400, 40000, "Not found email");
@@ -92,12 +93,25 @@ function sendOTP(req, res) {
         return;
     }
 
+    if (req.body.return_url[0] == "h") {
+        return_url = req.body.return_url;
+    }else{
+        if( req.headers.origin === undefined || req.headers.origin === "" ){
+            http.error(res, 400, 40001, "Not found origin header");
+            return;
+        }else{
+            return_url = req.headers.origin + req.body.return_url;
+        }
+    }
+
+    
+
     //generate OTP
     const otp = getOTP();
 
     //send email 
     const content = '<span style="font-family:Arial, Helvetica, sans-serif; font-size:12px; color:#000000;">ทาง DGA ได้รับคำขอ reset password แล้ว (เลขอ้างอิง: ' + req.body.ref_code + ')\
-    <br><br><a href="' + req.body.return_url + '?email=' + req.body.email + '&ref_code=' + req.body.ref_code + '&otp=' + otp + '">กดเพื่อกรอกรหัสผ่านใหม่</a> ลิงค์นี้จะมีอายุ 5 นาที<br><br>\
+    <br><br><a href="' + return_url + '?email=' + req.body.email + '&ref_code=' + req.body.ref_code + '&otp=' + otp + '">กดเพื่อกรอกรหัสผ่านใหม่</a> ลิงค์นี้จะมีอายุ 5 นาที<br><br>\
     ขอแสดงความนับถือ<br>\
     ทีม G-Survey<br></span>';
 
