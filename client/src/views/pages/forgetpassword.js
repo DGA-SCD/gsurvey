@@ -19,9 +19,8 @@ import { toastr } from "react-redux-toastr";
 export default function ForgetPassword() {
   const initalstate = {
     email: "",
-    //  url: "https://gsurvey.dga.or.th/pages/password/reset",
-    //return_url: config.BACKEND_GSURVEY + "/pages/resetPassword",
-    return_url: "http://client.open4u.io:3002/pages/resetPassword",
+    return_url: "/pages/resetPassword",
+    //return_url: "http://client.open4u.io:3002/pages/resetPassword",
     ref_code: Math.random()
       .toString(36)
       .substring(7)

@@ -103,6 +103,7 @@ export default function ResetPassword() {
                       name="password"
                       className="form-control"
                       placeholder="กรุณากรอกรหัสผ่าน"
+                      type="password"
                       ref={register({ required: "กรุณากรอกรหัสผ่าน" })}
                     />
                   </div>
@@ -122,6 +123,7 @@ export default function ResetPassword() {
                     <input
                       name="passwordConfirmation"
                       className="form-control"
+                      type="password"
                       ref={register({
                         required: "กรุณายืนยันรหัสผ่าน",
                         validate: {
