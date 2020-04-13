@@ -129,7 +129,7 @@ function register(req, res) {
                 from: 'noreply.gsurvey@dga.or.th',
                 to: req.body.email,
                 subject: 'ยืนยันการสมัครใช้งานระบบ G-Survey',
-                html: 'ทาง DGA ได้รับคำขอการลงทะเบียนของท่านเรียบร้อยแล้ว\n\n' +
+                text: 'ทาง DGA ได้รับคำขอการลงทะเบียนของท่านเรียบร้อยแล้ว\n\n' +
                     'รอการยืนยันจากผู้ดูแลระบบอีกครั้ง สำหรับการเข้าใช้งานระบบ G-Survey\n\n' +
                     'ขอแสดงความนับถือ\n' +
                     'ทีม G-Survey',
