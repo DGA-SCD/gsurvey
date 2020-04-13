@@ -77,7 +77,7 @@ function register(req, res) {
 
     var username = req.body.email;
     var password = pwd.generate(req.body.password);
-    var role = 0;
+    var role = 1;
     var user_id;
 
     /* prepare statement */
