@@ -34,7 +34,7 @@ const mongo = require('../../helpers/mongodb');
 const users = require('./user');
 const uuidv4 = require('uuid/v4');
 const auth = require('../../helpers/auth');
-
+const members = require('./members');
 
 
 router.use(function (req, res, next) {
@@ -439,5 +439,17 @@ router.get('/users/profile', users.getProfile);
 // /api/v2/admin/password/change
 router.post('/password/change', users.changePassord);
 
+
+// /api/v2/admin/members
+router.get("/members", members.getMembers);
+
+// /api/v2/admin/members/approval
+router.post("/members/approval", members.setApproval);
+
+// /api/v2/admin/members/suspension
+router.post("/members/suspension", members.setSuspension);
+
+// /api/v2/admin/members/{:id}
+router.delete("/members/:id", members.deleteMember);
 
 module.exports = router;
