@@ -57,6 +57,8 @@
     "react-spinners": "^0.4.7",
     "react-stepzilla": "^4.7.2",
     "react-swipeable-views": "^0.12.16",
+    "react-data-table-component": "^6.6.0",
+    "styled-components": "^5.1.0",
     "react-table": "^6.11.5",
     "react-tagsinput": "^3.19.0",
     "react-toggle": "^4.1.1",

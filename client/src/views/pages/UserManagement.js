@@ -1,111 +1,153 @@
-import React, { useState, useEffect } from "react";
+import React, {
+  Component,
+  useState,
+  useCallback,
+  useMemo,
+  useEffect
+} from "react";
+import memoize from "memoize-one";
 import axios from "axios";
-import MaterialTable from "material-table";
+import DataTable from "react-data-table-component";
+import { Button } from "reactstrap";
+import IconButton from "@material-ui/core/IconButton";
+import DeleteIcon from "@material-ui/icons/Delete";
+import Edit from "@material-ui/icons/Edit";
+import * as config from "../../services/AppConfig";
 export default function UserManagement() {
-  const [dataArray, setdataArray] = useState([]);
+  const actions = <Button key="add">Add</Button>;
 
-  // useEffect(() => {
-  //   async function fetchData() {
-  //     // You can await here
-  //     const response = await axios("https://reqres.in/api/users");
-  //     console.log(response);
-  //     if (response.status !== 200) {
-  //       console.log("ไม่สารมารถเปิดแบบสำรวจได้");
-  //       //   toastr.error("ไม่สารมารถเปิดแบบสำรวจได้", toastrOptions);
-  //     }
-  //     setdataArray(response.data.data);
-  //   }
-  //   fetchData();
-  // }, []); // Or [] if effect doesn't need props or state
+  const [selectedRows, setSelectedRows] = useState([]);
+  const [toggleCleared, setToggleCleared] = useState(false);
+  const [errors, seterrors] = useState();
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const fetchUsers = async page => {
+    setLoading(true);
+    const requestOptions = {
+      method: "GET",
+      credentials: "include"
+    };
+    const res = await fetch(
+      config.BACKEND_GSURVEY + `/api/v2/admin/members`,
+      requestOptions
+    )
+      .then(response => response.json())
+      .then(response => setData(response.data))
+      .catch(err => seterrors(err));
+    console.log(data);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchUsers(1);
+  }, []);
+  const columns = [
+    {
+      name: "First Name",
+      selector: "firstname",
+      sortable: true
+    },
+    {
+      name: "Last Name",
+      selector: "lastname",
+      sortable: true
+    },
+    {
+      name: "Email",
+      selector: "email",
+      sortable: true
+    },
+    {
+      name: "mobile",
+      selector: "mobile",
+      sortable: true
+    },
+    {
+      cell: row => (
+        <div>
+          <IconButton
+            color="primary"
+            onClick={() => setSendRequest(row.user_id)}
+          >
+            <Edit />
+          </IconButton>
+          {/* <button onClick={() => setSendRequest(row.id)} id={row.id}>
+            Action
+          </button>
+
+          <button onClick={() => sethandelEdit(row.id)} id={row.id}>
+            Edit
+          </button> */}
+        </div>
+      )
+    }
+  ];
+
+  const setSendRequest = user_id => {
+    console.log(user_id);
+  };
+  const sethandelEdit = user_id => {
+    alert(user_id);
+  };
+  const handleRowSelected = useCallback(state => {
+    setSelectedRows(state.selectedRows);
+  }, []);
+
+  const contextActions = useMemo(() => {
+    const handleDelete = () => {
+      if (
+        window.confirm(
+          `Are you sure you want to delete:\r ${selectedRows.map(
+            r => r.user_id
+          )}?`
+        )
+      ) {
+        setToggleCleared(!toggleCleared);
+        // setData(differenceBy(data, selectedRows, "name"));
+      }
+    };
+    const handleEdit = () => {
+      if (
+        window.confirm(
+          `Are you sure you want to edit:\r ${selectedRows.map(
+            r => r.user_id
+          )}?`
+        )
+      ) {
+        setToggleCleared(!toggleCleared);
+        // setData(differenceBy(data, selectedRows, "name"));
+      }
+    };
+
+    return (
+      <div>
+        <Button
+          key="delete"
+          onClick={handleDelete}
+          style={{ backgroundColor: "red" }}
+          icon
+        >
+          Delete
+        </Button>
+      </div>
+    );
+  }, [data, selectedRows, toggleCleared]);
 
   return (
-    // <div>
-    //   <ul>
-    //     {dataArray.map(item => (
-    //       <li key={item.id}>
-    //         <a href={item.first_name}>{item.email}</a>
-    //       </li>
-    //     ))}
-    //   </ul>
-
-    <MaterialTable
-      title="Remote Data Preview"
-      columns={[
-        {
-          title: "Avatar",
-          field: "avatar",
-          render: rowData => (
-            <img
-              style={{ height: 36, borderRadius: "50%" }}
-              src={rowData.avatar}
-            />
-          )
-        },
-        { title: "Id", field: "id" },
-        { title: "First Name", field: "first_name" },
-        { title: "Last Name", field: "last_name" }
-      ]}
-      data={query =>
-        new Promise((resolve, reject) => {
-          let url = "http://demo8767913.mockable.io/alluser%3F";
-          //let url = "https://reqres.in/api/users?";
-          url += "per_page=" + query.pageSize;
-          url += "&page=" + (query.page + 1);
-          console.log(url);
-          fetch(url)
-            .then(response => response.json())
-            .then(result => {
-              console.log(result);
-              resolve({
-                data: result.data,
-                page: result.page - 1,
-                totalCount: result.total
-              });
-            });
-        })
-      }
-      editable={{
-        onRowAdd: newData =>
-          new Promise((resolve, reject) => {
-            setTimeout(() => {
-              {
-                /* const data = this.state.data;
-                          data.push(newData);
-                          this.setState({ data }, () => resolve()); */
-              }
-              resolve();
-            }, 1000);
-          }),
-        onRowUpdate: (newData, oldData) =>
-          new Promise((resolve, reject) => {
-            setTimeout(() => {
-              {
-                /* const data = this.state.data;
-                          const index = data.indexOf(oldData);
-                          data[index] = newData;                
-                          this.setState({ data }, () => resolve()); */
-              }
-              resolve();
-            }, 1000);
-          }),
-        onRowDelete: oldData =>
-          new Promise((resolve, reject) => {
-            setTimeout(() => {
-              {
-                /* let data = this.state.data;
-                          const index = data.indexOf(oldData);
-                          data.splice(index, 1);
-                          this.setState({ data }, () => resolve()); */
-              }
-              resolve();
-            }, 1000);
-          })
-      }}
-      options={{
-        pageSize: 10,
-        exportButton: true,
-        exportAllData: true
-      }}
-    />
+    <div>
+      {/* {console.log(data)} */}
+      <DataTable
+        title="Arnold Movies"
+        columns={columns}
+        data={data}
+        selectableRows // add for checkbox selection
+        pagination
+        // contextActions={contextActions}
+        // onSelectedRowsChange={handleRowSelected}
+        // clearSelectedRows={toggleCleared}
+        // progressPending={loading}
+      />
+    </div>
   );
 }

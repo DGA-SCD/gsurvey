@@ -40,9 +40,17 @@ class SideMenuContent extends Component {
           </i>
           <span className="menu-item-text">แบบสำรวจ</span>
         </NavLink>
+      </SideMenu.MenuSingleItem>,
+      //1 จัดการผู้ใช้งาน
+      <SideMenu.MenuSingleItem>
+        <NavLink to="/pages/UserManagement" activeClassName="active">
+          <i className="menu-icon">
+            <Users size={18} />
+          </i>
+          <span className="menu-item-text">จัดการผู้ใช้งาน</span>
+        </NavLink>
       </SideMenu.MenuSingleItem>
     ];
-
     // if (localStorage.getItem("token_local") === null) {
     //   return <Redirect to={"login"} />;
     // } else {
@@ -68,8 +76,8 @@ class SideMenuContent extends Component {
             toggleSidebarMenu={this.props.toggleSidebarMenu}
           >
             {menuLists[0]}
-            {/* {menuLists[1]}
-            {menuLists[2]}
+            {menuLists[1]}
+            {/*{menuLists[2]}
             {menuLists[3]}
             {menuLists[4]} */}
           </SideMenu>
@@ -81,7 +89,6 @@ class SideMenuContent extends Component {
             toggleSidebarMenu={this.props.toggleSidebarMenu}
           >
             {menuLists[0]}
-            {menuLists[1]}
           </SideMenu>
         );
       } else {
