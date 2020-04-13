@@ -43,7 +43,7 @@ export default function ResetPassword() {
   const toggle = () => setModal(!modal);
 
   const onSubmit = data => {
-    //  alert(JSON.stringify(data));
+    //alert(JSON.stringify(data));
 
     try {
       // fetch("https://jsonplaceholder.typicode.com/todos/1")
@@ -59,13 +59,15 @@ export default function ResetPassword() {
         .then(result => result.json())
         .then(result => {
           console.log(result);
-          if (result.userId) {
+          if (result.success) {
             setshow();
 
             setTimeout(function() {
               setIsOpened(false);
 
               setModal(false);
+
+              window.location.replace("/pages/login");
             }, 4000);
           } else {
             toastr.error(result.desc, toastrOptions);
@@ -160,12 +162,6 @@ export default function ResetPassword() {
               <input
                 name="otp"
                 value={decodeURIComponent(params.otp)}
-                type="hidden"
-                ref={register}
-              />
-              <input
-                name="return_url"
-                value={config.BACKEND_GSURVEY + "/pages/login"}
                 type="hidden"
                 ref={register}
               />
