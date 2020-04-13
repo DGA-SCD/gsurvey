@@ -67,7 +67,7 @@ function getUserDetails(conn, userName, password) {
         "JOIN department on department.dep_id = user_profile.dep_id " +
         "JOIN ministry on ministry.ministry_code = user_profile.ministry_code " +
         "JOIN roles on roles.role_id = users.role_id " +
-        "WHERE users.username = '" + userName + "' ";
+        "WHERE users.username = '" + userName + "' and user_profile.delete_flag = 0";
 
     return new promise(function (resolve, reject) {
         conn.query(qstr, function (err, result, fields) {
