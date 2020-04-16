@@ -268,7 +268,7 @@ function setSuspension(req, res) {
     }
 
     const qstr = "UPDATE user_profile " +
-        "SET suspended_flag=\'" + ((action === "enable") ? 1 : 0) + "\' " +
+        "SET suspended_flag=\'" + ((action === "enable") ? 0 : 1) + "\' " +
         "WHERE user_id = \'" + memberId + "\'";
 
     const approved_content = '<span style="font-family:Arial, Helvetica, sans-serif; font-size:12px; color:#000000;">บัญชีผู้ใช้เปิดใช้งานแล้ว<br>\
