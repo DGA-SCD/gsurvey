@@ -83,12 +83,6 @@ function getMembers(req, res) {
         .then(conn => {
             return mysqlHelper.query(conn, qstr_getMember)
                 .then(results => {
-                    if (results > 0 && results[0].suspended_flag !== undefined) {
-                        let sus_string = (results[0].suspended_flag === 1) ? "disable" : "enable";
-                        results[0].suspended_flag = sus_flag;
-                        console.log(results);
-                    }
-
                     http.success(res, results);
                     conn.destroy();
                     return Promise.resolve(results.length)
