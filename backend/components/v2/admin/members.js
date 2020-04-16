@@ -67,13 +67,17 @@ function getMembers(req, res) {
         return;
     }
 
-    const qstr_getMember = "SELECT U.user_id, username, PF.prefix_name, P.firstname, P.lastname, P.email, P.mobile, P.office_phone, P.ext, M.ministry_name as min_name, D.dep_name, O.org_name, P.suspended_flag as suspension_status, P.approval_status, P.approved_by " +
+    const qstr_getMember = "SELECT U.user_id, username, PF.prefix_name, P.firstname, P.lastname, P.email, P.mobile, P.office_phone, P.ext, M.ministry_name as min_name, D.dep_name, O.org_name, P.approval_status, P.approved_by, " +
+        "CASE P.suspended_flag " +
+        "WHEN 1 then \"disable\" " +
+        "WHEN 0 then \"enable\" " +
+        "END as suspension_status " +
         "FROM users as U INNER JOIN user_profile as P on U.user_id = P.user_id " +
         "LEFT JOIN department as D ON D.dep_id = P.dep_id " +
         "LEFT JOIN ministry as M ON M.ministry_code = P.ministry_code " +
         "LEFT JOIN organization as O ON O.org_code = P.org_code " +
         "LEFT JOIN prefix as PF ON PF.prefix_id = P.prefix_id " +
-        "WHERE P.delete_flag = 0";
+        "WHERE P.delete_flag = 0 and U.role_id > 0 and U.user_id != \'" + userId + "\'";
 
     return validateAdmin(userId)
         .then(conn => {
