@@ -73,6 +73,33 @@ function insert(filters, data, collection) {
     })
 }
 
+function insertOne(data, collection) {
+    return new promise((resolve, reject) => {
+        MongoClient.connect(appConf.mongoDB, {
+                useNewUrlParser: true,
+                useUnifiedTopology: true
+            }).then(db => {
+                logger.debug("mongodb connected");
+                db.db(appConf.MONGODB_dbname)
+                    .collection(collection).insertOne(data, function (err, result) {
+                        if (err) {
+                            logger.error('Error occurred while inserting: ' + err);
+                            db.close();
+                            reject(err);
+                        } else {
+                            logger.debug('inserted record: ' + JSON.stringify(result));
+                            db.close();
+                            resolve(true);
+                        }
+                    })
+            })
+            .catch(function (err) {
+                logger.error("Failed to connection MongoDB:" + err);
+                reject(err);
+            });
+    })
+}
+
 function update(filters, data, collection) {
     return new promise((resolve, reject) => {
         MongoClient.connect(appConf.mongoDB, {
@@ -135,6 +162,7 @@ module.exports = {
     findWithProjector,
     find,
     insert,
+    insertOne,
     update,
     remove
 }

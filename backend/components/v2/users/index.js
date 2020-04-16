@@ -139,7 +139,7 @@ function saveResult(req, res) {
         modified_at: new Date(),
     };
 
-    mongo.insert(filters, data, appConf.surveyCollections.result).then(result => {
+    mongo.insertOne(data, appConf.surveyCollections.result).then(result => {
             http.success(res, result);
             return true;
         })
