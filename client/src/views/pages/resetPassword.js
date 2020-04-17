@@ -13,7 +13,8 @@ import {
   Form,
   Col,
   FormGroup,
-  InputGroup
+  InputGroup,
+  UncontrolledTooltip
 } from "reactstrap";
 
 export default function ResetPassword() {
@@ -36,15 +37,25 @@ export default function ResetPassword() {
   params = JSON.parse(params);
   const [isOpened, setIsOpened] = useState(false);
   const setshow = () => setIsOpened(!isOpened);
-  const { register, errors, getValues, handleSubmit } = useForm();
+  const {
+    register,
+    errors,
+    getValues,
+    handleSubmit,
+    setError,
+    clearError
+  } = useForm();
 
   const [modal, setModal] = useState(true);
-
+  const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
   const toggle = () => setModal(!modal);
-
+  const url =
+    window.location.protocol +
+    "//" +
+    window.location.hostname +
+    (window.location.port ? ":" + window.location.port : "");
+  const loginurl = url + "/pages/login";
   const onSubmit = data => {
-    //alert(JSON.stringify(data));
-
     try {
       // fetch("https://jsonplaceholder.typicode.com/todos/1")
       fetch(config.BACKEND_GSURVEY + "/api/v2/users/password/reset", {
@@ -66,8 +77,7 @@ export default function ResetPassword() {
               setIsOpened(false);
 
               setModal(false);
-
-              window.location.replace("/pages/login");
+              window.location.replace(loginurl);
             }, 4000);
           } else {
             toastr.error(result.desc, toastrOptions);
@@ -101,16 +111,82 @@ export default function ResetPassword() {
                         <i className="fa fa-key"></i>
                       </span>
                     </div>
+                    <UncontrolledTooltip
+                      placement="top"
+                      target="passwordptooltip"
+                    >
+                      <ul
+                        style={{
+                          fontSize: "12px",
+                          textAlign: "left"
+                        }}
+                      >
+                        <li style={{ lineHeight: "15px" }}>
+                          ต้องมีอย่างน้อย 8 ตัวอักษร
+                        </li>
+                        <li style={{ lineHeight: "15px" }}>
+                          ต้องมีตัวอักษรภาษาอังกฤษตัวใหญ๋ อย่างน้อย 1 ตัว
+                        </li>
+                        <li style={{ lineHeight: "15px" }}>
+                          ต้องมีตัวเลขอย่างน้อย 1 ตัว
+                        </li>
+                        <li style={{ lineHeight: "15px" }}>
+                          มีแต่ภาษาอังกฤษและตัวเลขเท่านั้น
+                        </li>
+                      </ul>
+                    </UncontrolledTooltip>
                     <input
                       name="password"
                       className="form-control"
-                      placeholder="กรุณากรอกรหัสผ่าน"
+                      placeholder="กรุณากรอกรหัสผ่านใหม่"
                       type="password"
+                      id="passwordptooltip"
+                      //  ref={register({ required: "กรุณากรอกรหัสผ่าน" })}
+                      onChange={async e => {
+                        const value = e.target.value;
+                        console.log(value);
+                        await sleep(1000);
+                        if (value.length < 8) {
+                          // clearError("password");
+                          setError(
+                            "password",
+                            "notMatch",
+                            "ต้องมีความยาวมากกว่า 8 ตัวอักษรขึ้นไป"
+                          );
+                        } else if (!/[A-Z]/.test(value)) {
+                          // clearError("password");
+                          setError(
+                            "password",
+                            "notMatch",
+                            "ต้องมีตัวอักษรภาษาอังกฤษตัวใหญ่ อย่างน้อย 1 ตัว"
+                          );
+                        } else if (!/[0-9]/.test(value)) {
+                          // clearError("password");
+                          setError(
+                            "password",
+                            "notMatch",
+                            "ต้องมีตัวเลขอย่างน้อย 1 ตัว"
+                          );
+                        } else if (
+                          !/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])$/.test(value)
+                        ) {
+                          // clearError("password");
+                          setError(
+                            "password",
+                            "notMatch",
+                            "ต้องเป็นตัวอักษรภาษาอังกฤษ และ ตัวเลขเท่านั้น"
+                          );
+                        } else {
+                          clearError("password");
+                        }
+                      }}
                       ref={register({ required: "กรุณากรอกรหัสผ่าน" })}
                     />
                   </div>
                   {errors.password && (
-                    <p style={{ color: "red" }}>{errors.password.message}</p>
+                    <p style={{ color: "#F08080" }}>
+                      {errors.password.message}
+                    </p>
                   )}
                 </Col>
               </FormGroup>
@@ -126,6 +202,7 @@ export default function ResetPassword() {
                       name="passwordConfirmation"
                       className="form-control"
                       type="password"
+                      placeholder="กรุณายืนยันรหัสผ่านใหม่"
                       ref={register({
                         required: "กรุณายืนยันรหัสผ่าน",
                         validate: {
@@ -140,7 +217,7 @@ export default function ResetPassword() {
                     />
                   </div>
                   {errors.passwordConfirmation && (
-                    <p style={{ color: "red" }}>
+                    <p style={{ color: "#F08080" }}>
                       {errors.passwordConfirmation.message}
                     </p>
                   )}

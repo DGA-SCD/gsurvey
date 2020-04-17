@@ -18,7 +18,9 @@ import {
   Modal,
   ModalHeader,
   ModalBody,
-  ModalFooter
+  ModalFooter,
+  Tooltip,
+  UncontrolledTooltip
 } from "reactstrap";
 
 import * as config from "../../services/AppConfig";
@@ -43,6 +45,7 @@ function Register() {
     // closeOnToastrClick: true, // false by default, this will close the toastr when user clicks on it
     progressBar: true
   };
+
   function submit() {
     try {
       fetch(config.BACKEND_GSURVEY + "/api/v2/users/register", {
@@ -143,7 +146,7 @@ function Register() {
     getOrganize();
   }, [account.dep_id]);
   const errorStyle = {
-    color: "#ca0000",
+    color: "#F08080",
     fontSize: "13px",
     textAlign: "left"
   };
@@ -219,6 +222,30 @@ function Register() {
                   <FormGroup>
                     <Row>
                       <Col md="12">
+                        <UncontrolledTooltip
+                          placement="top"
+                          target="passwordptooltip"
+                        >
+                          <ul
+                            style={{
+                              fontSize: "12px",
+                              textAlign: "left"
+                            }}
+                          >
+                            <li style={{ lineHeight: "15px" }}>
+                              ต้องมีอย่างน้อย 8 ตัวอักษร
+                            </li>
+                            <li style={{ lineHeight: "15px" }}>
+                              ต้องมีตัวอักษรภาษาอังกฤษตัวใหญ๋ อย่างน้อย 1 ตัว
+                            </li>
+                            <li style={{ lineHeight: "15px" }}>
+                              ต้องมีตัวเลขอย่างน้อย 1 ตัว
+                            </li>
+                            <li style={{ lineHeight: "15px" }}>
+                              มีแต่ภาษาอังกฤษและตัวเลขเท่านั้น
+                            </li>
+                          </ul>
+                        </UncontrolledTooltip>
                         <Input
                           type="password"
                           className="form-control"
@@ -226,6 +253,7 @@ function Register() {
                           value={account.password}
                           placeholder="รหัสผ่าน"
                           onChange={handleChange}
+                          id="passwordptooltip"
                         />
                         {errors.password && (
                           <p style={errorStyle}>{errors.password}</p>
