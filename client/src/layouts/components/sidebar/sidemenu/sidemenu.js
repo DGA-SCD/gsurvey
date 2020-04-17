@@ -40,19 +40,24 @@ class SideMenuContent extends Component {
           </i>
           <span className="menu-item-text">แบบสำรวจ</span>
         </NavLink>
+      </SideMenu.MenuSingleItem>,
+      //1
+      <SideMenu.MenuSingleItem>
+        <NavLink to="/pages/UserManagement" activeClassName="active">
+          <i className="menu-icon">
+            <CheckSquare size={18} />
+          </i>
+          <span className="menu-item-text">จัดการผู้ใช้งาน</span>
+        </NavLink>
       </SideMenu.MenuSingleItem>
     ];
-
-    // if (localStorage.getItem("token_local") === null) {
-    //   return <Redirect to={"login"} />;
-    // } else {
     if (JSON.parse(localStorage.getItem("userData") === null)) {
       return <Redirect to={"login"} />;
     } else {
       let dataList = JSON.parse(localStorage.getItem("userData"));
 
-      // console.log(dataList);
-      if (dataList.role === "sadmin") {
+      console.log(dataList.role);
+      if (dataList.role === "system admin") {
         return (
           <SideMenu
             className="sidebar-content"
@@ -61,20 +66,7 @@ class SideMenuContent extends Component {
             {menuLists}
           </SideMenu>
         );
-      } else if (dataList.role === "system admin") {
-        return (
-          <SideMenu
-            className="sidebar-content"
-            toggleSidebarMenu={this.props.toggleSidebarMenu}
-          >
-            {menuLists[0]}
-            {/* {menuLists[1]}
-            {menuLists[2]}
-            {menuLists[3]}
-            {menuLists[4]} */}
-          </SideMenu>
-        );
-      } else if (dataList.role === "user") {
+      } else if (dataList.role === "organization admin") {
         return (
           <SideMenu
             className="sidebar-content"
@@ -82,6 +74,18 @@ class SideMenuContent extends Component {
           >
             {menuLists[0]}
             {menuLists[1]}
+            {/*  {menuLists[2]}
+            {menuLists[3]}
+            {menuLists[4]} */}
+          </SideMenu>
+        );
+      } else if (dataList.role === "organization user") {
+        return (
+          <SideMenu
+            className="sidebar-content"
+            toggleSidebarMenu={this.props.toggleSidebarMenu}
+          >
+            {menuLists[0]}
           </SideMenu>
         );
       } else {
