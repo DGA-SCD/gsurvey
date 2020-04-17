@@ -1,14 +1,13 @@
 import React, { useState, useEffect, Component, forwardRef } from "react";
 
-import MaterialTable from "material-table";
+//import MaterialTable from "material-table";
+import MaterialTable, { MTableAction } from "material-table";
 import { userService } from "../../services/UserAuth";
 import * as config from "../../services/AppConfig";
 import { BrowserRouter, Route, Link } from "react-router-dom";
 import BlockIcon from "@material-ui/icons/Block";
 import AddBox from "@material-ui/icons/AddBox";
-
 import Check from "@material-ui/icons/Check";
-
 import ChevronRight from "@material-ui/icons/ChevronRight";
 import Clear from "@material-ui/icons/Clear";
 import DeleteOutline from "@material-ui/icons/DeleteOutline";
@@ -380,10 +379,16 @@ export default class UserManagement extends Component {
           }}
           actions={[
             rowData => ({
+              //icon: rowData => if(rowData.suspension_status === "enable"){ <AddBox />,
+              //  icon: props => <p>Manage</p>,
               icon:
                 rowData.suspension_status === "enable" //0enable,1disable
-                  ? "block"
-                  : "check_circle_outline",
+                  ? "toggle_on"
+                  : "toggle_off",
+              iconProps:
+                rowData.suspension_status === "enable"
+                  ? { style: { color: "green" } }
+                  : { style: { color: "#cccccc" } },
               tooltip:
                 rowData.suspension_status === "enable" //disable ยกเลิกการใช้งาน , reject ระงับการใช้งาน
                   ? "กดเพื่อยกเลิกการใช้งาน"
@@ -430,6 +435,7 @@ export default class UserManagement extends Component {
               labelDisplayedRows: "{from}-{to} จาก {count}"
             }
           }}
+          components={{}}
         />
 
         <Dialog
