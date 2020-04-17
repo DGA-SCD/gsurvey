@@ -1,12 +1,14 @@
 // import external modules
 //https://www.skptricks.com/2018/06/simple-form-validation-in-reactjs-example.html
-import React, { Component } from "react";
+import React, { Component, useEffect } from "react";
 import { NavLink, Redirect } from "react-router-dom";
+import history from "./history";
 import { userService } from "../../services/UserAuth";
 import * as config1 from "../../services/AppConfig";
 import Logo from "../../assets/img/logo_gsurvey_login.png";
 import { toastr } from "react-redux-toastr";
 import ForgetPassword from "./forgetpassword";
+import { useForm } from "react-hook-form";
 import {
   Row,
   Col,
@@ -21,241 +23,162 @@ import {
 } from "reactstrap";
 
 const toastrOptions = {
-  timeOut: 5000, // by setting to 0 it will prevent the auto close
+  timeOut: 3000, // by setting to 0 it will prevent the auto close
   position: "top-right",
   showCloseButton: true, // false by default
   closeOnToastrClick: true, // false by default, this will close the toastr when user clicks on it
   progressBar: false
 };
 
-class Login extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      username: "",
-
-      password: "",
-
-      useridError: false,
-      passError: false,
-      fields: {},
-      errors: {}
-    };
-
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleChange = this.handleChange.bind(this);
-    this.handlePassChange = this.handlePassChange.bind(this);
-    this.handleUseridChange = this.handleUseridChange.bind(this);
-  }
-
-  handlePassChange = event => {
-    this.setState({ password: event.target.value });
-    console.log(this.state.password);
+export default function Login() {
+  // const history = useHistory();
+  const { register, errors, handleSubmit } = useForm();
+  const [errorText, seterrorText] = React.useState("");
+  const url =
+    window.location.protocol +
+    "//" +
+    window.location.hostname +
+    (window.location.port ? ":" + window.location.port : "");
+  const loginurl = url + "/pages/main";
+  const handleerr = errcode => {
+    switch (errcode) {
+      case 40103:
+        return "ขออภัยบัญชีผู้ใช้งานของท่านไม่ได้รับการอนุมัติ";
+      case 40104:
+        return "ขออภัยบัญชีผู้ใช้งานของท่านถูกระงับชั่วคราว";
+      case 40105:
+        return "ไม่พบบัญชีผู้ใช้งาน";
+      case 40106:
+        return "บัญชีผู้ใช้อยู่ระหว่างการพิจารณาอนุมัติ";
+      case 40000:
+        return "ท่านกรอกบัญชีหรือรหัสผ่านผิด";
+      default:
+        return "กรุณาติดต่อผู้ดูแลระบบ";
+    }
   };
-  handleUseridChange = event => {
-    console.log(this.state.username);
-    this.setState({ username: event.target.value });
-  };
+  const onSubmit = data => {
+    alert(JSON.stringify(data));
+    userService.login(data.username, data.password).then(
+      user => {
+        if (user.success) {
+          if (localStorage.getItem("userData")) {
+            window.location.replace(loginurl);
 
-  handleChange(e) {
-    let fields = this.state.fields;
-    fields[e.target.name] = e.target.value;
-    this.setState({
-      fields
-    });
-  }
-
-  handleSubmit(e) {
-    e.preventDefault();
-    console.log("dfs" + JSON.stringify(this.state.fields));
-    if (this.validateForm()) {
-      userService
-        .login(this.state.fields.username, this.state.fields.password)
-        .then(
-          user => {
-            console.log(user);
-            this.setState({
-              passError: true
-            });
-            // console.log(this.state);
-            // this.props.history.push("main");
-            // const { from } = this.props.location.state || {
-            //   from: { pathname: "main" }
-            // };
-            // this.props.history.push(from);
-          },
-          error => {
-            console.log(error);
-            this.setState({ error, loading: false });
-            if (error === "Unauthorized") {
-              toastr.error(
-                "ไม่สามารถเข้าระบบได้ โปรดตรวจสอบอีเมลหรือรหัสผ่านของท่าน",
-                toastrOptions
-              );
-            } else
-              toastr.error(
-                "ไม่สามารถเข้าระบบได้ โปรดติดต่อผู้ดูแลระบบ",
-                toastrOptions
-              );
+            // history.push("/pages/main");
           }
-        );
-    }
-  }
-
-  validateForm() {
-    let fields = this.state.fields;
-    let errors = {};
-    let formIsValid = true;
-    console.log("validateForm");
-    console.log(fields["username"]);
-    console.log(fields["password"]);
-    if (fields["username"] === "") {
-      formIsValid = false;
-      console.log(fields["username"] + "por");
-      errors["username"] = "*กรุณากรอกอีเมล์ผู้ใช้งาน";
-    }
-
-    if (typeof fields["username"] !== "undefined") {
-      //regular expression for email validation
-      var pattern = new RegExp(
-        /^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i
-      );
-      if (!pattern.test(fields["username"])) {
-        formIsValid = false;
-        errors["username"] = "*กรุณากรอกอีเมล์ให้ถูกต้อง.";
+        } else {
+          if (!user.success) {
+            const messagetext = handleerr(user.code);
+            toastr.error(messagetext, toastrOptions);
+          }
+        }
+      },
+      error => {
+        console.log(error);
       }
-    }
-
-    if (!fields["password"]) {
-      formIsValid = false;
-      errors["password"] = "*กรุณากรอกรหัสผ่าน.";
-    }
-
-    // if (typeof fields["password"] !== "undefined") {
-    //   if (
-    //     !fields["password"].match(
-    //       /^.*(?=.{8,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%&]).*$/
-    //     )
-    //   ) {
-    //     formIsValid = false;
-    //     errors["password"] = "*Please enter secure and strong password.";
-    //   }
-    // }
-
-    this.setState({
-      errors: errors
-    });
-    return formIsValid;
-  }
-
-  render() {
-    const divStyle = {
-      fontSize: "13px",
-      color: "white",
-      textAlign: "left"
-    };
-    const errorstyle = {
-      fontSize: "15px",
-      textAlign: "left",
-      color: "red"
-    };
-
-    // console.log(this.state.redirectToReferrer);
-    // const { errors } = this.state;
-
-    if (localStorage.getItem("userData")) {
-      return <Redirect to={"main"} />;
-    }
-
-    return (
-      <div className="container">
-        <Row className="full-height-vh">
-          <Col
-            xs="12"
-            className="d-flex align-items-center justify-content-center"
-          >
-            <Card className="gradient-indigo-purple text-center width-400">
-              <CardBody>
-                <img src={Logo} alt="logo" />
-                <h2
-                  className=""
-                  style={{
-                    color: "white",
-                    paddingTop: "20px"
-                  }}
-                >
-                  เข้าสู่ระบบ
-                </h2>
-                <Form
-                  className="pt-2"
-                  id="loginForm"
-                  method="post"
-                  onSubmit={this.handleSubmit}
-                >
-                  <div> </div>
-                  <FormGroup>
-                    <Col md="12">
-                      <input
-                        type="textbox"
-                        name="username"
-                        value={this.state.fields.username}
-                        className="form-control"
-                        placeholder="อีเมลผู้ใช้งาน"
-                        onChange={this.handleChange}
-                      />
-                      <div style={errorstyle}>{this.state.errors.username}</div>
-                    </Col>
-                  </FormGroup>
-                  <FormGroup>
-                    <Col md="12">
-                      <Input
-                        type="password"
-                        className="form-control"
-                        name="password"
-                        id="password"
-                        value={this.state.fields.password}
-                        placeholder="รหัสผ่าน"
-                        onChange={this.handleChange}
-                        // onBlur={this.handleChange}
-                      />
-                      <div style={errorstyle}>{this.state.errors.password}</div>
-                    </Col>
-                  </FormGroup>
-                  <FormGroup> </FormGroup>
-                  <FormGroup>
-                    <Col md="12">
-                      <Button
-                        type="submit"
-                        color="danger"
-                        block
-                        className="btn-pink btn-raised"
-                      >
-                        เข้าสู่ระบบ
-                      </Button>
-                    </Col>
-                  </FormGroup>
-                </Form>
-              </CardBody>
-              <CardFooter>
-                <div className="float-left">
-                  <ForgetPassword />
-                </div>
-                <div className="float-right">
-                  <NavLink
-                    to="/pages/register"
-                    className="text-white"
-                    target="_blank"
-                  >
-                    ลงทะเบียนผู้ใช้
-                  </NavLink>
-                </div>
-              </CardFooter>
-            </Card>
-          </Col>
-        </Row>
-      </div>
     );
-  }
-}
+  };
+  return (
+    <div className="container">
+      <Row className="full-height-vh">
+        <Col
+          xs="12"
+          className="d-flex align-items-center justify-content-center"
+        >
+          <Card className="gradient-indigo-purple text-center width-400">
+            <CardBody>
+              <img src={Logo} alt="logo" />
+              <h2
+                className=""
+                style={{
+                  color: "white",
+                  paddingTop: "20px"
+                }}
+              >
+                เข้าสู่ระบบ
+              </h2>
+              <form onSubmit={handleSubmit(onSubmit)}>
+                <FormGroup>
+                  <Col md="12">
+                    <input
+                      name="username"
+                      className="form-control"
+                      placeholder="อีเมลผู้ใช้งาน"
+                      type="text"
+                      ref={register({
+                        required: "กรุณากรอกอีเมลผู้ใช้งาน",
+                        pattern: {
+                          value: /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
+                          message: "กรุณากรอกอีเมลให้ถูกต้อง"
+                        }
+                      })}
+                    />
 
-export default Login;
+                    <div
+                      style={{
+                        color: "#F08080",
+                        fontSize: 14,
+                        textAlign: "left"
+                      }}
+                    >
+                      {errors.username && errors.username.message}
+                    </div>
+                  </Col>
+                </FormGroup>
+                <FormGroup>
+                  <Col md="12">
+                    <input
+                      type="password"
+                      name="password"
+                      className="form-control"
+                      placeholder="รหัสผ่าน"
+                      ref={register({
+                        required: "กรุณากรอกรหัสผ่านของท่าน"
+                      })}
+                    />
+                    <div
+                      style={{
+                        color: "#F08080",
+                        fontSize: 14,
+                        textAlign: "left"
+                      }}
+                    >
+                      {errors.password && errors.password.message}
+                    </div>
+                  </Col>
+                </FormGroup>
+                <FormGroup> </FormGroup>
+                <FormGroup>
+                  <Col md="12">
+                    <Button
+                      type="submit"
+                      color="danger"
+                      block
+                      className="btn-pink btn-raised"
+                    >
+                      เข้าสู่ระบบ
+                    </Button>
+                  </Col>
+                </FormGroup>
+              </form>
+            </CardBody>
+            <CardFooter>
+              <div className="float-left">
+                <ForgetPassword />
+              </div>
+              <div className="float-right">
+                <NavLink
+                  to="/pages/register"
+                  className="text-white"
+                  target="_blank"
+                >
+                  ลงทะเบียนผู้ใช้
+                </NavLink>
+              </div>
+            </CardFooter>
+          </Card>
+        </Col>
+      </Row>
+    </div>
+  );
+}

@@ -16,20 +16,21 @@ const login = function(username, password) {
     credentials: "include"
   };
 
-  return fetch(config.BACKEND_GSURVEY + "/api/v2/auth/login", requestOptions)
-    .then(handleResponse)
+  return (
+    fetch(config.BACKEND_GSURVEY + "/api/v2/auth/login", requestOptions)
+      // .then(handleResponse)
+      .then(response => response.json())
+      .then(user => {
+        if (user.success) {
+          // store user details and basic auth credentials in local storage
+          // to keep user logged in between page refreshes
+          //     user.authdata = window.btoa(username + ":" + password);
+          localStorage.setItem("userData", JSON.stringify(user.data));
+        }
 
-  .then(user => {
-    // login successful if there's a user in the response
-    if (user) {
-      // store user details and basic auth credentials in local storage
-      // to keep user logged in between page refreshes
-      //     user.authdata = window.btoa(username + ":" + password);
-      localStorage.setItem("userData", JSON.stringify(user.data));
-    }
-
-    return user;
-  });
+        return user;
+      })
+  );
 };
 
 function clearStrogae() {
