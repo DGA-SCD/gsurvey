@@ -2,7 +2,7 @@ export default function validateRegister(account) {
   console.log("name" + account.dep_id);
 
   let errors = {};
-
+  let length = new RegExp("^(?=.{8,10})");
   if (!account.email) {
     errors.email = "กรุณาระบุอีเมล";
   } else if (!/\S+@\S+\.\S+/.test(account.email)) {
@@ -13,7 +13,16 @@ export default function validateRegister(account) {
   }
   if (!account.password) {
     errors.password = "กรุณากรอกรหัสผ่าน";
+  } else if (account.password.length < 8) {
+    errors.password = "ต้องมีความยาวมากกว่า 8 ตัวอักษรขึ้นไป";
+  } else if (!/[A-Z]/.test(account.password)) {
+    errors.password = "ต้องมีตัวอักษรภาษาอังกฤษตัวใหญ๋s อย่างน้อย 1 ตัว";
+  } else if (!/[0-9]/.test(account.password)) {
+    errors.password = "ต้องมีตัวเลขอย่างน้อย 1 ตัว";
+  } else if (!/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])$/.test(account.password)) {
+    errors.password = "ต้องเป็นตัวอักษรภาษาอังกฤษ และ ตัวเลขเท่านั้น";
   }
+
   if (!account.lastname) {
     errors.lastname = "กรุณากรอกนามสกุล";
   }
