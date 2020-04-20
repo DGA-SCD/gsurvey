@@ -24,7 +24,7 @@
 const {loggerr} = require('../../../commons/logger');
 const http = require('../..//../commons/http');
 const appConf = require('../../../config/production.conf');
-
+const uuidv4 = require('uuid/v4');
 const mongo = require('../../helpers/mongodb');
 
 
