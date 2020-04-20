@@ -33,6 +33,7 @@ const uuidv4 = require('uuid/v4');
 const {register} = require('./register');
 const {getMinistries, getDepartments, getOrganizations} = require('./organization');
 const {sendOTP, resetPassword} = require('../users/password');
+const {getSurveyById, saveResult} = require('./survey');
 
 router.use(function (req, res, next) {
     logger.info('calling users api ' + req.path);
@@ -62,93 +63,6 @@ router.use(function (req, res, next) {
 
     next();
 });
-
-function getSurveyById(req, res) {
-
-    if (req.query.sid === undefined) {
-        http.error(res, 400, 40000, "Not found surveyid");
-        return;
-    }
-
-    if (req.query.uid === undefined ) {
-        http.error(res, 400, 40000, "Not found userid");
-        return;
-    }
-
-    if (req.query.v === undefined ) {
-        http.error(res, 400, 40000, "Not found version");
-        return;
-    }
-
-    var filters = {
-        surveyid: req.query.sid,
-        version: req.query.v,
-        userid: req.query.uid
-    };
-
-    mongo.find(filters, appConf.surveyCollections.survey, {}).then(results => {
-            http.success(res, results[0]);
-            return true;
-        })
-        .catch(err => {
-            http.error(res, 500, 50002, "mongodb error: " + err);
-            return false;
-        });
-};
-
-function saveResult(req, res) {
-
-    var body = req.body;
-    var resultid = 'undefined';
-
-    if (body.surveyid === undefined) {
-        http.error(res, 400, 40000, "Not found surveyid");
-        return;
-    }
-
-    if (body.userid === undefined ) {
-        http.error(res, 400, 40000, "Not found userid");
-        return;
-    }
-
-    if (body.version === undefined ) {
-        http.error(res, 400, 40000, "Not found version");
-        return;
-    }
-
-    if (body.resultid == 'undefined' || body.resultid == null) {
-        resultid = uuidv4();
-    } else {
-        resultid = body.resultid;
-    }
-
-    var filters = {
-        surveyid: body.surveyid,
-        resultid: resultid,
-        userid: body.userid,
-        version: body.version
-    }
-
-    var data = {
-        surveyid: body.surveyid,
-        resultid: resultid,
-        userid: body.userid,
-        result: body.result,
-        version: body.version,
-        created_at: new Date(),
-        modified_at: new Date(),
-    };
-
-    mongo.insertOne(data, appConf.surveyCollections.result).then(result => {
-            http.success(res, result);
-            return true;
-        })
-        .catch(err => {
-            http.error(res, 500, 50002, "mongodb error: " + err);
-            return false;
-        });
-}
-
 
 // /api/v2/users/surveys
 router.get('/surveys', getSurveyById);

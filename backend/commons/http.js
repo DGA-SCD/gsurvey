@@ -20,12 +20,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-exports.success = function( res, data){
-    if( res == null ) {
+function successStream(res, data, {...params}) {
+    if (res == null) {
         return false;
     }
-    res.status(200).json(
-        { 
+    res.status(200).json({
+        success: true,
+        code: 20000,
+        desc: null,
+        data: data,
+        ...params
+    });
+    return true;
+}
+
+function success(res, data) {
+    if (res == null) {
+        return false;
+    }
+    res.status(200).json({
         success: true,
         code: 20000,
         desc: null,
@@ -34,15 +47,21 @@ exports.success = function( res, data){
     return true;
 }
 
-exports.error = function( res, httpCode, errorCode, desc){
-    if( res == null ) {
+function error(res, httpCode, errorCode, desc) {
+    if (res == null) {
         return false;
     }
-    res.status(httpCode).json({ 
+    res.status(httpCode).json({
         success: false,
         code: errorCode,
         desc: desc,
-        data: null 
+        data: null
     });
     return true;
+}
+
+module.exports = {
+    successStream,
+    success,
+    error
 }

@@ -5,19 +5,27 @@ const logger = winston.logger;
 const promise = require('promise');
 
 function findWithProjector(filters, collection, projector, sort) {
-    return _find(filters, collection, projector, sort);
+    return _find(filters, collection, projector, sort, 0 , 0);
 }
 
+function findWithPaging(filters, collection, sort, limit , skip){
+    return _find(filters, collection, {
+        projection: {
+            _id: 0
+        }
+    }, sort, limit, skip); 
+}
 
 function find(filters, collection, sort) {
     return _find(filters, collection, {
         projection: {
             _id: 0
         }
-    }, sort);
+    }, sort, 0, 0);
 }
 
-function _find(filters, collection, projector, sort) {
+function _find(filters, collection, projector, sort, limit, skip) {
+    console.log("limit: " + limit + " skip: " + skip);
     return new promise((resolve, reject) => {
         MongoClient.connect(appConf.mongoDB, {
                 useNewUrlParser: true,
@@ -25,7 +33,7 @@ function _find(filters, collection, projector, sort) {
             }).then(db => {
                 logger.debug("mongodb connected");
                 db.db(appConf.MONGODB_dbname)
-                    .collection(collection).find(filters, projector).sort(sort).toArray(function (err, results) {
+                    .collection(collection).find(filters, projector).skip(skip).limit(limit).sort(sort).toArray(function (err, results) {
                         if (err) {
                             logger.error('Error occurred while querying: ' + err);
                             db.close();
@@ -158,11 +166,40 @@ function remove(filters, justOne, collection) {
     })
 }
 
+function count(filters, collection) {
+    return new promise((resolve, reject) => {
+        MongoClient.connect(appConf.mongoDB, {
+                useNewUrlParser: true,
+                useUnifiedTopology: true
+            }).then(db => {
+                logger.debug("mongodb connected");
+                db.db(appConf.MONGODB_dbname)
+                    .collection(collection).countDocuments(filters, function (err, results) {
+                        if (err) {
+                            logger.error('Error occurred while counting: ' + err);
+                            db.close();
+                            reject(err);
+                        } else {
+                            logger.debug('result count: ' + JSON.stringify(results));
+                            db.close();
+                            resolve(results);
+                        }
+                    })
+            })
+            .catch(function (err) {
+                logger.error("Failed to connection MongoDB:" + err);
+                reject(err);
+            });
+    })
+}
+
 module.exports = {
     findWithProjector,
     find,
     insert,
     insertOne,
     update,
-    remove
+    remove,
+    count,
+    findWithPaging,
 }
