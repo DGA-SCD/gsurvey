@@ -2,7 +2,6 @@
 //https://www.skptricks.com/2018/06/simple-form-validation-in-reactjs-example.html
 import React, { Component, useEffect } from "react";
 import { NavLink, Redirect } from "react-router-dom";
-import history from "./history";
 import { userService } from "../../services/UserAuth";
 import * as config1 from "../../services/AppConfig";
 import Logo from "../../assets/img/logo_gsurvey_login.png";
@@ -57,7 +56,6 @@ export default function Login() {
     }
   };
   const onSubmit = data => {
-    alert(JSON.stringify(data));
     userService.login(data.username, data.password).then(
       user => {
         if (user.success) {
