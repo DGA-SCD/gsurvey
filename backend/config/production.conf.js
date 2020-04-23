@@ -73,21 +73,13 @@ assert(SMTP_SECURE, "SMTP_SECURE configuration is required.");
 assert(SMTP_USER, "SMTP_USER configuration is required.");
 assert(SMTP_PASS, "SMTP_PASS configuration is required.");
 
-if (MONGODB_CONNECTION_POOL === undefined) {
-    MONGODB_CONNECTION_POOL = 5;
-}
-
-if (MONGODB_CONNECTION_MIN === undefined) {
-    MONGODB_CONNECTION_MIN = 1;
-}
-
 module.exports = {
     accessLog: ACCESS_LOG,
     applicationLog: APPLICATION_LOG,
     mongoDB: MONGODB_URL,
     MONGODB_dbname: MONGODB_DATABASE_NAME,
-    MONGODB_connection_pool: MONGODB_CONNECTION_POOL,
-    MONGODB_connection_min: MONGODB_CONNECTION_MIN,
+    MONGODB_connection_pool: MONGODB_CONNECTION_POOL || 5,
+    MONGODB_connection_min: MONGODB_CONNECTION_MIN || 1,
     surveyCollections: {
         survey: SURVEY_COLLECTION,
         result: RESULT_COLLECTION,
