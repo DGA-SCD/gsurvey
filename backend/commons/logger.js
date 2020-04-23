@@ -5,6 +5,7 @@ const winston = require('winston');
 /**
  * Set up logger
  */
+
 exports.logger =  winston.createLogger({
     format: winston.format.combine(
         winston.format.timestamp({
@@ -16,13 +17,13 @@ exports.logger =  winston.createLogger({
     transports: [
       new winston.transports.Console({
           timestamp: true,
-          level: 'debug',
+          level: config.LOG_LEVEL,
           colorize: 'true',
           label: 'development'}),
       new winston.transports.File({
         filename: path.join(global.appRoot, config.applicationLog),
         timestamp: true,
-        level: 'debug',
+        level: config.LOG_LEVEL,
         colorize: 'true',
         label: 'development'
       })
