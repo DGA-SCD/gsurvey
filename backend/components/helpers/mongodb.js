@@ -8,7 +8,6 @@ var db;
 
 function getPoolConnection(){
     if( db !== undefined ){
-        logger.error("reuse pool");
         return db;
     } else {
         db = MongoClient.connect(appConf.mongoDB, {
@@ -17,7 +16,6 @@ function getPoolConnection(){
             poolSize: appConf.MONGODB_connection_pool,
             minSize: appConf.MONGODB_connection_min,
         });
-        logger.error("create new pool");
         return db;
     }
 
