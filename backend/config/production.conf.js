@@ -8,6 +8,7 @@ dotenv.config();
 const {
     ACCESS_LOG,
     APPLICATION_LOG,
+    LOG_LEVEL,
     MONGODB_URL,
     MONGODB_DATABASE_NAME,
     MONGODB_CONNECTION_POOL,
@@ -76,6 +77,7 @@ assert(SMTP_PASS, "SMTP_PASS configuration is required.");
 module.exports = {
     accessLog: ACCESS_LOG,
     applicationLog: APPLICATION_LOG,
+    LOG_LEVEL: LOG_LEVEL || 'error',
     mongoDB: MONGODB_URL,
     MONGODB_dbname: MONGODB_DATABASE_NAME,
     MONGODB_connection_pool: MONGODB_CONNECTION_POOL || 5,
