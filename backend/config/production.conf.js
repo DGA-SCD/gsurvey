@@ -10,6 +10,8 @@ const {
     APPLICATION_LOG,
     MONGODB_URL,
     MONGODB_DATABASE_NAME,
+    MONGODB_CONNECTION_POOL,
+    MONGODB_CONNECTION_MIN,
 
     SURVEY_COLLECTION,
     RESULT_COLLECTION,
@@ -65,18 +67,27 @@ assert(COOKIES_SIGNED, "COOKIES_SIGNED configuration is required.");
 assert(COOKIES_SECRETE_KEY, "COOKIES_SECRETE_KEY configuration is required.");
 assert(TOKEN_EXPIRED_TIME, "TOKEN_EXPIRED_TIME configuration is required.");
 
-assert(SMTP_HOST,"SMTP_HOST configuration is required.");
-assert(SMTP_PORT,"SMTP_PORT configuration is required.");
-assert(SMTP_SECURE,"SMTP_SECURE configuration is required.");
-assert(SMTP_USER,"SMTP_USER configuration is required.");
-assert(SMTP_PASS,"SMTP_USER configuration is required.");
+assert(SMTP_HOST, "SMTP_HOST configuration is required.");
+assert(SMTP_PORT, "SMTP_PORT configuration is required.");
+assert(SMTP_SECURE, "SMTP_SECURE configuration is required.");
+assert(SMTP_USER, "SMTP_USER configuration is required.");
+assert(SMTP_PASS, "SMTP_PASS configuration is required.");
+
+if (MONGODB_CONNECTION_POOL === undefined) {
+    MONGODB_CONNECTION_POOL = 5;
+}
+
+if (MONGODB_CONNECTION_MIN === undefined) {
+    MONGODB_CONNECTION_MIN = 1;
+}
 
 module.exports = {
     accessLog: ACCESS_LOG,
     applicationLog: APPLICATION_LOG,
     mongoDB: MONGODB_URL,
     MONGODB_dbname: MONGODB_DATABASE_NAME,
-
+    MONGODB_connection_pool: MONGODB_CONNECTION_POOL,
+    MONGODB_connection_min: MONGODB_CONNECTION_MIN,
     surveyCollections: {
         survey: SURVEY_COLLECTION,
         result: RESULT_COLLECTION,
