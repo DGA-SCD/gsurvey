@@ -4,6 +4,25 @@ const appConf = require('../../config/production.conf');
 const logger = winston.logger;
 const promise = require('promise');
 
+var db;
+
+function getPoolConnection(){
+    if( db !== undefined ){
+        logger.error("reuse pool");
+        return db;
+    } else {
+        db = MongoClient.connect(appConf.mongoDB, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            poolSize: appConf.MONGODB_connection_pool,
+            minSize: appConf.MONGODB_connection_min,
+        });
+        logger.error("create new pool");
+        return db;
+    }
+
+}
+
 function findWithProjector(filters, collection, projector, sort) {
     return _find(filters, collection, projector, sort, 0 , 0);
 }
@@ -27,20 +46,15 @@ function find(filters, collection, sort) {
 function _find(filters, collection, projector, sort, limit, skip) {
     console.log("limit: " + limit + " skip: " + skip);
     return new promise((resolve, reject) => {
-        MongoClient.connect(appConf.mongoDB, {
-                useNewUrlParser: true,
-                useUnifiedTopology: true
-            }).then(db => {
+        getPoolConnection().then(db => {
                 logger.debug("mongodb connected");
                 db.db(appConf.MONGODB_dbname)
                     .collection(collection).find(filters, projector).skip(skip).limit(limit).sort(sort).toArray(function (err, results) {
                         if (err) {
                             logger.error('Error occurred while querying: ' + err);
-                            db.close();
                             reject(err);
                         } else {
                             logger.debug('search results: ' + JSON.stringify(results));
-                            db.close();
                             resolve(results);
                         }
                     })
