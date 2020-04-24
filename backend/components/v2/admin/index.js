@@ -116,7 +116,7 @@ router.get('/results/surveyid/:surveyId', getAllResultsBySurveyId); /* requires 
 router.get('/results/:resultId', getResultById)
 router.post('/results', saveResult);
 
-// /v2/users
+// /v2/users[deprecated]
 router.get('/users/profile', users.getProfile);
 
 // /api/v2/admin/password/change
@@ -134,5 +134,11 @@ router.post("/members/suspension", members.setSuspension);
 
 // /api/v2/admin/members/{:id}
 router.delete("/members/:id", members.deleteMember);
+
+// /api/v2/admin/profile
+router.get('/profile', users.getProfile);
+
+// /api/v2/admin/profile
+router.post('/profile', users.updateProfile);
 
 module.exports = router;

@@ -31,7 +31,7 @@ const router = express.Router();
 const mongo = require('../../helpers/mongodb');
 const uuidv4 = require('uuid/v4');
 const {register} = require('./register');
-const {getMinistries, getDepartments, getOrganizations} = require('./organization');
+const {getMinistries, getDepartments, getOrganizations, getPrefixes} = require('./organization');
 const {sendOTP, resetPassword} = require('../users/password');
 const {getSurveyById, saveResult} = require('./survey');
 
@@ -87,5 +87,8 @@ router.post('/otp', sendOTP);
 
 // /api/v2/users/password/reset
 router.post('/password/reset', resetPassword);
+
+// /api/v2/users/prefixes
+router.get('/prefixes', getPrefixes);
 
 module.exports = router;

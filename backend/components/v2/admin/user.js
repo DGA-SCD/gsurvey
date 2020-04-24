@@ -20,19 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-const express = require('express');
-const crypto = require('crypto');
-const base64url = require('base64url')
-const mysql = require('mysql');
+"use strict";
+
 const helperMySQL = require('../../helpers/mysql');
-const winston = require('../../../commons/logger');
+const {
+    logger
+} = require('../../../commons/logger');
 const http = require('../../../commons/http');
 const appConf = require('../../../config/production.conf');
-const redis = require("redis");
-const logger = winston.logger;
-const router = express.Router();
-const promise = require('promise');
-const MongoClient = require('mongodb').MongoClient;
 const {
     changePassword
 } = require('../users/password');
@@ -40,116 +35,41 @@ const {
 // Get User profile 
 function getProfile(req, res) {
 
-    var userName = req.signedCookies['username']; //req.USERNAME;
-    var conn = mysql.createConnection({
-        host: appConf.MYSQL_host,
-        port: appConf.MYSQL_port,
-        user: appConf.MYSQL_user,
-        password: appConf.MYSQL_password,
-        database: appConf.MYSQL_database
-    });
+    let userName = req.signedCookies['username']; //req.USERNAME;
 
-    conn.connect(function (err) {
+    if (userName === undefined) {
+        http.error(res, 401, 40100, 'required authentication');
+        return;
+    }
 
-        logger.debug("Trying...");
+    const qstr = "SELECT prefix_id, P.firstname, P.lastname, position, email, ministry_name as ministry, dep_name as department, org_name as  organization, mobile, office_phone, ext, role_name as role " +
+        "FROM users as U " +
+        "INNER JOIN user_profile  as P on U.user_id = P.user_id " +
+        "LEFT JOIN department on department.dep_id = P.dep_id " +
+        "LEFT JOIN ministry on ministry.ministry_code = P.ministry_code " +
+        "LEFT JOIN organization as O on O.org_code = P.org_code " +
+        "LEFT JOIN roles on roles.role_id = U.role_id " +
+        "WHERE U.username = '" + userName + "' ";
 
-        if (err) {
-            logger.error("Cannot connect to mariadb");
-            http.error(res, 500, 50001, "Cannot connect to mariadb");
-            conn.end();
-            return;
-        } else {
-            logger.debug("Database connected!");
-            logger.debug("Search user name: " + userName);
-
-            const qstr = "SELECT * " +
-                "FROM users " +
-                "JOIN user_profile on users.user_id = user_profile.user_id " +
-                "JOIN department on department.dep_id = user_profile.dep_id " +
-                "JOIN ministry on ministry.ministry_code = user_profile.ministry_code " +
-                "JOIN roles on roles.role_id = users.role_id " +
-                "WHERE users.username = '" + userName + "' ";
-            logger.debug("user query: " + qstr);
-            conn.query(qstr, function (err, result, fields) {
-                if (err) {
-                    logger.error(err);
-                    http.error(res, 404, 404000, "Not found user or password");
-                    conn.end();
-                    return;
-                } else {
-                    logger.debug("result " + JSON.stringify(result));
-                    var userDetails = result[0];
-                    if (result[0] != null) {
-                        http.success(res, {
-                            user: userDetails.username,
-                            name: userDetails.firstname,
-                            surname: userDetails.lastname,
-                            nameEN: "",
-                            surnameEN: "",
-                            nickName: "",
-                            tel: userDetails.office_phone,
-                            ext: userDetails.ext,
-                            mobile: userDetails.mobile,
-                            email: userDetails.email,
-                            position: userDetails.position,
-                            organize: userDetails.org_name,
-                            department: userDetails.dep_name,
-                            devision: "",
-                            role: userDetails.role_name
-                        })
+    helperMySQL.getConnection()
+        .then(conn => {
+            return helperMySQL.query(conn, qstr)
+                .then(results => {
+                    if (results.length < 1) {
+                        http.error(res, 404, 404000, "Not found user or password");
                         conn.end();
                     } else {
-                        logger.error("invalid user or password");
-                        http.error(res, 401, 401000, "invalid user or password");
+                        http.success(res, results[0]);
                         conn.end();
                     }
-                }
-            });
-        }
-    });
-}
-
-// getAlluser
-function getAllUser(conn) {
-
-    const qstr = "SELECT \
-        t.*,\
-        u2.Name  as FName,\
-        u2.Surname as FSurname, \
-        b.Vehicle, \
-        b.Room, \
-        b.Join, \
-        ss.IsAnswer, \
-        b.Remark \
-    FROM ( \
-        SELECT   \
-            u.userID, \
-            u.Name, \
-            u.Surname, \
-            u.Department, \
-            u.Segment, \
-            r.FriendID FROM user_details as u \
-    LEFT JOIN roommates as r \
-    ON u.userId = r.UserID \
-    ) as t \
-    LEFT JOIN user_details as u2 on t.FriendID = u2.UserID \
-    LEFT JOIN booking as b on b.userId = t.userId \
-    LEFT JOIN user_stats as ss on ss.userId = t.userId";
-
-    return new promise(function (resolve, reject) {
-        conn.query(qstr, function (err, result, fields) {
-            if (err) {
-                logger.error("query failed: " + err);
-                reject(err);
-            } else {
-                conn.end();
-                resolve(result);
-            }
+                });
+        })
+        .catch(err => {
+            http.error(res, 500, 50002, err);
         });
-    });
 }
 
-
+// change password
 function changePassord(req, res) {
     req.ctx = {
         userId: req.signedCookies['userid']
@@ -157,7 +77,85 @@ function changePassord(req, res) {
     changePassword(req, res);
 }
 
+// update profile
+function updateProfile(req, res) {
+
+    let userId = req.signedCookies['userid'];
+
+    if (userId === undefined) {
+        http.error(res, 401, 40100, 'required authentication');
+        return;
+    }
+
+    if (req.body.prefix_id === undefined) {
+        http.error(res, 404, 40400, 'not found prefix_id');
+        return;
+    }
+
+    if (req.body.firstname === undefined) {
+        http.error(res, 404, 40400, 'not found firstname');
+        return;
+    }
+
+    if (req.body.lastname === undefined) {
+        http.error(res, 404, 40400, 'not found lastname');
+        return;
+    }
+
+    if (req.body.position === undefined) {
+        http.error(res, 404, 40400, 'not found position');
+        return;
+    }
+
+    if (req.body.mobile === undefined) {
+        http.error(res, 404, 40400, 'not found mobile');
+        return;
+    }
+
+    if (req.body.office_phone === undefined) {
+        http.error(res, 404, 40400, 'not found office_phone');
+        return;
+    }
+
+    if (req.body.ext === undefined) {
+        http.error(res, 404, 40400, 'not found ext');
+        return;
+    }
+
+    let qstr = "UPDATE user_profile SET " +
+        "prefix_id=" + req.body.prefix_id + "," +
+        "firstname=\'" + req.body.firstname + "\'," +
+        "lastname=\'" + req.body.lastname + "\'," +
+        "position=\'" + req.body.position + "\'," +
+        "mobile=\'" + req.body.mobile + "\'," +
+        "office_phone=\'" + req.body.office_phone + "\'," +
+        "ext=\'" + req.body.ext + "\' " +
+        "WHERE user_profile.user_id=" + userId;
+
+    helperMySQL.getConnection()
+        .then(conn => {
+            return helperMySQL.query(conn, qstr)
+                .then(status => {
+                    if (status !== undefined && status.affectedRows == 1) {
+                        http.success(res);
+                        conn.destroy();
+                    } else {
+                        http.error(res, 500, 50002, "cannot update profile or not found this profile");
+                        conn.destroy();
+                    }
+                })
+        })
+        .then(() => {
+            logger.debug("update profile success");
+        })
+        .catch(err => {
+            http.error(res, 500, 50002, err);
+        });
+
+}
+
 module.exports = {
     getProfile,
     changePassord,
+    updateProfile,
 };
