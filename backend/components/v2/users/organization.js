@@ -52,7 +52,7 @@ function getMinistries(req, res) {
 function getDepartments(req, res) {
 
     const min_id = req.query.ministryId;
-    
+
     if (min_id === undefined) {
         http.error(res, 400, 40000, "Not found ministryId");
         return;
@@ -86,7 +86,7 @@ function getOrganizations(req, res) {
     }
 
     const qstr = "SELECT org_code as org_id, org_name as org_name \
-    FROM organization WHERE active_flag = 1 and dep_id='" + dep_id +"'";
+    FROM organization WHERE active_flag = 1 and dep_id='" + dep_id + "'";
 
     mysql.getConnection()
         .then(conn => {
@@ -103,8 +103,29 @@ function getOrganizations(req, res) {
         });
 }
 
+function getPrefixes(req, res) {
+
+    const qstr = "SELECT prefix_id as id, prefix_name as name FROM prefix";
+
+    mysql.getConnection()
+        .then(conn => {
+            return mysql.query(conn, qstr)
+                .then(results => {
+                    conn.destroy();
+                    http.success(res, results);
+                    return Promise.resolve(results.length);
+                });
+        }).then((l) => {
+            logger.debug("query prefixes: " + l + " records");
+        })
+        .catch(err => {
+            http.error(res, 500, 50002, err);
+        });
+}
+
 module.exports = {
     getMinistries,
     getDepartments,
-    getOrganizations
+    getOrganizations,
+    getPrefixes,
 }
