@@ -186,14 +186,14 @@ class ThemeNavbar extends Component {
                           </span>
                         </span>
                       </DropdownItem>
-                      {/* <DropdownItem divider /> */}
+                      <DropdownItem divider />
 
-                      {/* <Link to="#" className="p-0">
+                      <Link to="user-profile" className="p-0">
                         <DropdownItem>
                           <User size={16} className="mr-1" />
                           ประวัติของฉัน
                         </DropdownItem>
-                      </Link> */}
+                      </Link>
 
                       <DropdownItem divider />
 

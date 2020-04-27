@@ -4,8 +4,7 @@ import React, { useState, useEffect, Component, forwardRef } from "react";
 import MaterialTable, { MTableAction } from "material-table";
 import { userService } from "../../services/UserAuth";
 import * as config from "../../services/AppConfig";
-import { BrowserRouter, Route, Link } from "react-router-dom";
-import BlockIcon from "@material-ui/icons/Block";
+
 import AddBox from "@material-ui/icons/AddBox";
 import Check from "@material-ui/icons/Check";
 import ChevronRight from "@material-ui/icons/ChevronRight";
@@ -14,18 +13,15 @@ import DeleteOutline from "@material-ui/icons/DeleteOutline";
 import Edit from "@material-ui/icons/Edit";
 import { toastr } from "react-redux-toastr";
 import SaveAlt from "@material-ui/icons/SaveAlt";
-import Search from "@material-ui/icons/Search";
-import ViewColumn from "@material-ui/icons/ViewColumn";
+
 import Button from "@material-ui/core/Button";
 import "../../assets/scss/views/pages/survey/survey.css";
 import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Container from "@material-ui/core/Container";
 import TextField from "@material-ui/core/TextField";
-import { fontFamily } from "@material-ui/system";
 
 const tableIcons = {
   Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -153,11 +149,6 @@ export default class UserManagement extends Component {
 
   submitHandler(e) {
     e.preventDefault();
-    console.log(this.state.user_id);
-    console.log(this.state.email);
-    console.log(this.state.desc);
-    console.log(this.state.status);
-    console.log(this.state.event);
 
     if (this.state.event === "reject") {
       var url_fetch = config.BACKEND_GSURVEY + "/api/v2/admin/members/approval";
@@ -165,11 +156,10 @@ export default class UserManagement extends Component {
     }
     if (this.state.event === "disable") {
       //disable
-      var url_fetch =
-        config.BACKEND_GSURVEY + "/api/v2/admin/members/suspension";
-      var message = "ยกเลิกการใช้งานเรียบร้อยแล้ว";
+      url_fetch = config.BACKEND_GSURVEY + "/api/v2/admin/members/suspension";
+      message = "ยกเลิกการใช้งานเรียบร้อยแล้ว";
     }
-    console.log(url_fetch);
+
     fetch(url_fetch, {
       method: "post",
       headers: {
@@ -186,7 +176,6 @@ export default class UserManagement extends Component {
     })
       .then(res => res.json())
       .then(result => {
-        console.log(result);
         if (result.success) {
           toastr.success(message, toastrOptions);
           this.setState({ supspenModalOpen: false, desc: "" });
@@ -201,7 +190,6 @@ export default class UserManagement extends Component {
   }
   onClose() {
     this.setState({ dialogOpen: false });
-    console.log(this.state.dialogOpen);
   }
   toggleModal = () => {
     this.setState({
@@ -394,7 +382,7 @@ export default class UserManagement extends Component {
                   ? "กดเพื่อยกเลิกการใช้งาน"
                   : "กดเพื่ออนุมัติการใช้งาน",
               onClick: (event, rowData) => {
-                console.log(rowData);
+                // console.log(rowData);
 
                 this.supspenModal({ rowData });
               }
