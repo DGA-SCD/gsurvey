@@ -16,7 +16,7 @@ import Check from "@material-ui/icons/Check";
 import Clear from "@material-ui/icons/Clear";
 import SaveAlt from "@material-ui/icons/SaveAlt";
 import PageviewIcon from "@material-ui/icons/Pageview";
-import { fontSize } from "@material-ui/system";
+
 import "../../assets/scss/views/pages/survey/survey.css";
 import { toastr } from "react-redux-toastr";
 //import AuthService from '../../services/AuthService';
@@ -76,9 +76,6 @@ class Main extends Component {
       );
       if (response.ok) {
         const json = await response.json();
-        console.log("callallsurvey" + JSON.stringify(json));
-
-        console.log("==========result==========");
 
         this.setState({
           data: json.data,
@@ -130,7 +127,9 @@ class Main extends Component {
             {
               icon: () => <Edit />,
               tooltip: "แก้ไขแบบสำรวจ",
+              //  rowData: () => ({ disabled: rowData.version === 2 }),
               onClick: (event, rowData) => {
+                //disabled: rowData.version === 2;
                 // this.handleClickOpen(rowData);
                 this.props.history.push({
                   pathname: "survey-create",
@@ -208,7 +207,7 @@ class Main extends Component {
                     };
 
                     jsondata = JSON.stringify(jsondata);
-                    console.log(jsondata);
+
                     fetch(
                       config.BACKEND_GSURVEY + "/api/v2/admin/surveys/create",
                       //"https://jsonplaceholder.typicode.com/users",
@@ -246,7 +245,6 @@ class Main extends Component {
                   {
                     let data = this.state.data;
                     const index = data.indexOf(oldData);
-                    console.log("onRowDelete", oldData);
 
                     var jsondel = {
                       userid: oldData.userid,
@@ -256,7 +254,7 @@ class Main extends Component {
                     };
 
                     jsondel = JSON.stringify(jsondel);
-                    console.log(jsondel);
+
                     fetch(
                       config.BACKEND_GSURVEY + "/api/v2/admin/surveys",
 
@@ -280,10 +278,6 @@ class Main extends Component {
                             toastrOptions
                           );
                           this.callallSurvey();
-                          // const data = this.state.data;
-                          // data.push(newData);
-                          // console.log("respne" + data);
-                          // this.setState({ data }, () => resolve());
                         }
                       })
                       .catch(err => {
