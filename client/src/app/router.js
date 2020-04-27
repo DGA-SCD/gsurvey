@@ -83,7 +83,6 @@ const LazySummary = lazy(() => import("../views/pages/summary"));
 const LazyBilling = lazy(() => import("../views/pages/billing"));
 const LazySurveyresult = lazy(() => import("../views/pages/surveyresult"));
 const LazyDashboard = lazy(() => import("../views/pages/dashboard"));
-const LazyProfile = lazy(() => import("../views/pages/proFile"));
 const LazyResult = lazy(() => import("../views/pages/result"));
 const LazyUserManagement = lazy(() => import("../views/pages/UserManagement"));
 // Full Layout
@@ -778,15 +777,7 @@ class Router extends Component {
                      </Suspense>
                   )}
                />
-               <MainLayoutRoutes
-                  exact
-                  path="/pages/profile"
-                  render={matchprops => (
-                     <Suspense fallback={<Spinner />}>
-                        <LazyProfile {...matchprops} />
-                     </Suspense>
-                  )}
-               />
+               
                <MainLayoutRoutes
                   exact
                   path="/pages/change-log"
