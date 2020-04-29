@@ -1,17 +1,10 @@
 import * as config from "./AppConfig";
 import { toastr } from "react-redux-toastr";
 
-const toastrOptions = {
-  timeOut: 2000, // by setting to 0 it will prevent the auto close
-  position: "top-right",
-  showCloseButton: true, // false by default
-  closeOnToastrClick: true, // false by default, this will close the toastr when user clicks on it
-  progressBar: false
-};
 const login = function(username, password) {
   const requestOptions = {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+    method: window.$httpPost,
+    headers: window.$httpHeaders,
     body: JSON.stringify({ username, password }),
     credentials: "include"
   };

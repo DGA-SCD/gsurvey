@@ -11,23 +11,12 @@ import { useForm } from "react-hook-form";
 import {
   Row,
   Col,
-  Input,
-  Form,
   FormGroup,
   Button,
-  Label,
   Card,
   CardBody,
   CardFooter
 } from "reactstrap";
-
-const toastrOptions = {
-  timeOut: 3000, // by setting to 0 it will prevent the auto close
-  position: "top-right",
-  showCloseButton: true, // false by default
-  closeOnToastrClick: true, // false by default, this will close the toastr when user clicks on it
-  progressBar: false
-};
 
 export default function Login() {
   // const history = useHistory();
@@ -61,13 +50,12 @@ export default function Login() {
         if (user.success) {
           if (localStorage.getItem("userData")) {
             window.location.replace(loginurl);
-
             // history.push("/pages/main");
           }
         } else {
           if (!user.success) {
             const messagetext = handleerr(user.code);
-            toastr.error(messagetext, toastrOptions);
+            toastr.error(messagetext, window.$toastrOptions);
           }
         }
       },
