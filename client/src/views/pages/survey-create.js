@@ -23,7 +23,7 @@ import "jquery-bar-rating";
 import "icheck/skins/square/blue.css";
 
 import * as widgets from "surveyjs-widgets";
-import AuthService from "../../services/AuthService";
+//import AuthService from "../../services/AuthService";
 import queryString from "query-string";
 import userImagedga from "../../assets/img/ico/icons8-edit-24.png";
 SurveyJSCreator.StylesManager.applyTheme("default");

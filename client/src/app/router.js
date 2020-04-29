@@ -9,7 +9,7 @@ import FullPageLayout from "../layouts/routes/fullpageRoutes";
 import ErrorLayoutRoute from "../layouts/routes/errorRoutes";
 
 // Main Layout
-const LazyEcommerceDashboard = lazy(() => import("../views/pages/survey"));
+//const LazyEcommerceDashboard = lazy(() => import("../views/pages/survey"));
 const LazyAnalyticsDashboard = lazy(() => import("../views/dashboard/analyticsDashboard"));
 const LazySalesDashboard = lazy(() => import("../views/dashboard/salesDashboard"));
 const LazyEmail = lazy(() => import("../views/email/email"));
@@ -76,12 +76,12 @@ const LazyFAQ = lazy(() => import("../views/pages/faq"));
 const LazyKnowledgeBase = lazy(() => import("../views/pages/knowledgeBase"));
 const LazySearch = lazy(() => import("../views/pages/search"));
 const LazyBlankPage = lazy(() => import("../views/pages/blankPage"));
-const LazySurvey = lazy(() => import("../views/pages/survey"));
-const LazySurveyCreator = lazy(() => import("../views/pages/SurveyCreator"));
+//const LazySurvey = lazy(() => import("../views/pages/survey"));
+//const LazySurveyCreator = lazy(() => import("../views/pages/SurveyCreator"));
 const LazyChangeLogPage = lazy(() => import("../views/pages/changeLogPage"));
-const LazySummary = lazy(() => import("../views/pages/summary"));
-const LazyBilling = lazy(() => import("../views/pages/billing"));
-const LazySurveyresult = lazy(() => import("../views/pages/surveyresult"));
+//const LazySummary = lazy(() => import("../views/pages/summary"));
+//const LazyBilling = lazy(() => import("../views/pages/billing"));
+//const LazySurveyresult = lazy(() => import("../views/pages/surveyresult"));
 const LazyDashboard = lazy(() => import("../views/pages/dashboard"));
 const LazyResult = lazy(() => import("../views/pages/result"));
 const LazyUserManagement = lazy(() => import("../views/pages/UserManagement"));
@@ -110,7 +110,7 @@ class Router extends Component {
                   path="/"
                   render={matchprops => (
                      <Suspense fallback={<Spinner />}>
-                        <LazyEcommerceDashboard {...matchprops} />
+                        <LazyMain {...matchprops} />
                      </Suspense>
                   )}
                />
@@ -741,24 +741,7 @@ class Router extends Component {
                      </Suspense>
                   )}
                />
-               <MainLayoutRoutes
-                  exact
-                  path="/pages/survey"
-                  render={matchprops => (
-                     <Suspense fallback={<Spinner />}>
-                        <LazySurvey {...matchprops} />
-                     </Suspense>
-                  )}
-               />
-               <MainLayoutRoutes
-                  exact
-                  path="/pages/SurveyCreator"
-                  render={matchprops => (
-                     <Suspense fallback={<Spinner />}>
-                        <LazySurveyCreator {...matchprops} />
-                     </Suspense>
-                  )}
-               />
+               
                <MainLayoutRoutes
                   exact
                   path="/pages/survey-create"
@@ -851,24 +834,7 @@ class Router extends Component {
                      </Suspense>
                   )}
                />
-               <MainLayoutRoutes
-                  exact
-                  path="/pages/summary"
-                  render={matchprops => (
-                     <Suspense fallback={<Spinner />}>
-                        <LazySummary {...matchprops} />
-                     </Suspense>
-                  )}
-               />
-               <MainLayoutRoutes
-                  exact
-                  path="/pages/billing"
-                  render={matchprops => (
-                     <Suspense fallback={<Spinner />}>
-                        <LazyBilling {...matchprops} />
-                     </Suspense>
-                  )}
-               />
+              
                <MainLayoutRoutes
                   exact
                   path="/pages/dashboard"
@@ -878,7 +844,7 @@ class Router extends Component {
                      </Suspense>
                   )}
                />
-               <MainLayoutRoutes
+               {/* <MainLayoutRoutes
                   exact
                   path="/pages/surveyresult"
                   render={matchprops => (
@@ -886,7 +852,7 @@ class Router extends Component {
                         <LazySurveyresult {...matchprops} />
                      </Suspense>
                   )}
-               />
+               /> */}
                <MainLayoutRoutes
                   exact
                   path="/pages/main"
