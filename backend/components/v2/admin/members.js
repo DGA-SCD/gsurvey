@@ -112,7 +112,7 @@ function getMembers(req, res) {
 function setApproval(req, res) {
 
     let userId = req.signedCookies['userid'];;
-
+    let url = (req.headers.origin || 'https://gsurvey.dga.or.th') + '/pages/login';
     if (userId === undefined || userId === "") {
         http.error(res, 401, 40100, 'unauthorized user');
         return;
@@ -154,16 +154,17 @@ function setApproval(req, res) {
         ",approved_dt=now() " +
         "WHERE user_id = \'" + memberId + "\'";
 
-    const approved_content = '<span style="font-family:Arial, Helvetica, sans-serif; font-size:12px; color:#000000;">การลงทะเบียนได้รับการอนุมัติแล้ว<br>\
-    สามารถเข้าใช้งานได้ทันที<br><br>\
-    ขอแสดงความนับถือ<br>\
-    ทีม G-Survey<br></span>';
+    const approved_content = '<span style="font-family:Arial, Helvetica, sans-serif; font-size:12px; color:#000000;">DGA ขอเรียนให้ท่านทราบว่า การลงทะเบียนขอใช้บริการระบบ G-Survey ของท่านได้รับการอนุมัติแล้ว<br>' +
+    'ท่านสามารถเข้าใช้งานได้ที่  ' + url + '<br><br>' +
+    '*** อีเมลนี้เป็นการแจ้งจากระบบอัตโนมัติ กรุณาอย่าตอบกลับ ***<br><br>' +
+    'ขอแสดงความนับถือ<br>' +
+    'ทีม G-Survey</span>';
 
-    const rejected_content = '<span style="font-family:Arial, Helvetica, sans-serif; font-size:12px; color:#000000;">การลงทะเบียนไม่ได้รับการอนุมัติ<br>\
-    สาเหตุ: ' + desc +
-        '<br><br>\
-    ขอแสดงความนับถือ<br>\
-    ทีม G-Survey<br></span>';
+    const rejected_content = '<span style="font-family:Arial, Helvetica, sans-serif; font-size:12px; color:#000000;">DGA ขอเรียนให้ท่านทราบว่า การลงทะเบียนขอใช้บริการระบบ G-Survey ของท่านไม่ได้รับการอนุมัติ<br>' +
+    'สาเหตุ: ' + desc +'<br><br>' +
+    '*** อีเมลนี้เป็นการแจ้งจากระบบอัตโนมัติ กรุณาอย่าตอบกลับ ***<br><br>' +
+    'ขอแสดงความนับถือ<br>' +
+    'ทีม G-Survey</span>';
 
     return validateAdmin(userId)
         .then(conn => {
@@ -230,7 +231,9 @@ function setApproval(req, res) {
 }
 
 function setSuspension(req, res) {
-    let userId = req.signedCookies['userid'];;
+    
+    let userId = req.signedCookies['userid'];
+    let url = (req.headers.origin || 'https://gsurvey.dga.or.th') + '/pages/login';
 
     if (userId === undefined || userId === "") {
         http.error(res, 401, 40100, 'unauthorized user');
@@ -271,16 +274,17 @@ function setSuspension(req, res) {
         "SET suspended_flag=\'" + ((action === "enable") ? 0 : 1) + "\' " +
         "WHERE user_id = \'" + memberId + "\'";
 
-    const approved_content = '<span style="font-family:Arial, Helvetica, sans-serif; font-size:12px; color:#000000;">บัญชีผู้ใช้เปิดใช้งานแล้ว<br>\
-    สามารถเข้าใช้งานได้ทันที<br><br>\
-    ขอแสดงความนับถือ<br>\
-    ทีม G-Survey<br></span>';
+    const approved_content = '<span style="font-family:Arial, Helvetica, sans-serif; font-size:12px; color:#000000;">บัญชีผู้ใช้งานของท่านได้เปิดใช้งานเรียบร้อยแล้ว<br>' +
+    'ท่านสามารถเข้าใช้งานได้ที่  ' + url + '<br><br>' +
+    '*** อีเมลนี้เป็นการแจ้งจากระบบอัตโนมัติ กรุณาอย่าตอบกลับ ***<br><br>' +
+    'ขอแสดงความนับถือ<br>' +
+    'ทีม G-Survey</span>';
 
-    const rejected_content = '<span style="font-family:Arial, Helvetica, sans-serif; font-size:12px; color:#000000;">บัญชีผู้ใช้งานถูกระงับชั่วคราว<br>\
-    สาเหตุ: ' + desc +
-        '<br><br>\
-    ขอแสดงความนับถือ<br>\
-    ทีม G-Survey<br></span>';
+    const rejected_content = '<span style="font-family:Arial, Helvetica, sans-serif; font-size:12px; color:#000000;">บัญชีผู้ใช้งานของท่านถูกระงับชั่วคราว<br>' +
+    'สาเหตุ: ' + desc + '<br><br>' +
+    '*** อีเมลนี้เป็นการแจ้งจากระบบอัตโนมัติ กรุณาอย่าตอบกลับ ***<br><br>' +
+    'ขอแสดงความนับถือ<br>' +
+    'ทีม G-Survey</span>';
 
     return validateAdmin(userId)
         .then(conn => {

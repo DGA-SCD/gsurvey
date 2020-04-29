@@ -110,10 +110,11 @@ function sendOTP(req, res) {
     const otp = getOTP();
 
     //send email 
-    const content = '<span style="font-family:Arial, Helvetica, sans-serif; font-size:12px; color:#000000;">ทาง DGA ได้รับคำขอ reset password แล้ว (เลขอ้างอิง: ' + req.body.ref_code + ')\
-    <br><br><a href="' + return_url + '?email=' + req.body.email + '&ref_code=' + req.body.ref_code + '&otp=' + otp + '">กดเพื่อกรอกรหัสผ่านใหม่</a> ลิงค์นี้จะมีอายุ 5 นาที<br><br>\
-    ขอแสดงความนับถือ<br>\
-    ทีม G-Survey<br></span>';
+    const content = '<span style="font-family:Arial, Helvetica, sans-serif; font-size:12px; color:#000000;">DGA ได้รับคำร้องขอการ reset password แล้ว (เลขอ้างอิง: ' + req.body.ref_code + ')<br><br>' + 
+    '<a href="' + return_url + '?email=' + req.body.email + '&ref_code=' + req.body.ref_code + '&otp=' + otp + '">กดเพื่อกรอกรหัสผ่านใหม่</a> ลิงค์นี้จะมีอายุ 5 นาที<br><br>' +
+    '*** อีเมลนี้เป็นการแจ้งจากระบบอัตโนมัติ กรุณาอย่าตอบกลับ ***<br><br>' +
+    'ขอแสดงความนับถือ<br>' +
+    'ทีม G-Survey</span>';
 
     isUserExist(req.body.email)
         .then(() => {
