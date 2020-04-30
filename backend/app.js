@@ -45,5 +45,6 @@ app.use('/v1/stats', report);
 app.use('/api/v2/auth', auth2);
 app.use('/api/v2/admin', gsurveyAdmin);
 app.use('/api/v2/users', gsurveyUser);
+app.use('/static/images/', express.static(__dirname + '/public/images'))
 
 module.exports = app;

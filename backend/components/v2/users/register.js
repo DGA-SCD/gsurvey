@@ -31,6 +31,7 @@ const mongo = require('../../helpers/mongodb');
 const mail = require('../../helpers/mail');
 const pwd = require('password-hash');
 const mysql = require('../../helpers/mysql');
+const {EmailTemplate} = require('../email-templates/form');
 
 function register(req, res) {
     //validate user info
@@ -80,6 +81,20 @@ function register(req, res) {
     var role = 1;
     var user_id;
 
+    let body = `<p style="font:15px/1.25em 'Helvetica Neue',Arial,Helvetica; color:#333">DGA ได้รับคำร้องขอการลงทะเบียนเข้าใช้งานระบบ G-Survey ของท่านเรียบร้อยแล้ว</p>
+    <p style="font:15px/1.25em 'Helvetica Neue',Arial,Helvetica; color:#333">โปรดรอการแจ้งยืนยันผลการลงทะเบียนจากผู้ดูแลระบบอีกครั้ง</p>
+    <br/>
+    <p style="font:15px/1.25em 'Helvetica Neue',Arial,Helvetica; color:#333">
+    <strong>*** อีเมลนี้เป็นการแจ้งจากระบบอัตโนมัติ กรุณาอย่าตอบกลับ ***</strong></p>
+    <br/>
+    <p style="font:15px/1.25em 'Helvetica Neue',Arial,Helvetica; color:#333">ขอแสดงความนับถือ</p>
+    <p style="font:15px/1.25em 'Helvetica Neue',Arial,Helvetica; color:#333">ทีม G-Survey</p>`;
+    let logo = req.protocol + '://' + req.headers.host + '/static/images/logo.png';
+
+    const eT = new EmailTemplate(body,  logo);
+    let mailContent = eT.getContent();
+    console.log(mailContent);
+    
     /* prepare statement */
     var qstr_usr_insert = "INSERT INTO users(`username`, `password`, `role_id`) value('" + username + "','" + password + "','" + role + "')";
 
@@ -128,11 +143,8 @@ function register(req, res) {
             return mail.sendMail({
                 from: 'noreply.gsurvey@dga.or.th',
                 to: req.body.email,
-                subject: 'ยืนยันการสมัครใช้งานระบบ G-Survey',
-                text: 'ทาง DGA ได้รับคำขอการลงทะเบียนของท่านเรียบร้อยแล้ว\n\n' +
-                    'รอการยืนยันจากผู้ดูแลระบบอีกครั้ง สำหรับการเข้าใช้งานระบบ G-Survey\n\n' +
-                    'ขอแสดงความนับถือ\n' +
-                    'ทีม G-Survey',
+                subject: 'แจ้งยืนยันการสมัครใช้งานระบบ G-Survey',
+                html: mailContent,
             }).then(info => {
                 logger.debug("sent mail to " + req.body.email + " successfully");
             });

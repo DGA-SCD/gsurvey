@@ -31,7 +31,9 @@ const promise = require('promise');
 const redis = require("redis");
 const mysqlHelper = require('../../helpers/mysql');
 const mailHeler = require('../../helpers/mail');
-
+const {
+    EmailTemplate
+} = require('../email-templates/form');
 
 function validateAdmin(userId) {
 
@@ -112,7 +114,7 @@ function getMembers(req, res) {
 function setApproval(req, res) {
 
     let userId = req.signedCookies['userid'];;
-
+    let url = (req.headers.origin || 'https://gsurvey.dga.or.th') + '/pages/login';
     if (userId === undefined || userId === "") {
         http.error(res, 401, 40100, 'unauthorized user');
         return;
@@ -154,16 +156,31 @@ function setApproval(req, res) {
         ",approved_dt=now() " +
         "WHERE user_id = \'" + memberId + "\'";
 
-    const approved_content = '<span style="font-family:Arial, Helvetica, sans-serif; font-size:12px; color:#000000;">การลงทะเบียนได้รับการอนุมัติแล้ว<br>\
-    สามารถเข้าใช้งานได้ทันที<br><br>\
-    ขอแสดงความนับถือ<br>\
-    ทีม G-Survey<br></span>';
 
-    const rejected_content = '<span style="font-family:Arial, Helvetica, sans-serif; font-size:12px; color:#000000;">การลงทะเบียนไม่ได้รับการอนุมัติ<br>\
-    สาเหตุ: ' + desc +
-        '<br><br>\
-    ขอแสดงความนับถือ<br>\
-    ทีม G-Survey<br></span>';
+
+    if (action === 'approve') {
+        var body = `<p style="font:15px/1.25em 'Helvetica Neue',Arial,Helvetica; color:#333">DGA ขอเรียนให้ท่านทราบว่า การลงทะเบียนขอใช้บริการระบบ G-Survey ของท่านได้รับการอนุมัติแล้ว</p>
+        <p style="font:15px/1.25em 'Helvetica Neue',Arial,Helvetica; color:#333">ท่านสามารถเข้าใช้งานได้ที่ <a href="${url}">${url}</a></p>
+        <br/>
+        <p style="font:15px/1.25em 'Helvetica Neue',Arial,Helvetica; color:#333">
+        <strong>*** อีเมลนี้เป็นการแจ้งจากระบบอัตโนมัติ กรุณาอย่าตอบกลับ ***</strong></p>
+        <br/>
+        <p style="font:15px/1.25em 'Helvetica Neue',Arial,Helvetica; color:#333">ขอแสดงความนับถือ</p>
+        <p style="font:15px/1.25em 'Helvetica Neue',Arial,Helvetica; color:#333">ทีม G-Survey</p>`;
+    } else {
+        var body = `<p style="font:15px/1.25em 'Helvetica Neue',Arial,Helvetica; color:#333">DGA ขอเรียนให้ท่านทราบว่า การลงทะเบียนขอใช้บริการระบบ G-Survey ของท่านไม่ได้รับการอนุมัติ</p>
+        <p style="font:15px/1.25em 'Helvetica Neue',Arial,Helvetica; color:#333">สาเหตุ: <strong>${req.body.desc}</strong></p>
+        <br/>
+        <p style="font:15px/1.25em 'Helvetica Neue',Arial,Helvetica; color:#333">
+        <strong>*** อีเมลนี้เป็นการแจ้งจากระบบอัตโนมัติ กรุณาอย่าตอบกลับ ***</strong></p>
+        <br/>
+        <p style="font:15px/1.25em 'Helvetica Neue',Arial,Helvetica; color:#333">ขอแสดงความนับถือ</p>
+        <p style="font:15px/1.25em 'Helvetica Neue',Arial,Helvetica; color:#333">ทีม G-Survey</p>`;
+    }
+
+    let logo = req.protocol + '://' + req.headers.host + '/static/images/logo.png';
+    const eT = new EmailTemplate(body, logo);
+    let mailContent = eT.getContent();
 
     return validateAdmin(userId)
         .then(conn => {
@@ -189,7 +206,7 @@ function setApproval(req, res) {
                             from: "noreply.gsurvey@dga.or.th",
                             to: email,
                             subject: "การลงทะเบียนได้รับการอนุมัติแล้ว",
-                            html: approved_content
+                            html: mailContent
                         }
                         return mailHeler.sendMail(data)
                             .then(info => {
@@ -201,7 +218,7 @@ function setApproval(req, res) {
                             from: "noreply.gsurvey@dga.or.th",
                             to: email,
                             subject: "การลงทะเบียนไม่ได้รับการอนุมัติ",
-                            html: rejected_content
+                            html: mailContent
                         }
                         return mailHeler.sendMail(data)
                             .then(info => {
@@ -230,7 +247,9 @@ function setApproval(req, res) {
 }
 
 function setSuspension(req, res) {
-    let userId = req.signedCookies['userid'];;
+
+    let userId = req.signedCookies['userid'];
+    let url = (req.headers.origin || 'https://gsurvey.dga.or.th') + '/pages/login';
 
     if (userId === undefined || userId === "") {
         http.error(res, 401, 40100, 'unauthorized user');
@@ -271,16 +290,30 @@ function setSuspension(req, res) {
         "SET suspended_flag=\'" + ((action === "enable") ? 0 : 1) + "\' " +
         "WHERE user_id = \'" + memberId + "\'";
 
-    const approved_content = '<span style="font-family:Arial, Helvetica, sans-serif; font-size:12px; color:#000000;">บัญชีผู้ใช้เปิดใช้งานแล้ว<br>\
-    สามารถเข้าใช้งานได้ทันที<br><br>\
-    ขอแสดงความนับถือ<br>\
-    ทีม G-Survey<br></span>';
+    if (action === "enable") {
+        var body = `<p style="font:15px/1.25em 'Helvetica Neue',Arial,Helvetica; color:#333">บัญชีผู้ใช้งานของท่านได้เปิดใช้งานเรียบร้อยแล้ว</p>
+        <p style="font:15px/1.25em 'Helvetica Neue',Arial,Helvetica; color:#333">ท่านสามารถเข้าใช้งานได้ที่ <a href="${url}">${url}</a></p>
+        <br/>
+        <p style="font:15px/1.25em 'Helvetica Neue',Arial,Helvetica; color:#333">
+        <strong>*** อีเมลนี้เป็นการแจ้งจากระบบอัตโนมัติ กรุณาอย่าตอบกลับ ***</strong></p>
+        <br/>
+        <p style="font:15px/1.25em 'Helvetica Neue',Arial,Helvetica; color:#333">ขอแสดงความนับถือ</p>
+        <p style="font:15px/1.25em 'Helvetica Neue',Arial,Helvetica; color:#333">ทีม G-Survey</p>`;
+    } else {
+        var body = `<p style="font:15px/1.25em 'Helvetica Neue',Arial,Helvetica; color:#333">บัญชีผู้ใช้งานของท่านถูกระงับการใช้งานชั่วคราว</p>
+        <p style="font:15px/1.25em 'Helvetica Neue',Arial,Helvetica; color:#333">สาเหตุ: <strong>${req.body.desc}</strong></p>
+        <br/>
+        <p style="font:15px/1.25em 'Helvetica Neue',Arial,Helvetica; color:#333">
+        <strong>*** อีเมลนี้เป็นการแจ้งจากระบบอัตโนมัติ กรุณาอย่าตอบกลับ ***</strong></p>
+        <br/>
+        <p style="font:15px/1.25em 'Helvetica Neue',Arial,Helvetica; color:#333">ขอแสดงความนับถือ</p>
+        <p style="font:15px/1.25em 'Helvetica Neue',Arial,Helvetica; color:#333">ทีม G-Survey</p>`;
+    }
 
-    const rejected_content = '<span style="font-family:Arial, Helvetica, sans-serif; font-size:12px; color:#000000;">บัญชีผู้ใช้งานถูกระงับชั่วคราว<br>\
-    สาเหตุ: ' + desc +
-        '<br><br>\
-    ขอแสดงความนับถือ<br>\
-    ทีม G-Survey<br></span>';
+    let logo = req.protocol + '://' + req.headers.host + '/static/images/logo.png';
+    const eT = new EmailTemplate(body, logo);
+    let mailContent = eT.getContent();
+    console.log(mailContent);
 
     return validateAdmin(userId)
         .then(conn => {
@@ -306,7 +339,7 @@ function setSuspension(req, res) {
                             from: "noreply.gsurvey@dga.or.th",
                             to: email,
                             subject: "บัญชีผู้ใช้เปิดใช้งานแล้ว",
-                            html: approved_content
+                            html: mailContent
                         }
                         return mailHeler.sendMail(data)
                             .then(info => {
@@ -318,7 +351,7 @@ function setSuspension(req, res) {
                             from: "noreply.gsurvey@dga.or.th",
                             to: email,
                             subject: "บัญชีผู้ใช้งานถูกระงับชั่วคราว",
-                            html: rejected_content
+                            html: mailContent
                         }
                         return mailHeler.sendMail(data)
                             .then(info => {
