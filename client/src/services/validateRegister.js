@@ -16,10 +16,10 @@ export default function validateRegister(account) {
   } else if (account.password.length < 8) {
     errors.password = "ต้องมีความยาวมากกว่า 8 ตัวอักษรขึ้นไป";
   } else if (!/[A-Z]/.test(account.password)) {
-    errors.password = "ต้องมีตัวอักษรภาษาอังกฤษตัวใหญ๋s อย่างน้อย 1 ตัว";
+    errors.password = "ต้องมีตัวอักษรภาษาอังกฤษตัวใหญ่ อย่างน้อย 1 ตัว";
   } else if (!/[0-9]/.test(account.password)) {
     errors.password = "ต้องมีตัวเลขอย่างน้อย 1 ตัว";
-  } else if (!/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])$/.test(account.password)) {
+  } else if (!/^[A-Za-z0-9]+$/.test(account.password)) {
     errors.password = "ต้องเป็นตัวอักษรภาษาอังกฤษ และ ตัวเลขเท่านั้น";
   }
 
