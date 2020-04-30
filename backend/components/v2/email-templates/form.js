@@ -47,7 +47,7 @@ class EmailTemplate {
         <table style="border:none; padding:0 18px; margin:50px auto; width:500px">
         <tbody>
         <tr width="100%" height="57">
-        <td valign="top" align="left" style="border-top-left-radius:4px; border-top-right-radius:4px; background:linear-gradient(45deg,#303f9f,#7b1fa2); padding:12px 18px; text-align:center">
+        <td valign="top" align="left" style="background:#303f9f; background:linear-gradient(45deg,#303f9f,#7b1fa2); border-top-left-radius:4px; border-top-right-radius:4px; padding:12px 18px; text-align:center">
         <img data-imagetype="External" src="${this.logo}" height="37" width="122" style="font-weight:bold; font-size:18px; color:#fff; vertical-align:top">
         </td>
         </tr>
