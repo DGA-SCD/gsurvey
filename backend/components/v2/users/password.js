@@ -30,7 +30,9 @@ const redis = require('../../helpers/redis');
 const appConf = require('../../../config/production.conf');
 const mysql = require('../../helpers/mysql');
 const hashPWD = require('password-hash');
-
+const {
+    EmailTemplate
+} = require('../email-templates/form');
 
 function randomString(length, custom_characters) {
     let result = '';
@@ -95,26 +97,31 @@ function sendOTP(req, res) {
 
     if (req.body.return_url[0] == "h") {
         return_url = req.body.return_url;
-    }else{
-        if( req.headers.origin === undefined || req.headers.origin === "" ){
+    } else {
+        if (req.headers.origin === undefined || req.headers.origin === "") {
             http.error(res, 400, 40001, "Not found origin header");
             return;
-        }else{
+        } else {
             return_url = req.headers.origin + req.body.return_url;
         }
     }
 
-    
 
     //generate OTP
     const otp = getOTP();
 
-    //send email 
-    const content = '<span style="font-family:Arial, Helvetica, sans-serif; font-size:12px; color:#000000;">DGA ได้รับคำร้องขอการ reset password แล้ว (เลขอ้างอิง: ' + req.body.ref_code + ')<br><br>' + 
-    '<a href="' + return_url + '?email=' + req.body.email + '&ref_code=' + req.body.ref_code + '&otp=' + otp + '">กดเพื่อกรอกรหัสผ่านใหม่</a> ลิงค์นี้จะมีอายุ 5 นาที<br><br>' +
-    '*** อีเมลนี้เป็นการแจ้งจากระบบอัตโนมัติ กรุณาอย่าตอบกลับ ***<br><br>' +
-    'ขอแสดงความนับถือ<br>' +
-    'ทีม G-Survey</span>';
+    let url = return_url + '?email=' + req.body.email + '&ref_code=' + req.body.ref_code + '&otp=' + otp;
+    let body = `<p style="font:15px/1.25em 'Helvetica Neue',Arial,Helvetica; color:#333">DGA ได้รับคำร้องขอการ reset password แล้ว (เลขอ้างอิง: <strong>${req.body.ref_code}</strong>)</p>
+    <p style="font:15px/1.25em 'Helvetica Neue',Arial,Helvetica; color:#333">ลิงค์นี้จะนี้จะมีเวลา 5 นาที</p>s
+     <a href="${url}" rel="noopener noreferrer" data-auth="NotApplicable" style="border-radius:3px; border-background:#e91e63; background:rgb(233, 30, 99); color:#fff; display:block; font-size:16px; line-height:1.25em; margin:24px auto 24px; padding:10px 18px; text-decoration:none; width:386px; text-align:center">กดเพื่อกรอกรหัสผ่านใหม่</a>
+    <br/>
+    <p style="font:15px/1.25em 'Helvetica Neue',Arial,Helvetica; color:#333">
+    <strong>*** อีเมลนี้เป็นการแจ้งจากระบบอัตโนมัติ กรุณาอย่าตอบกลับ ***</strong></p>
+    <br/>
+    <p style="font:15px/1.25em 'Helvetica Neue',Arial,Helvetica; color:#333">ขอแสดงความนับถือ</p>
+    <p style="font:15px/1.25em 'Helvetica Neue',Arial,Helvetica; color:#333">ทีม G-Survey</p>`;
+    const email = new EmailTemplate(body, req.protocol+'://'+req.headers.host+'/static/images/logo.png');
+    const content = email.getContent();
 
     isUserExist(req.body.email)
         .then(() => {
@@ -290,7 +297,7 @@ function changePassword(req, res) {
                     }
                 });
         })
-        .then(()=>{
+        .then(() => {
             http.success(res);
             logger.debug("password change complete");
         })
