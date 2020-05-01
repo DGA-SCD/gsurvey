@@ -112,7 +112,7 @@ function sendOTP(req, res) {
 
     let url = return_url + '?email=' + req.body.email + '&ref_code=' + req.body.ref_code + '&otp=' + otp;
     let body = `<p style="font:15px/1.25em 'Helvetica Neue',Arial,Helvetica; color:#333">DGA ได้รับคำร้องขอการ reset password แล้ว (เลขอ้างอิง: <strong>${req.body.ref_code}</strong>)</p>
-    <p style="font:15px/1.25em 'Helvetica Neue',Arial,Helvetica; color:#333">ลิงค์นี้จะนี้จะมีเวลา 5 นาที</p>s
+    <p style="font:15px/1.25em 'Helvetica Neue',Arial,Helvetica; color:#333">ลิงค์นี้จะนี้จะมีเวลา 5 นาที</p>
      <a href="${url}" rel="noopener noreferrer" data-auth="NotApplicable" style="border-radius:3px; border-background:#e91e63; background:rgb(233, 30, 99); color:#fff; display:block; font-size:16px; line-height:1.25em; margin:24px auto 24px; padding:10px 18px; text-decoration:none; width:386px; text-align:center">กดเพื่อกรอกรหัสผ่านใหม่</a>
     <br/>
     <p style="font:15px/1.25em 'Helvetica Neue',Arial,Helvetica; color:#333">
