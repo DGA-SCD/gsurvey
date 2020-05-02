@@ -73,8 +73,8 @@ class SideMenuContent extends Component {
             toggleSidebarMenu={this.props.toggleSidebarMenu}
           >
             {menuLists[0]}
-            {menuLists[1]}
-            {/*  {menuLists[2]}
+            {/*  {menuLists[1]}
+            {menuLists[2]}
             {menuLists[3]}
             {menuLists[4]} */}
           </SideMenu>
