@@ -168,7 +168,8 @@ export default function ResetPassword() {
                             "ต้องมีตัวเลขอย่างน้อย 1 ตัว"
                           );
                         } else if (
-                          !/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])$/.test(value)
+                          //!/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])$/.test(value)
+                          !/^[A-Za-z0-9]+$/.test(value)
                         ) {
                           // clearError("password");
                           setError(
