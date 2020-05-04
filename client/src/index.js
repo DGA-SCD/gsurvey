@@ -22,8 +22,7 @@ const LazyApp = lazy(() => import("./app/app"));
 
 window.$httpHeaders = {
   "Content-Type": "application/json",
-  "Accept-Charset": "utf-8",
-  "Content-Type": "application/json"
+  "Accept-Charset": "utf-8"
 };
 
 window.$httpPost = "POST";

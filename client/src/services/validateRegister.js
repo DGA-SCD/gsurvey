@@ -2,7 +2,6 @@ export default function validateRegister(account) {
   console.log("name" + account.dep_id);
 
   let errors = {};
-  let length = new RegExp("^(?=.{8,10})");
   if (!account.email) {
     errors.email = "กรุณาระบุอีเมล";
   } else if (!/\S+@\S+\.\S+/.test(account.email)) {

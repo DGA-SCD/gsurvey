@@ -1,13 +1,8 @@
-import React, { Component, useState, forwardRef } from "react";
+import React, { Component, forwardRef } from "react";
 import * as config from "../../services/AppConfig";
-import { BrowserRouter, Route, Link } from "react-router-dom";
 
 import { userService } from "../../services/UserAuth";
-//import Settimeout from "../../services/Settimeout";
-//import async from "react-async";
-import axios from "axios";
-import Formcreate from "survey-creator";
-import { Button } from "reactstrap";
+
 import MaterialTable from "material-table";
 import DeleteOutline from "@material-ui/icons/DeleteOutline";
 import Edit from "@material-ui/icons/Edit";
@@ -21,8 +16,7 @@ import "../../assets/scss/views/pages/survey/survey.css";
 import { toastr } from "react-redux-toastr";
 //import AuthService from '../../services/AuthService';
 //import withRequest from "../../services/withRequest";
-import { array } from "prop-types";
-import zIndex from "@material-ui/core/styles/zIndex";
+
 const toastrOptions = {
   timeOut: 2000, // by setting to 0 it will prevent the auto close
   position: "top-right",
@@ -175,17 +169,50 @@ class Main extends Component {
               }
             }
           ]}
+          // eslint-disable-next-line react/jsx-no-duplicate-props
           icons={{
-            Add: () => (
-              <div>
-                <Button color="success">เพิ่มแบบสำรวจ</Button>
-              </div>
-            ),
-            Export: () => (
-              <div>
-                <Button color="info">นำข้อมูลออก</Button>
-              </div>
-            )
+            //Add: () => <Button color="success">เพิ่มแบบสำรวจ</Button>,
+            Add: props => {
+              return (
+                <div
+                  style={{
+                    backgroundColor: "#44c767",
+
+                    radius: "7px",
+                    border: "1px solid",
+                    display: "inline-block",
+                    cursor: "pointer",
+                    color: "#ffffff",
+                    padding: "13px 20px",
+                    fontSize: "16px"
+                    //width: "100px"
+                  }}
+                >
+                  เพิ่มแบบสำรวจ
+                </div>
+              );
+            },
+            Export: props => {
+              return (
+                <div
+                  style={{
+                    backgroundColor: "#1CBCD8",
+
+                    radius: "7px",
+                    border: "1px solid",
+                    display: "inline-block",
+                    cursor: "pointer",
+                    color: "#ffffff",
+                    padding: "13px 20px",
+                    fontSize: "16px"
+                    //width: "100px"
+                  }}
+                >
+                  นำข้อมูลออก
+                </div>
+              );
+            }
+            // Export: () => <Button color="info">นำข้อมูลออก</Button>
           }}
           editable={{
             onRowAdd: newData =>
@@ -242,9 +269,9 @@ class Main extends Component {
             onRowDelete: oldData =>
               new Promise((resolve, reject) => {
                 setTimeout(() => {
+                  // eslint-disable-next-line no-lone-blocks
                   {
-                    let data = this.state.data;
-                    const index = data.indexOf(oldData);
+                    //let data = this.state.data;
 
                     var jsondel = {
                       userid: oldData.userid,

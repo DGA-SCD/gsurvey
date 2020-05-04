@@ -1,9 +1,8 @@
 import React from "react";
-import { ShoppingCart } from "react-feather";
 import dgalogo from "../../../assets/img/DGALogo.png";
 import "../../../assets/scss/views/pages/survey/survey.css";
-import templateConfig from "../../../templateConfig";
-import { Camera, PhoneCall } from "react-feather";
+
+import { PhoneCall } from "react-feather";
 
 const Footer = props => (
   <div className="row">
@@ -14,6 +13,7 @@ const Footer = props => (
             <p>
               <img
                 src={dgalogo}
+                alt="dga"
                 style={{
                   height: "54px",
                   justifyContent: "center",
@@ -31,7 +31,11 @@ const Footer = props => (
           </div>
           <div
             className="col-md-2.5  col-xs-2"
-            style={{ paddingTop: "10px", paddingLeft: "15px" ,textAlign:"right" }}
+            style={{
+              paddingTop: "10px",
+              paddingLeft: "15px",
+              textAlign: "right"
+            }}
           >
             DGA CONTACT CENTER
             <p>
