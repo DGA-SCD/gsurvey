@@ -1,28 +1,8 @@
 // import external modules
 import React, { Component } from "react";
-import { Link, Redirect, NavLink } from "react-router-dom";
-import IdleTimer from "react-idle-timer";
-import {
-  Home,
-  Mail,
-  MessageSquare,
-  ChevronRight,
-  Aperture,
-  Box,
-  Edit,
-  Grid,
-  Layers,
-  Sliders,
-  Map,
-  PieChart,
-  BarChart2,
-  Calendar,
-  Copy,
-  Book,
-  CheckSquare,
-  LifeBuoy,
-  Users
-} from "react-feather";
+import { Redirect, NavLink } from "react-router-dom";
+//import IdleTimer from "react-idle-timer";
+import { CheckSquare } from "react-feather";
 
 // Styling
 import "../../../../assets/scss/components/sidebar/sidemenu/sidemenu.scss";
@@ -33,7 +13,7 @@ class SideMenuContent extends Component {
   render() {
     var menuLists = [
       //0 แบบสำรวจ
-      <SideMenu.MenuSingleItem>
+      <SideMenu.MenuSingleItem key="1">
         <NavLink to="/pages/main" activeClassName="active">
           <i className="menu-icon">
             <CheckSquare size={18} />
@@ -42,7 +22,7 @@ class SideMenuContent extends Component {
         </NavLink>
       </SideMenu.MenuSingleItem>,
       //1
-      <SideMenu.MenuSingleItem>
+      <SideMenu.MenuSingleItem key="2">
         <NavLink to="/pages/UserManagement" activeClassName="active">
           <i className="menu-icon">
             <CheckSquare size={18} />
@@ -73,8 +53,8 @@ class SideMenuContent extends Component {
             toggleSidebarMenu={this.props.toggleSidebarMenu}
           >
             {menuLists[0]}
-            {/*  {menuLists[1]}
-            {menuLists[2]}
+            {menuLists[1]}
+            {/*  {menuLists[2]}
             {menuLists[3]}
             {menuLists[4]} */}
           </SideMenu>

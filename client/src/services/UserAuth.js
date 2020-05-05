@@ -1,7 +1,6 @@
 import * as config from "./AppConfig";
-import { toastr } from "react-redux-toastr";
 
-const login = function(username, password) {
+const login = function (username, password) {
   const requestOptions = {
     method: window.$httpPost,
     headers: window.$httpHeaders,
@@ -28,25 +27,6 @@ const login = function(username, password) {
 
 function clearStrogae() {
   localStorage.clear();
-}
-
-function handleResponse(response) {
-  return response.text().then(text => {
-    const data = text && JSON.parse(text);
-    if (!response.ok) {
-      if (response.status === 401 || response.status === 404) {
-        // auto logout if 401 response returned from api
-        // toastr.error("เช็ค username หรือ password", toastrOptions);
-        clearStrogae();
-        //location.reload(true);
-      }
-
-      const error = (data && data.message) || response.statusText;
-      return Promise.reject(error);
-    }
-
-    return data;
-  });
 }
 
 export const userService = {

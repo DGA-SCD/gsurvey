@@ -1,43 +1,30 @@
 // import external modules
-import React, { Fragment, Component } from "react";
-import { Link, Redirect, Route, withRouter } from "react-router-dom";
+import React, { Component } from "react";
+import { Link, Redirect } from "react-router-dom";
 //import { Route , withRouter} from 'react-router-dom';
 //import AuthService from "../../../services/AuthService";
 
 //import { IdleTimeOutModal } from "./IdleModal";
 import IdleTimer from "react-idle-timer";
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
+
 import {
-  Form,
-  Media,
   Collapse,
   Navbar,
   Nav,
-  NavItem,
   UncontrolledDropdown,
   DropdownToggle,
   DropdownMenu,
   DropdownItem
 } from "reactstrap";
-import PerfectScrollbar from "react-perfect-scrollbar";
+
 import {
   // Moon,
-  Mail,
+
   Menu,
   MoreVertical,
-  Check,
-  Bell,
   User,
-  AlertTriangle,
-  Inbox,
-  Phone,
-  Calendar,
-  Lock,
-  X,
   LogOut
 } from "react-feather";
-import NavbarSearch from "../../../components/search/Search";
-import ReactCountryFlag from "react-country-flag";
 
 import userImagedga from "../../../assets/img/portrait/avatars/avatar-01.png";
 class ThemeNavbar extends Component {
@@ -119,7 +106,7 @@ class ThemeNavbar extends Component {
     if (!localStorage.getItem("userData")) {
       return <Redirect to={"login"} />;
     }
-    const { match } = this.props;
+    //const { match } = this.props;
 
     return (
       <div>
