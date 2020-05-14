@@ -179,7 +179,7 @@ function createEmptySurvey(req, res) {
 }
 
 async function getAllSurveysByOwnerId(req, res) {
-    
+
     const DEFAULT_PER_PAGE = 20;
     var per_page = DEFAULT_PER_PAGE;
     var page = 1;
@@ -232,7 +232,7 @@ async function getAllSurveysByOwnerId(req, res) {
         logger.warn(err);
     });
 
-    await mongo.count(filters, appConf.surveyCollections.surve)
+    await mongo.count(filters, appConf.surveyCollections.survey)
         .then(result => {
             total = result;
             console.log("result: " + total);
