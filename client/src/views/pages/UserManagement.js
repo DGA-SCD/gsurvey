@@ -66,6 +66,7 @@ export default class UserManagement extends Component {
     this.submitHandler = this.submitHandler.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.onClose = this.onClose.bind(this);
+    this.upDateapproval = this.upDateapproval.bind(this);
   }
 
   async fecthdata() {
@@ -199,14 +200,12 @@ export default class UserManagement extends Component {
 
   handleChange(event) {
     this.setState({ desc: event.target.value });
-    console.log(this.state.desc);
   }
   replaceModalItem(rowData) {
-    console.log(rowData);
     // const requiredItem = JSON.stringify(rowData.rowData.user_id);
 
     //  console.log(requiredItem);
-    console.log(rowData.rowData.email);
+
     this.setState({
       supspenModalOpen: true,
       user_id: rowData.rowData.user_id,
@@ -216,9 +215,45 @@ export default class UserManagement extends Component {
       status: rowData.rowData.approval_status
     });
   }
+
+  upDateapproval(rowData) {
+    var message;
+    if (rowData.approval_status === "approve") {
+      message = "อนุมัติการใช้งานเรียบร้อยแล้ว";
+    }
+    if (rowData.approval_status === "waiting") {
+      message = "รอการตรวจสอบจากผู้ดูแลระบบ";
+    }
+
+    fetch(config.BACKEND_GSURVEY + "/api/v2/admin/members/approval", {
+      method: "post",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      credentials: "include",
+
+      body: JSON.stringify({
+        userid: rowData.user_id,
+        email: rowData.email,
+        action: rowData.approval_status,
+        desc: ""
+      })
+    })
+      .then(res => res.json())
+      .then(result => {
+        if (result.success) {
+          toastr.success(message, toastrOptions);
+
+          this.fecthdata();
+          // setTimeout(function() {
+          //   this.fecthdata();
+          // }, 3000);
+        } else {
+          toastr.error(result.desc, toastrOptions);
+        }
+      });
+  }
   supspenModal(rowData) {
-    const num = rowData.rowData.suspension_status;
-    console.log(num);
     if (rowData.rowData.suspension_status === "enable") {
       var suspension_status = "disable";
       this.setState({
@@ -230,7 +265,7 @@ export default class UserManagement extends Component {
         status: suspension_status
       });
     } else {
-      var suspension_status = "enable";
+      suspension_status = "enable";
 
       fetch(config.BACKEND_GSURVEY + "/api/v2/admin/members/suspension", {
         method: "post",
@@ -248,7 +283,6 @@ export default class UserManagement extends Component {
       })
         .then(res => res.json())
         .then(result => {
-          console.log(result);
           if (result.success) {
             toastr.success("อนุมัติการใช้งานเรียบร้อยแล้ว", toastrOptions);
             //  this.setState({ supspenModalOpen: false, desc: "" });
@@ -312,12 +346,12 @@ export default class UserManagement extends Component {
                     const index = data.indexOf(oldData);
                     data[index] = newData;
                     const rowData = data[index];
-                    console.log("data[index].approval_status");
-                    console.log(data[index].approval_status);
+
                     if (data[index].approval_status === "reject") {
                       this.replaceModalItem({ rowData });
+                    } else {
+                      this.upDateapproval(rowData);
                     }
-                    //  this.setState({ data }, () => resolve());
                   }
                   resolve();
                 }, 1000);
@@ -346,7 +380,6 @@ export default class UserManagement extends Component {
                       )
                         .then(res => res.json())
                         .then(result => {
-                          console.log(result);
                           if (result.success) {
                             toastr.success(
                               "ลบข้อมูลผู้ใช้งานเรียบร้อยแล้ว",
