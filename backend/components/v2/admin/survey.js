@@ -31,8 +31,38 @@ const MongoClient = require('mongodb').MongoClient
 const redis = require("redis");
 const mongo = require('../../helpers/mongodb');
 const uuidv4 = require('uuid/v4');
+const mysqlHelper = require('../../helpers/mysql');
 
-/** Survey Management Services */
+
+/**
+ * get a role of user
+ * @param {userid}
+ */
+
+function getRole(userid){
+
+    let qstr = "SELECT roles.role_name as role " + 
+    "FROM users " +
+    "INNER JOIN roles ON users.role_id = roles.role_id " +
+    "WHERE user_id = \'" + userid +"\'";
+
+    return mysqlHelper.getConnection()
+    .then( conn => {
+        return mysqlHelper.query(conn, qstr)
+        .then( results => {
+            console.log(results);
+            if ( results.length > 0 && results[0].role !== "" ) {
+                
+                return Promise.resolve(results[0].role);
+            }else {
+                return Promise.reject("not found any role");
+            }
+        })
+    })
+    .catch( err => {
+        return Promise.reject(err);
+    })
+}
 
 function saveSurvey(req, res) {
 
@@ -148,22 +178,78 @@ function createEmptySurvey(req, res) {
         });
 }
 
-function getAllSurveysByOwnerId(req, res) {
+async function getAllSurveysByOwnerId(req, res) {
+    
+    const DEFAULT_PER_PAGE = 20;
+    var per_page = DEFAULT_PER_PAGE;
+    var page = 1;
+    var total = undefined;
+    var error = undefined;
+
     if (req.params.ownerid == 'undefined') {
         http.error(res, 400, 40000, "Not found owerid");
         return false;
     }
 
-    var filters = {
-        userid: req.params.ownerid
-    };
+    if (req.query.page !== undefined) {
+        page = parseInt(req.query.page);
+        page = (page <= 0) ? 1 : page;
+    }
+
+    if (req.query.per_page !== undefined) {
+
+        per_page = parseInt(req.query.per_page);
+        per_page = (per_page <= 0) ? DEFAULT_PER_PAGE : per_page;
+    }
+
+    let userId = req.signedCookies['userid'];;
 
     var sort = {
         created_at: -1
     };
 
-    mongo.find(filters, appConf.surveyCollections.survey, sort).then(results => {
-            http.success(res, results);
+    var filters = {
+        userid: req.params.ownerid
+    };
+
+    await mongo.count(filters, appConf.surveyCollections.survey)
+    .then(result => {
+        total = result;
+        console.log("result: " + total);
+    })
+    .catch(err => {
+        http.error(res, 500, 50002, "mongo error: " + err);
+        return false;
+    });
+
+
+    await getRole( userId )
+    .then( role => {
+        if( role === 'super admin' ){
+            filters = {};
+        }
+    }).catch(err => {
+        logger.warn(err);
+    });
+
+    await mongo.count(filters, appConf.surveyCollections.surve)
+        .then(result => {
+            total = result;
+            console.log("result: " + total);
+        })
+        .catch(err => { 
+            error = err;
+        });
+    
+    if( error !== undefined ){
+        http.error(res, 500, 50002, "mongo error: " + error);
+        return;
+    }
+
+    await mongo.findWithPaging(filters, appConf.surveyCollections.survey, sort, per_page, ((page-1)*per_page))
+        .then(results => {
+            console.log("result: " + results);
+            http.successStream(res, results, {per_page: per_page, page: page, total: total});
             return true;
         })
         .catch(err => {
