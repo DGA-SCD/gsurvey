@@ -24,6 +24,7 @@ export default function ResetPassword() {
   params =
     '{"' +
     params
+      /* eslint-disable */
       .replace(/\?/gi, "")
       .replace(/\&/gi, '","')
       .replace(/\=/gi, '":"') +
@@ -68,7 +69,7 @@ export default function ResetPassword() {
           if (result.success) {
             setshow();
 
-            setTimeout(function() {
+            setTimeout(function () {
               setIsOpened(false);
 
               setModal(false);

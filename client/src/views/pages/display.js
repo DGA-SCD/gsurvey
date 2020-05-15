@@ -49,7 +49,7 @@ widgets.jquerybarrating(Survey, $);
 widgets.jqueryuidatepicker(Survey, $);
 widgets.nouislider(Survey);
 widgets.select2tagbox(Survey, $);
-widgets.signaturepad(Survey);
+//widgets.signaturepad(Survey);
 widgets.sortablejs(Survey);
 widgets.ckeditor(Survey);
 widgets.autocomplete(Survey, $);
@@ -170,7 +170,7 @@ class Display extends Component {
         "Content-Type": "application/json",
         Accept: "application/json"
       },
-      success: function(response) {
+      success: function (response) {
         console.log(response);
         toastr.success("บันทึกข้อมูลเรียบร้อยแล้ว", toastrOptions);
         localStorage.clear();
@@ -205,7 +205,7 @@ class Display extends Component {
       survey.clearInvisibleValues = "onHidden";
       survey.showQuestionNumbers = "off";
 
-      survey.onAfterRenderQuestion.add(function(sender, options) {});
+      survey.onAfterRenderQuestion.add(function (sender, options) {});
 
       return (
         <div style={divStyle}>
