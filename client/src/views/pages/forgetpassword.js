@@ -1,19 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import * as config from "../../services/AppConfig";
 import {
   Button,
   Modal,
   ModalHeader,
   ModalBody,
-  ModalFooter,
+
   Input,
-  Form,
+
   Col,
   FormGroup,
-  InputGroup
+ 
 } from "reactstrap";
-import { isUpdateExpression } from "@babel/types";
-import { fontWeight } from "@material-ui/system";
+
 import { toastr } from "react-redux-toastr";
 
 export default function ForgetPassword() {

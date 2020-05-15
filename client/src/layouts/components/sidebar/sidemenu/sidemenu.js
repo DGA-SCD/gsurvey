@@ -3,12 +3,18 @@ import React, { Component } from "react";
 import { Redirect, NavLink } from "react-router-dom";
 //import IdleTimer from "react-idle-timer";
 import { CheckSquare } from "react-feather";
-
+import { toastr } from "react-redux-toastr";
 // Styling
 import "../../../../assets/scss/components/sidebar/sidemenu/sidemenu.scss";
 // import internal(own) modules
 import SideMenu from "../sidemenuHelper";
-
+const toastrOptions = {
+  timeOut: 0, // by setting to 0 it will prevent the auto close
+  position: "top-right",
+  showCloseButton: true, // false by default
+  closeOnToastrClick: true, // false by default, this will close the toastr when user clicks on it
+  progressBar: false
+};
 class SideMenuContent extends Component {
   render() {
     var menuLists = [
@@ -46,20 +52,34 @@ class SideMenuContent extends Component {
             {menuLists}
           </SideMenu>
         );
-      } else if (dataList.role === "organization admin") {
+      } else if (dataList.role === "super admin") {
         return (
           <SideMenu
             className="sidebar-content"
             toggleSidebarMenu={this.props.toggleSidebarMenu}
           >
-            {menuLists[0]}
+            {menuLists}
 
             {/*  {menuLists[2]}
             {menuLists[3]}
             {menuLists[4]} */}
           </SideMenu>
         );
-      } else if (dataList.role === "organization user") {
+         } else if (dataList.role === "organization admin") {
+          return (
+            <SideMenu
+              className="sidebar-content"
+              toggleSidebarMenu={this.props.toggleSidebarMenu}
+            >
+              {menuLists[0]}
+  
+              {/*  {menuLists[2]}
+              {menuLists[3]}
+              {menuLists[4]} */}
+            </SideMenu>
+          );
+        }
+       else if (dataList.role === "organization user") {
         return (
           <SideMenu
             className="sidebar-content"
@@ -69,6 +89,7 @@ class SideMenuContent extends Component {
           </SideMenu>
         );
       } else {
+        toastr.error("เกิดข้อผิดพลาดทางเทคนิค กรุณาติดต่อผู้ดูแลระบบ", toastrOptions);
         return <Redirect to={"login"} />;
       }
     }

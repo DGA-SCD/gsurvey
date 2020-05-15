@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import * as config from "../../services/AppConfig";
 
 import { useForm } from "react-hook-form";
@@ -7,13 +7,8 @@ import {
   Button,
   Modal,
   ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Input,
-  Form,
   Col,
   FormGroup,
-  InputGroup,
   UncontrolledTooltip
 } from "reactstrap";
 
