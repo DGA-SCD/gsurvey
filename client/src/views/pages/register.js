@@ -1,9 +1,8 @@
-import React, { Fragment, useEffect, useState } from "react";
-import { Route, Switch, Redirect, NavLink } from "react-router-dom";
+import React, {  useEffect, useState } from "react";
+import { NavLink } from "react-router-dom";
 
 // import { Redirect, useHistory } from "react-router";
 import useForm from "./useForm";
-import Logo from "../../assets/img/logo_gsurvey_login.png";
 import {
   Row,
   Col,
@@ -14,12 +13,12 @@ import {
   Label,
   Card,
   CardBody,
-  CardFooter,
+ 
   Modal,
   ModalHeader,
   ModalBody,
   ModalFooter,
-  Tooltip,
+
   UncontrolledTooltip
 } from "reactstrap";
 

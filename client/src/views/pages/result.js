@@ -1,10 +1,10 @@
-import React, { Component, useState, forwardRef } from "react";
+import React, { Component, forwardRef } from "react";
 import * as config from "../../services/AppConfig";
-import { BrowserRouter, Route, Link } from "react-router-dom";
+import {  Link } from "react-router-dom";
 //import async from "react-async";
-import axios from "axios";
+
 import queryString from "query-string";
-import Formcreate from "survey-creator";
+
 import {
   Card,
   CardBody,
@@ -12,13 +12,7 @@ import {
   Row,
   Col,
   Button,
-  Alert,
-  Form,
-  CustomInput,
-  FormGroup,
-  Label,
-  Table,
-  Input
+ 
 } from "reactstrap";
 import MaterialTable from "material-table";
 import DeleteOutline from "@material-ui/icons/DeleteOutline";
@@ -27,8 +21,6 @@ import AddBox from "@material-ui/icons/AddBox";
 import Check from "@material-ui/icons/Check";
 import Clear from "@material-ui/icons/Clear";
 import SaveAlt from "@material-ui/icons/SaveAlt";
-import VisibilityIcon from "@material-ui/icons/Visibility";
-import { fontSize } from "@material-ui/system";
 import "../../assets/scss/views/pages/survey/survey.css";
 import { toastr } from "react-redux-toastr";
 //import AuthService from '../../services/AuthService';

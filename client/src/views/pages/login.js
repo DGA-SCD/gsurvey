@@ -1,9 +1,8 @@
 // import external modules
 //https://www.skptricks.com/2018/06/simple-form-validation-in-reactjs-example.html
-import React, { Component, useEffect } from "react";
-import { NavLink, Redirect } from "react-router-dom";
+import React  from "react";
+import { NavLink } from "react-router-dom";
 import { userService } from "../../services/UserAuth";
-import * as config1 from "../../services/AppConfig";
 import Logo from "../../assets/img/logo_gsurvey_login.png";
 import { toastr } from "react-redux-toastr";
 import ForgetPassword from "./forgetpassword";
@@ -21,7 +20,7 @@ import {
 export default function Login() {
   // const history = useHistory();
   const { register, errors, handleSubmit } = useForm();
-  const [errorText, seterrorText] = React.useState("");
+  
   const url =
     window.location.protocol +
     "//" +

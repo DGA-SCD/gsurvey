@@ -1,7 +1,7 @@
-import React, { useState, useEffect, Component, forwardRef } from "react";
+import React, { Component, forwardRef } from "react";
 
 //import MaterialTable from "material-table";
-import MaterialTable, { MTableAction } from "material-table";
+import MaterialTable from "material-table";
 import { userService } from "../../services/UserAuth";
 import * as config from "../../services/AppConfig";
 
@@ -41,10 +41,7 @@ const toastrOptions = {
   closeOnToastrClick: true, // false by default, this will close the toastr when user clicks on it
   progressBar: false
 };
-const styleSpan = {
-  fontSize: 20,
-  fontFamily: "Athiti !important"
-};
+
 
 export default class UserManagement extends Component {
   constructor(props) {
@@ -71,7 +68,7 @@ export default class UserManagement extends Component {
 
   async fecthdata() {
     try {
-      var user = JSON.parse(localStorage.getItem("userData"));
+      //var user = JSON.parse(localStorage.getItem("userData"));
 
       const requestOptions = {
         method: "GET",
@@ -84,7 +81,7 @@ export default class UserManagement extends Component {
       );
       if (response.ok) {
         const json = await response.json();
-        // console.log("callallsurvey" + JSON.stringify(json));
+        console.log("callallsurvey" + JSON.stringify(json));
 
         this.setState({
           data: json.data,
