@@ -35,7 +35,7 @@ widgets.jquerybarrating(SurveyKo, $);
 widgets.jqueryuidatepicker(SurveyKo, $);
 widgets.nouislider(SurveyKo);
 widgets.select2tagbox(SurveyKo, $);
-widgets.signaturepad(SurveyKo);
+//widgets.signaturepad(SurveyKo);
 widgets.sortablejs(SurveyKo);
 widgets.ckeditor(SurveyKo);
 widgets.autocomplete(SurveyKo, $);
@@ -62,19 +62,21 @@ class Formcreate extends Component {
       clickedit: true,
       name: "",
       rename: "",
-      vesion: ""
+      vesion: "",
+      passwordShow: true,
+      password: ""
     };
+    this.togglePasswordVisiblity = this.togglePasswordVisiblity.bind(this);
   }
-  handleClick = event => {
-    console.log("State ==>", this.state.rename + "..." + this.state.surveyid);
 
+  handleClick = event => {
     var renamedata = {
       surveyid: this.state.surveyid,
       userid: "1",
       version: "1",
       name: this.state.rename === "" ? this.state.name : this.state.rename
     };
-    console.log(renamedata);
+
     try {
       fetch(config.BACKEND_GSURVEY + "/api/v2/admin/surveys/rename", {
         method: "post",
@@ -86,7 +88,7 @@ class Formcreate extends Component {
         credentials: "include",
         body: JSON.stringify(renamedata)
       })
-        .then(function(response) {
+        .then(function (response) {
           if (!response.ok) {
             toastr.error("ไม่สามารถแก้ไขข้อมูลได้", toastrOptions);
             alert("fail");
@@ -103,12 +105,20 @@ class Formcreate extends Component {
   };
   handleNameChange = event => {
     this.setState({ rename: event.target.value });
-
-    console.log(this.state.rename);
   };
 
+  togglePasswordVisiblity() {
+    this.setState({
+      passwordShow: !this.state.passwordShow
+    });
+  }
+
+  handleNameChangePassword = event => {
+    this.setState({ password: event.target.value });
+
+    console.log(this.state.password);
+  };
   increment() {
-    console.log("increment");
     this.setState({
       version: (parseInt(this.state.version) + parseInt(1)).toString()
     });
@@ -122,7 +132,6 @@ class Formcreate extends Component {
   }
 
   async componentDidMount() {
-    console.log("didmount   " + JSON.stringify(this.props));
     if (this.props.location.state) {
       this.setState({
         surveyid: this.props.location.state.surveyid,
@@ -141,10 +150,6 @@ class Formcreate extends Component {
     this.surveyCreator.saveSurveyFunc = this.saveMySurvey;
 
     try {
-      console.log("surveyid" + this.props.location.state.surveyid);
-      console.log("userid" + this.props.location.state.userid);
-      console.log("version" + this.props.location.state.version);
-      console.log("name" + this.props.location.state.name);
       const response = await fetch(
         config.BACKEND_GSURVEY +
           "/api/v2/admin/surveys/" +
@@ -162,14 +167,13 @@ class Formcreate extends Component {
           credentials: "include"
         }
       );
-      console.log(response);
+
       if (!response.ok) {
         userService.clearStrogae();
         // throw Error(response.statusText);
       }
       const json = await response.json();
       var question = JSON.stringify(json.data);
-      console.log(question);
 
       this.surveyCreator.text = question;
       this.setState({ json: question });
@@ -182,63 +186,87 @@ class Formcreate extends Component {
     return (
       <div className="admin">
         <Row>
-          <Col md="6">
+          <Col md="12">
             <FormGroup>
-              <Row className="row">
-                <Col md="12">
-                  <Table className="table table-borderless table-sm">
-                    <tbody>
-                      <tr>
-                        <td>
-                          <Link to="main" className="btn btn-info">
-                            กลับหน้าหลัก
-                          </Link>
-                        </td>
-                        <td>
-                          <input
-                            type="text"
-                            name="name"
-                            className="form-control"
-                            onChange={this.handleNameChange}
-                            defaultValue={this.state.name}
-                            disabled={this.state.disabled ? "disabled" : ""}
-                            required
-                            //style={{ width: "300px" }}
-                          />
-                        </td>
-                        <td className="text-left">
-                          <img
-                            src={userImagedga}
-                            onClick={this.startEdit.bind(this)}
-                            style={{
-                              display: this.state.clickedit ? "block" : "none"
-                            }}
-                          />
-                        </td>
-                        <div
-                          style={{
-                            display: this.state.showStore ? "block" : "none"
-                          }}
-                        >
-                          <td className="text-left">
-                            <Button color="success" onClick={this.handleClick}>
-                              แก้ไข
-                            </Button>
-                          </td>
-                          <td className="text-left">
-                            <Button
-                              color="warning"
-                              onClick={this.startEdit.bind(this)}
-                            >
-                              ยกเลิก
-                            </Button>
-                          </td>
+              {/* <Row className="row">
+                <Col md="12"> */}
+              <Table className="table table-borderless">
+                <tbody>
+                  <tr>
+                    <td>
+                      <Link to="main" className="btn btn-info">
+                        กลับหน้าหลัก
+                      </Link>
+                    </td>
+                    <td>
+                      <input
+                        type="text"
+                        name="name"
+                        className="form-control"
+                        onChange={this.handleNameChange}
+                        defaultValue={this.state.name}
+                        disabled={this.state.disabled ? "disabled" : ""}
+                        required
+                        //style={{ width: "300px" }}
+                      />
+                    </td>
+                    <td className="text-left">
+                      <img
+                        src={userImagedga}
+                        onClick={this.startEdit.bind(this)}
+                        style={{
+                          display: this.state.clickedit ? "block" : "none"
+                        }}
+                      />
+                    </td>
+                    <td
+                      style={{
+                        display: this.state.showStore ? "block" : "none"
+                      }}
+                    >
+                      <Button color="success" onClick={this.handleClick}>
+                        แก้ไข
+                      </Button>
+
+                      <Button
+                        color="warning"
+                        onClick={this.startEdit.bind(this)}
+                      >
+                        ยกเลิก
+                      </Button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+                    <>
+                      <td className="input-group">
+                        <input
+                          className="form-control"
+                          type={this.state.passwordShow ? "password" : "text"}
+                          name="password"
+                          onChange={this.handleNameChangePassword}
+                        />
+                        <div className="input-group-prepend">
+                          <span className="input-group-text" id="basic-addon1">
+                            <a>
+                              <i
+                                className={
+                                  this.state.passwordShow
+                                    ? "fa fa-eye-slash"
+                                    : "fa fa-eye"
+                                }
+                                onClick={this.togglePasswordVisiblity}
+                              ></i>
+                            </a>
+                          </span>
                         </div>
-                      </tr>
-                    </tbody>
-                  </Table>
-                </Col>
-              </Row>
+                      </td>
+                    </>
+                  </tr>
+                </tbody>
+              </Table>
+              {/* </Col>
+              </Row> */}
             </FormGroup>
           </Col>
         </Row>
@@ -256,7 +284,8 @@ class Formcreate extends Component {
       surveyid: this.state.surveyid,
       name: this.state.name,
       version: "1",
-      userid: "" + user.userid
+      userid: "" + user.userid,
+      password: this.state.password
     };
     var t = JSON.stringify(jsondata);
     t = t.substring(0, t.length - 1);
@@ -273,7 +302,7 @@ class Formcreate extends Component {
         },
         credentials: "include",
         body: senddata
-      }).then(function(response) {
+      }).then(function (response) {
         console.log("res" + JSON.stringify(response));
         if (!response.ok) {
           toastr.error("ไม่สามารถเพิ่มข้อมูลได้", toastrOptions);

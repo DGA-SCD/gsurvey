@@ -1,4 +1,4 @@
-import React, {  useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 
 // import { Redirect, useHistory } from "react-router";
@@ -13,12 +13,10 @@ import {
   Label,
   Card,
   CardBody,
- 
   Modal,
   ModalHeader,
   ModalBody,
   ModalFooter,
-
   UncontrolledTooltip
 } from "reactstrap";
 
