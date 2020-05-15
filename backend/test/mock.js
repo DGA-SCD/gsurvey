@@ -1,13 +1,34 @@
 mockRequest = (sessionData, body) => ({
-    session: { data: sessionData },
+    session: {
+        data: sessionData
+    },
     body: body,
 });
-  
+
 mockResponse = () => {
     const res = {};
-        res.status = jest.fn().mockReturnValue(res);
-        res.json = jest.fn().mockReturnValue(res);
-        return res;
+    res.s = jest.fn()
+    res.j = jest.fn()
+
+    res.status = (status) => {
+        if (status === undefined) {
+            return res.s();
+        } else {
+            res.s.mockReturnValue(status);
+            return res;
+        }
+    }
+
+    res.json = (data) => {
+        if (data === undefined) {
+            return res.j();
+        } else {
+            res.j.mockReturnValue(data);
+            return res;
+        }
+    }
+
+    return res;
 };
 
 module.exports = {
