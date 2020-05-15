@@ -32,6 +32,8 @@ const redis = require("redis");
 const mongo = require('../../helpers/mongodb');
 const uuidv4 = require('uuid/v4');
 const mysqlHelper = require('../../helpers/mysql');
+const surveyModel = require('../../../model/v2/survey');
+const resultModel = require('../../../model/v2/result');
 
 
 /**
@@ -39,55 +41,56 @@ const mysqlHelper = require('../../helpers/mysql');
  * @param {userid}
  */
 
-function getRole(userid){
+function getRole(userid) {
 
-    let qstr = "SELECT roles.role_name as role " + 
-    "FROM users " +
-    "INNER JOIN roles ON users.role_id = roles.role_id " +
-    "WHERE user_id = \'" + userid +"\'";
+    let qstr = "SELECT roles.role_name as role " +
+        "FROM users " +
+        "INNER JOIN roles ON users.role_id = roles.role_id " +
+        "WHERE user_id = \'" + userid + "\'";
 
     return mysqlHelper.getConnection()
-    .then( conn => {
-        return mysqlHelper.query(conn, qstr)
-        .then( results => {
-            console.log(results);
-            if ( results.length > 0 && results[0].role !== "" ) {
-                
-                return Promise.resolve(results[0].role);
-            }else {
-                return Promise.reject("not found any role");
-            }
+        .then(conn => {
+            return mysqlHelper.query(conn, qstr)
+                .then(results => {
+                    console.log(results);
+                    if (results.length > 0 && results[0].role !== "") {
+
+                        return Promise.resolve(results[0].role);
+                    } else {
+                        return Promise.reject("not found any role");
+                    }
+                })
         })
-    })
-    .catch( err => {
-        return Promise.reject(err);
-    })
+        .catch(err => {
+            return Promise.reject(err);
+        })
 }
 
-function saveSurvey(req, res) {
-
-    console.log(req.body)
+async function saveSurvey(req, res) {
 
     var body = req.body
-
     var searchFilters = {
         userid: body.userid,
         surveyid: body.surveyid,
         version: body.version,
     };
 
-    let resultProvmises = mongo.find(searchFilters, appConf.surveyCollections.survey, {});
-
-    var survey = {
+    let survey = {
         userid: body.userid,
         name: body.name,
         surveyid: body.surveyid,
         version: body.version,
+        password_enable: false,
         pages: body.pages,
         created_at: new Date(),
         modified_at: new Date(),
     }
 
+    if (body.password !== undefined && body.password !== "")  {
+        survey.password = body.password;
+        survey.password_enable = true;
+    }
+
     var filters = {
         userid: body.userid,
         name: body.name,
@@ -95,64 +98,62 @@ function saveSurvey(req, res) {
         version: body.version
     };
 
-    resultProvmises.then(results => {
-            return Promise.resolve(results);
+    var results = undefined;
+    let ret = false;
+
+    await surveyModel.find(searchFilters, {}, {})
+        .then(r => {
+            results = r
         })
         .catch(err => {
-            mongo.insert(filters, survey, appConf.surveyCollections.survey).then(result => {
-                    http.success(res, result);
-                    return true;
-                })
-                .catch(err => {
-                    http.error(res, 500, 50002, "mongo error: " + err);
-                    return false;
-                });
-        })
-        .then(results => {
-            if (results[0] !== undefined && results[0].created_at !== undefined) {
-                console.log("created at : " + results[0].created_at);
-                survey.created_at = results[0].created_at;
-            }
-            mongo.insert(filters, survey, appConf.surveyCollections.survey).then(result => {
-                    http.success(res, result);
-                    return true;
-                })
-                .catch(err => {
-                    http.error(res, 500, 50002, "mongo error: " + err);
-                    return false;
-                });
-        })
+            console.log(err);
+        });
 
+    if (results[0] !== undefined && results[0].created_at !== undefined) {
+        console.log("created at : " + results[0].created_at);
+        survey.created_at = results[0].created_at;
+    }
+
+    await surveyModel.findOneAndReplace(filters, survey)
+        .then(result => {
+            http.success(res, result);
+            ret = true;
+        })
+        .catch(err => {
+            http.error(res, 500, 50002, "mongo error: " + err);
+            ret = false;
+        });
+
+
+    return ret;
 
 }
 
-function createEmptySurvey(req, res) {
-    console.log(req.body)
+async function createEmptySurvey(req, res) {
 
-    var body = req.body
+    let body = req.body
 
     if (body.userid === undefined) {
         http.error(res, 400, 40000, 'require "userid"');
-        return;
+        return false;
     }
 
     if (body.name === undefined) {
         http.error(res, 400, 40000, 'require "name"');
-        return;
+        return false;
     }
 
     if (body.surveyid === undefined) {
         http.error(res, 400, 40000, 'require "surveyid"');
-        return;
+        return false;
     }
 
     if (body.version === undefined) {
         http.error(res, 400, 40000, 'require "version"');
-        return;
+        return false;
     }
 
-
-    var survey = {
+    let survey = {
         userid: body.userid,
         name: body.name,
         surveyid: body.surveyid,
@@ -161,30 +162,37 @@ function createEmptySurvey(req, res) {
         modified_at: new Date(),
     }
 
-    var filters = {
+    let filters = {
         userid: body.userid,
         name: body.name,
         surveyid: body.surveyid,
         version: body.version
     };
 
-    mongo.insert(filters, survey, appConf.surveyCollections.survey).then(result => {
+    let ret = false;
+
+    await surveyModel.findOneAndReplace(filters, survey, appConf.surveyCollections.survey)
+        .then(result => {
             http.success(res, result);
-            return true;
+            console.log(result);
+            ret = true;
         })
         .catch(err => {
             http.error(res, 500, 50002, "mongo error: " + err);
-            return false;
+            ret = false;
         });
+
+    return ret;
 }
 
 async function getAllSurveysByOwnerId(req, res) {
 
     const DEFAULT_PER_PAGE = 20;
-    var per_page = DEFAULT_PER_PAGE;
-    var page = 1;
-    var total = undefined;
-    var error = undefined;
+    let per_page = DEFAULT_PER_PAGE;
+    let page = 1;
+    let total = undefined;
+    let error = undefined;
+    let ret = false;
 
     if (req.params.ownerid == 'undefined') {
         http.error(res, 400, 40000, "Not found owerid");
@@ -212,61 +220,52 @@ async function getAllSurveysByOwnerId(req, res) {
         userid: req.params.ownerid
     };
 
-    await mongo.count(filters, appConf.surveyCollections.survey)
-    .then(result => {
-        total = result;
-        console.log("result: " + total);
-    })
-    .catch(err => {
-        http.error(res, 500, 50002, "mongo error: " + err);
-        return false;
-    });
+    total = await surveyModel.count(filters);
 
-
-    await getRole( userId )
-    .then( role => {
-        if( role === 'super admin' ){
-            filters = {};
-        }
-    }).catch(err => {
-        logger.warn(err);
-    });
-
-    await mongo.count(filters, appConf.surveyCollections.survey)
-        .then(result => {
-            total = result;
-            console.log("result: " + total);
-        })
-        .catch(err => { 
-            error = err;
+    await getRole(userId)
+        .then(role => {
+            if (role === 'super admin') {
+                filters = {};
+            }
+        }).catch(err => {
+            logger.warn(err);
         });
-    
-    if( error !== undefined ){
+
+    total = await surveyModel.count(filters);
+
+    if (error !== undefined) {
         http.error(res, 500, 50002, "mongo error: " + error);
-        return;
+        return false;
     }
 
-    await mongo.findWithPaging(filters, appConf.surveyCollections.survey, sort, per_page, ((page-1)*per_page))
+    await surveyModel.findWithPaging(filters, {
+            password: 0
+        }, sort, per_page, ((page - 1) * per_page))
         .then(results => {
-            console.log("result: " + results);
-            http.successStream(res, results, {per_page: per_page, page: page, total: total});
-            return true;
+            http.successStream(res, results, {
+                per_page: per_page,
+                page: page,
+                total: total
+            });
+            ret = true;
         })
         .catch(err => {
             http.error(res, 500, 50002, "mongo error: " + err);
-            return false;
+            ret = false;
         });
 
+    return ret;
 }
 
-function getSurveyById(req, res) {
+async function getSurveyById(req, res) {
 
-    var userid = 'undefined';
-    var version = '1';
+    let userid = 'undefined';
+    let version = '1';
+    let ret = false;
 
     if (req.query.uid === undefined) {
         http.error(res, 400, 40000, "Not found userid");
-        return;
+        return false;
     } else {
         userid = req.query.uid + "";
     }
@@ -277,79 +276,95 @@ function getSurveyById(req, res) {
 
     if (req.params.surveyId === undefined) {
         http.error(res, 400, 40000, "Not found owerid");
-        return;
+        return false;
     }
 
-    var filters = {
+    let filters = {
         surveyid: req.params.surveyId,
         version: version,
         userid: userid,
     };
 
-    mongo.find(filters, appConf.surveyCollections.survey).then(results => {
+    await surveyModel.find(filters, {
+            password: 0
+        })
+        .then(results => {
             http.success(res, results[0]);
-            return true;
+            ret = true;
         })
         .catch(err => {
             http.error(res, 500, 50002, "mongo error: " + err);
-            return false;
+            ret = false;
         });
+
+    return ret;
 };
 
-function renameSurvey(req, res) {
+async function renameSurvey(req, res) {
 
-    var filters = {
+    let ret = false;
+
+    let filters = {
         surveyid: req.body.surveyid,
-        userid: req.body.userid,
+        userid: req.signedCookies['userid'],
         version: req.body.version
     };
 
-
-    var data = {
+    let data = {
         $set: {
             name: req.body.name,
             modified_at: new Date(),
         }
     };
 
-    mongo.update(filters, data, appConf.surveyCollections.survey).then(results => {
-            http.success(res, results);
-            return true;
+    await surveyModel.updateOne(filters, data)
+        .then(results => {
+            http.success(res, {
+                "affected": results.modifiedCount
+            });
+            ret = true;
         })
         .catch(err => {
             http.error(res, 500, 50002, "mongo error: " + err);
-            return false;
+            ret = false;
         });
+    return ret;
 }
 
-function deleteSurvey(req, res) {
-    var filters = {
-        userid: req.body.userid,
+async function deleteSurvey(req, res) {
+
+    let ret = false;
+    let filters = {
+        userid: req.signedCookies['userid'],
         surveyid: req.body.surveyid,
         version: req.body.version
     };
 
-    mongo.remove(filters, true, appConf.surveyCollections.survey).then(result => {
+    await surveyModel.removeOne(filters)
+        .then(result => {
             http.success(res, {
                 affected: result.result.n
             });
-            return true;
+            ret = true;
         })
         .catch(err => {
             http.error(res, 500, 50002, "mongo error: " + err);
-            return false;
+            ret = false;
         });
+
+    return ret;
 }
 
 /** Answer Management Services */
 async function getAllResultsBySurveyId(req, res) {
 
     const DEFAULT_PER_PAGE = 100;
-    var userid = 'undefined';
-    var version = '1';
-    var per_page = DEFAULT_PER_PAGE;
-    var page = 1;
-    var total = 0;
+    let userid = 'undefined';
+    let version = '1';
+    let per_page = DEFAULT_PER_PAGE;
+    let page = 1;
+    let total = 0;
+    let ret = false;
 
     if (req.query.uid !== undefined) {
         userid = req.query.uid;
@@ -370,65 +385,62 @@ async function getAllResultsBySurveyId(req, res) {
         per_page = (per_page <= 0) ? DEFAULT_PER_PAGE : per_page;
     }
 
-    var filters = {
+    let filters = {
         surveyid: req.params.surveyId + "",
         userid: userid,
         version: version
     };
 
-    var sort = {
+    let sort = {
         created_at: -1
     };
 
     console.log(filters, page, per_page);
 
-    await mongo.count(filters, appConf.surveyCollections.result)
-    .then(result => {
-        total = result;
-        console.log("result: " + total);
-    })
-    .catch(err => {
-        http.error(res, 500, 50002, "mongo error: " + err);
-        return false;
-    });
+    total = await resultModel.count(filters);
 
-    await mongo.findWithPaging(filters, appConf.surveyCollections.result, sort, per_page, ((page-1)*per_page))
+    await resultModel.findWithPaging(filters, {surveyid: 1}, sort, per_page, ((page - 1) * per_page))
         .then(results => {
             console.log("result: " + results);
-            http.successStream(res, results, {per_page: per_page, page: page, total: total});
-            return true;
+            http.successStream(res, results, {
+                per_page: per_page,
+                page: page,
+                total: total
+            });
+            ret = true;
         })
         .catch(err => {
             http.error(res, 500, 50002, "mongo error: " + err);
-            return false;
+            ret = false;
         });
 
+    return ret;
 }
 
-function getResultById(req, res) {
-
-    var body = req.body;
-
-    var filters = {
+async function getResultById(req, res) {
+    let ret = false;
+    let filters = {
         resultid: req.params.resultId
     }
 
-    mongo.find(filters, appConf.surveyCollections.result).then(results => {
+    await resultModel.find(filters).then(results => {
             http.success(res, results);
-            return true;
+            ret = true;
         })
         .catch(err => {
             http.error(res, 500, 50002, "mongo error: " + err);
-            return false;
+            ret = false;
         });
+    return ret;
 }
 
-function saveResult(req, res) {
+async function saveResult(req, res) {
 
-    var body = req.body;
-    var resultid = 'undefined';
-    var userid = 'undefined';
-    var version = '1';
+    let body = req.body;
+    let resultid = 'undefined';
+    let userid = 'undefined';
+    let version = '1';
+    let ret = false;
 
     if (body.resultid === undefined || body.resultid == null) {
         resultid = uuidv4();
@@ -436,40 +448,42 @@ function saveResult(req, res) {
         resultid = body.resultid;
     }
 
-    if (body.userid !== undefined) {
-        userid = body.userid;
+    if (body.userid === undefined) {
+        http.error(res, 400, 40000, 'require "userid"');
+        return false;
     }
 
     if (body.version !== undefined) {
         version = body.version;
     }
 
-    var filters = {
+    let filters = {
         surveyid: body.surveyid,
         resultid: resultid,
         version: version,
-        userid: userid,
-
+        userid: body.userid,
     }
 
-    var data = {
+    let data = {
         surveyid: body.surveyid,
         resultid: resultid,
         version: version,
-        userid: userid,
+        userid: body.userid,
         result: body.result,
         created_at: new Date(),
         modified_at: new Date(),
     }
 
-    mongo.insert(filters, data, appConf.surveyCollections.result).then(result => {
+    await resultModel.findOneAndReplace(filters, data, appConf.surveyCollections.result)
+        .then(result => {
             http.success(res, result);
-            return true;
+            ret = true;
         })
         .catch(err => {
             http.error(res, 500, 50002, "mongo error: " + err);
-            return false;
+            ret = false;
         });
+    return ret;
 }
 
 module.exports = {

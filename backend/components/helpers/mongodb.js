@@ -25,12 +25,8 @@ function findWithProjector(filters, collection, projector, sort) {
     return _find(filters, collection, projector, sort, 0 , 0);
 }
 
-function findWithPaging(filters, collection, sort, limit , skip){
-    return _find(filters, collection, {
-        projection: {
-            _id: 0
-        }
-    }, sort, limit, skip); 
+function findWithPaging(filters, collection, projector, sort, limit , skip){
+    return _find(filters, collection, {_id: 0, ...projector}, sort, limit, skip); 
 }
 
 function find(filters, collection, sort) {
@@ -42,12 +38,12 @@ function find(filters, collection, sort) {
 }
 
 function _find(filters, collection, projector, sort, limit, skip) {
-    console.log("limit: " + limit + " skip: " + skip);
+    console.log("limit: " + limit + " skip: " + skip + " projector: " + JSON.stringify(projector));
     return new promise((resolve, reject) => {
         getPoolConnection().then(db => {
                 logger.debug("mongodb connected");
                 db.db(appConf.MONGODB_dbname)
-                    .collection(collection).find(filters, projector).skip(skip).limit(limit).sort(sort).toArray(function (err, results) {
+                    .collection(collection).find(filters).project(projector).skip(skip).limit(limit).sort(sort).toArray(function (err, results) {
                         if (err) {
                             logger.error('Error occurred while querying: ' + err);
                             reject(err);
@@ -138,7 +134,7 @@ function update(filters, data, collection) {
                         } else {
                             logger.debug('updated record: ' + JSON.stringify(result));
                             db.close();
-                            resolve(true);
+                            resolve(result);
                         }
                     })
             })
@@ -164,7 +160,7 @@ function remove(filters, justOne, collection) {
                             reject(err);
                         } else {
                             console.log(results);
-                            logger.debug('results: ' + JSON.stringify(results));
+                            logger.debug('delete result: ' + JSON.stringify(results));
                             db.close();
                             resolve(results);
                         }
