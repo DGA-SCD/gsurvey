@@ -21,30 +21,37 @@ function getPoolConnection() {
 
 }
 
-function findWithProjector(filters, collection, projector, sort) {
-    return _find(filters, collection, projector, sort, 0, 0);
+function findWithProject(filter, collection, project, sort) {
+    return _find(filter, collection, project, sort, 0, 0);
 }
 
-function findWithPaging(filters, collection, projector, sort, limit, skip) {
-    return _find(filters, collection, {
+function findWithPaging(filter, collection, project, sort, limit, skip) {
+    return _find(filter, collection, {
         _id: 0,
-        ...projector
+        ...project
     }, sort, limit, skip);
 }
 
-function find(filters, collection, sort) {
-    return _find(filters, collection, {
+function find(filter, collection, sort) {
+    return _find(filter, collection, {
         _id: 0
     }, sort, 0, 0);
 }
 
-function _find(filters, collection, projector, sort, limit, skip) {
-    console.log("limit: " + limit + " skip: " + skip + " projector: " + JSON.stringify(projector));
+function findOne(filter, collection, project, sort) {
+    return _find(filter, collection, {
+        _id: 0,
+        ...project
+    }, sort, 1, 0);
+}
+
+function _find(filter, collection, project, sort, limit, skip) {
+    console.log("limit: " + limit + " skip: " + skip + " project: " + JSON.stringify(project));
     return new promise((resolve, reject) => {
         getPoolConnection().then(db => {
                 logger.debug("mongodb connected");
                 db.db(appConf.MONGODB_dbname)
-                    .collection(collection).find(filters).project(projector).skip(skip).limit(limit).sort(sort).toArray(function (err, results) {
+                    .collection(collection).find(filter).project(project).skip(skip).limit(limit).sort(sort).toArray(function (err, results) {
                         if (err) {
                             logger.error('Error occurred while querying: ' + err);
                             reject(err);
@@ -61,7 +68,7 @@ function _find(filters, collection, projector, sort, limit, skip) {
     })
 }
 
-function insert(filters, data, collection) {
+function insert(filter, data, collection) {
     return new promise((resolve, reject) => {
         MongoClient.connect(appConf.mongoDB, {
                 useNewUrlParser: true,
@@ -69,7 +76,7 @@ function insert(filters, data, collection) {
             }).then(db => {
                 logger.debug("mongodb connected");
                 db.db(appConf.MONGODB_dbname)
-                    .collection(collection).findOneAndReplace(filters, data, {
+                    .collection(collection).findOneAndReplace(filter, data, {
                         upsert: true
                     }, function (err, result) {
                         if (err) {
@@ -117,7 +124,7 @@ function insertOne(data, collection) {
     })
 }
 
-function update(filters, data, collection) {
+function update(filter, data, collection) {
     return new promise((resolve, reject) => {
         MongoClient.connect(appConf.mongoDB, {
                 useNewUrlParser: true,
@@ -125,7 +132,7 @@ function update(filters, data, collection) {
             }).then(db => {
                 logger.debug("mongodb connected");
                 db.db(appConf.MONGODB_dbname)
-                    .collection(collection).updateOne(filters, data, {
+                    .collection(collection).updateOne(filter, data, {
                         upsert: false
                     }, function (err, result) {
                         if (err) {
@@ -146,7 +153,7 @@ function update(filters, data, collection) {
     })
 }
 
-function remove(filters, justOne, collection) {
+function remove(filter, justOne, collection) {
     return new promise((resolve, reject) => {
         MongoClient.connect(appConf.mongoDB, {
                 useNewUrlParser: true,
@@ -154,7 +161,7 @@ function remove(filters, justOne, collection) {
             }).then(db => {
                 logger.debug("mongodb connected");
                 db.db(appConf.MONGODB_dbname)
-                    .collection(collection).deleteOne(filters, function (err, results) {
+                    .collection(collection).deleteOne(filter, function (err, results) {
                         if (err) {
                             logger.error('Error occurred while querying: ' + err);
                             db.close();
@@ -175,7 +182,7 @@ function remove(filters, justOne, collection) {
     })
 }
 
-function count(filters, collection) {
+function count(filter, collection) {
     return new promise((resolve, reject) => {
         MongoClient.connect(appConf.mongoDB, {
                 useNewUrlParser: true,
@@ -183,7 +190,7 @@ function count(filters, collection) {
             }).then(db => {
                 logger.debug("mongodb connected");
                 db.db(appConf.MONGODB_dbname)
-                    .collection(collection).countDocuments(filters, function (err, results) {
+                    .collection(collection).countDocuments(filter, function (err, results) {
                         if (err) {
                             logger.error('Error occurred while counting: ' + err);
                             db.close();
@@ -203,7 +210,7 @@ function count(filters, collection) {
 }
 
 module.exports = {
-    findWithProjector,
+    findWithProject,
     find,
     insert,
     insertOne,
@@ -211,4 +218,5 @@ module.exports = {
     remove,
     count,
     findWithPaging,
+    findOne,
 }

@@ -43,7 +43,8 @@ const {saveSurvey,
     deleteSurvey,
     getAllResultsBySurveyId,
     getResultById,
-    saveResult} = require('./survey');
+    saveResult,
+    viewPassword} = require('./survey');
 
 router.use(function (req, res, next) {
     logger.info('calling users api ' + req.path);
@@ -140,5 +141,8 @@ router.get('/profile', users.getProfile);
 
 // /api/v2/admin/profile
 router.post('/profile', users.updateProfile);
+
+// /api/v2/admin/survey/password
+router.get('/survey/password', viewPassword);
 
 module.exports = router;

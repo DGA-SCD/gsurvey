@@ -28,8 +28,12 @@ const appConf = require('../../config/production.conf');
 const promise = require('promise');
 const mongodb = require('../../components/helpers/mongodb');
 
-function find(filter, projection, sort) {
-    return mongodb.findWithProjector(filter, appConf.surveyCollections.survey, projection, sort);
+function findOne(filter, project, sort) {
+    return mongodb.findOne(filter, appConf.surveyCollections.survey, project, sort);
+}
+
+function find(filter, project, sort) {
+    return mongodb.findWithProject(filter, appConf.surveyCollections.survey, project, sort);
 }
 
 function findWithPaging(filter, projector, sort, page_size, page) {
@@ -77,5 +81,6 @@ module.exports = {
     findOneAndReplace,
     count,
     updateOne,
-    removeOne
+    removeOne,
+    findOne
 }
