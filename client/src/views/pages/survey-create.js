@@ -148,37 +148,46 @@ class Formcreate extends Component {
       options
     );
     this.surveyCreator.saveSurveyFunc = this.saveMySurvey;
+    const HeaderAPI = {
+      method: "get",
+      crossDomain: true,
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      credentials: "include"
+    };
 
     try {
       const response = await fetch(
-        config.BACKEND_GSURVEY +
-          "/api/v2/admin/surveys/" +
-          this.props.location.state.surveyid +
-          "?uid=" +
-          this.props.location.state.userid +
-          "&v=1",
-        {
-          method: "get",
-          crossDomain: true,
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json"
-          },
-          credentials: "include"
-        }
+        `${config.BACKEND_GSURVEY}/api/v2/admin/surveys/${this.props.location.state.surveyid}?uid=${this.props.location.state.userid}&v=1`,
+
+        HeaderAPI
       );
 
-      if (!response.ok) {
-        userService.clearStrogae();
-        // throw Error(response.statusText);
-      }
-      const json = await response.json();
-      var question = JSON.stringify(json.data);
+      if (response.ok) {
+        const json = await response.json();
 
-      this.surveyCreator.text = question;
-      this.setState({ json: question });
+        var question = JSON.stringify(json.data);
+
+        this.surveyCreator.text = question;
+        this.setState({ json: question });
+        const response_pass = await fetch(
+          `${config.BACKEND_GSURVEY}/api/v2/admin/survey/password/?sid=${this.props.location.state.surveyid}`,
+          HeaderAPI
+        );
+        if (response_pass.ok) {
+          const res = await response_pass.json();
+
+          this.setState({ password: res.data.password });
+        } else {
+          toastr.error("ไม่สามารถดึงข้อมูลจาก server ได้", toastrOptions);
+        }
+      } else {
+        userService.clearStrogae();
+      }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 
@@ -245,6 +254,7 @@ class Formcreate extends Component {
                           type={this.state.passwordShow ? "password" : "text"}
                           name="password"
                           onChange={this.handleNameChangePassword}
+                          value={this.state.password}
                         />
                         <div className="input-group-prepend">
                           <span className="input-group-text" id="basic-addon1">
