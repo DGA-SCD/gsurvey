@@ -43,10 +43,10 @@ const resultModel = require('../../../model/v2/result');
 
 function getRole(userid) {
 
-    let qstr = "SELECT roles.role_name as role " +
-        "FROM users " +
-        "INNER JOIN roles ON users.role_id = roles.role_id " +
-        "WHERE user_id = \'" + userid + "\'";
+    let qstr = `SELECT roles.role_name as role 
+    FROM users 
+    INNER JOIN roles ON users.role_id = roles.role_id
+    WHERE user_id = '${userid}'`;
 
     return mysqlHelper.getConnection()
         .then(conn => {
@@ -86,7 +86,7 @@ async function saveSurvey(req, res) {
         modified_at: new Date(),
     }
 
-    if (body.password !== undefined && body.password !== "")  {
+    if (body.password !== undefined && body.password !== "") {
         survey.password = body.password;
         survey.password_enable = true;
     }
@@ -210,7 +210,7 @@ async function getAllSurveysByOwnerId(req, res) {
         per_page = (per_page <= 0) ? DEFAULT_PER_PAGE : per_page;
     }
 
-    let userId = req.signedCookies['userid'];;
+    let userId = req.signedCookies['userid'];
 
     var sort = {
         created_at: -1
@@ -399,7 +399,9 @@ async function getAllResultsBySurveyId(req, res) {
 
     total = await resultModel.count(filters);
 
-    await resultModel.findWithPaging(filters, {surveyid: 1}, sort, per_page, ((page - 1) * per_page))
+    await resultModel.findWithPaging(filters, {
+            surveyid: 1
+        }, sort, per_page, ((page - 1) * per_page))
         .then(results => {
             console.log("result: " + results);
             http.successStream(res, results, {
@@ -486,6 +488,51 @@ async function saveResult(req, res) {
     return ret;
 }
 
+async function viewPassword(req, res) {
+
+    const surveyId = req.query.sid;
+    let version = req.query.v;
+    const userId = req.signedCookies['userid'];
+
+    if (surveyId === undefined) {
+        http.error(res, 400, 40000, "Not found sid (surveyid)");
+        return false;
+    }
+
+    if (version === undefined) {
+        version = '1';
+    }
+
+    if (userId === undefined) {
+        http.error(res, 401, 40100, "unauthorized user");
+        return false;
+    }
+
+    try {
+        const response = await surveyModel.findOne({
+            userid: userId,
+            surveyid: surveyId,
+            version: version,
+        }, {}, {});
+
+        console.log(response);
+        if (response.length > 0) {
+            http.success(res, {
+                surveyid: response[0].surveyid,
+                password: response[0].password,
+            });
+            return true;
+        } else {
+            http.error(res, 404, 40400, `not found survey`);
+            return false;
+        }
+    } catch (err) {
+        logger.error(`viewpassword error: ${err}`);
+        http.error(res, 500, 5002, err);
+        return false;
+    }
+}
+
 module.exports = {
     saveSurvey,
     createEmptySurvey,
@@ -495,5 +542,6 @@ module.exports = {
     deleteSurvey,
     getAllResultsBySurveyId,
     getResultById,
-    saveResult
+    saveResult,
+    viewPassword
 }

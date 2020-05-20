@@ -29,7 +29,7 @@ const promise = require('promise');
 const mongodb = require('../../components/helpers/mongodb');
 
 function find(filter, projection, sort) {
-    return mongodb.findWithProjector(filter, appConf.surveyCollections.result, projection, sort);
+    return mongodb.findWithProject(filter, appConf.surveyCollections.result, projection, sort);
 }
 
 function findOneAndReplace(filter, result) {

@@ -138,6 +138,75 @@ describe("rename a survey", () => {
 
 });
 
+describe("view password", () => {
+
+    test("should display passord as '1234' for survey id = 1", () => {
+        let req = mock.mockRequest({}, {});
+        req.signedCookies = [];
+        req.signedCookies['userid'] = "24";
+        req.query = {
+            sid: '1',
+            v: '1'
+        };
+        
+        let res = mock.mockResponse();
+        return surveyApi.viewPassword(req, res).then(response => {
+            expect(response).toBe(true);
+            const data = res.json().data;
+            expect(data.surveyid).toBe('1');
+            expect(data.password).toBe('1234');
+        });
+        
+    })
+
+    test("should display passord as '1234' with undefined version", () => {
+        let req = mock.mockRequest({}, {});
+        req.signedCookies = [];
+        req.signedCookies['userid'] = "24";
+        req.query = {
+            sid: '1'
+        };
+        
+        let res = mock.mockResponse();
+        return surveyApi.viewPassword(req, res).then(response => {
+            expect(response).toBe(true);
+            const data = res.json().data;
+            expect(data.surveyid).toBe('1');
+            expect(data.password).toBe('1234');
+        });
+        
+    })
+
+
+    
+    test("should alert return code 40000", () => {
+        let req = mock.mockRequest({}, {});
+        req.signedCookies = [];
+        req.signedCookies['userid'] = "24";
+        req.query = {
+        };
+        
+        let res = mock.mockResponse();
+        return surveyApi.viewPassword(req, res).then(response => {
+            expect(response).toBe(false);
+            const data = res.json();
+            expect(data.success).toBe(false);
+            expect(data.code).toBe(40000);
+        });
+        
+    })
+})
+
+
+
+
+
+
+
+
+
+
+
 describe("remove a survey", () => {
     let req = mock.mockRequest({}, {});
     req.signedCookies = [];
@@ -160,4 +229,3 @@ describe("remove a survey", () => {
     });
 
 });
-
