@@ -122,7 +122,7 @@ describe("rename a survey", () => {
     req.body.surveyid = '1';
     req.body.version = '1';
     req.body.name = "test";
-    
+
     let res = mock.mockResponse();
 
     test("rename a survey with surveyid = 1", () => {
@@ -148,7 +148,7 @@ describe("view password", () => {
             sid: '1',
             v: '1'
         };
-        
+
         let res = mock.mockResponse();
         return surveyApi.viewPassword(req, res).then(response => {
             expect(response).toBe(true);
@@ -156,7 +156,7 @@ describe("view password", () => {
             expect(data.surveyid).toBe('1');
             expect(data.password).toBe('1234');
         });
-        
+
     })
 
     test("should display passord as '1234' with undefined version", () => {
@@ -166,7 +166,7 @@ describe("view password", () => {
         req.query = {
             sid: '1'
         };
-        
+
         let res = mock.mockResponse();
         return surveyApi.viewPassword(req, res).then(response => {
             expect(response).toBe(true);
@@ -174,18 +174,17 @@ describe("view password", () => {
             expect(data.surveyid).toBe('1');
             expect(data.password).toBe('1234');
         });
-        
+
     })
 
 
-    
+
     test("should alert return code 40000", () => {
         let req = mock.mockRequest({}, {});
         req.signedCookies = [];
         req.signedCookies['userid'] = "24";
-        req.query = {
-        };
-        
+        req.query = {};
+
         let res = mock.mockResponse();
         return surveyApi.viewPassword(req, res).then(response => {
             expect(response).toBe(false);
@@ -193,7 +192,29 @@ describe("view password", () => {
             expect(data.success).toBe(false);
             expect(data.code).toBe(40000);
         });
-        
+
+    })
+})
+
+describe("duplicate survey", () => {
+
+    test("should create new survey 'test_copy' ", () => {
+        let req = mock.mockRequest({}, {});
+        req.signedCookies = [];
+        req.signedCookies['userid'] = "24";
+        req.body = {
+            surveyid: '1',
+            version: '1'
+        };
+
+        let res = mock.mockResponse();
+        return surveyApi.duplicateSurvey(req, res).then(response => {
+            expect(response).toBe(true);
+            const data = res.json();
+            expect(data.success).toBe(true);
+            expect(data.code).toBe(20000);
+        });
+
     })
 })
 
@@ -214,7 +235,7 @@ describe("remove a survey", () => {
 
     req.body.surveyid = '1';
     req.body.version = '1';
-    
+
     let res = mock.mockResponse();
 
     test("remove a survey with surveyid = 1", () => {

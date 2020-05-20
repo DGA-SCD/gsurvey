@@ -44,7 +44,8 @@ const {saveSurvey,
     getAllResultsBySurveyId,
     getResultById,
     saveResult,
-    viewPassword} = require('./survey');
+    viewPassword,
+    duplicateSurvey} = require('./survey');
 
 router.use(function (req, res, next) {
     logger.info('calling users api ' + req.path);
@@ -144,5 +145,10 @@ router.post('/profile', users.updateProfile);
 
 // /api/v2/admin/survey/password
 router.get('/survey/password', viewPassword);
+
+// /api/v2/admin/survey/duplicate?sid=1&v=1
+router.post('/survey/duplicate', duplicateSurvey);
+
+
 
 module.exports = router;

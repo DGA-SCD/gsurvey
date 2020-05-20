@@ -56,6 +56,22 @@ function findOneAndReplace(filter, survey) {
     return mongodb.insert(filter, data, appConf.surveyCollections.survey);
 }
 
+function insertOne(survey){
+
+    const data = {
+        userid: survey.userid,
+        name: survey.name,
+        surveyid: survey.surveyid,
+        version: survey.version,
+        password: survey.password,
+        password_enable: survey.password_enable,
+        pages: survey.pages,
+        created_at: survey.created_at,
+        modified_at: survey.created_at,
+    }  
+    return mongodb.insertOne(data, appConf.surveyCollections.survey);
+}
+
 function count(filter) {
     return mongodb.count(filter, appConf.surveyCollections.survey)
         .then(r => {
@@ -82,5 +98,6 @@ module.exports = {
     count,
     updateOne,
     removeOne,
-    findOne
+    findOne,
+    insertOne
 }
