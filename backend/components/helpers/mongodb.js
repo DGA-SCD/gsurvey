@@ -6,8 +6,8 @@ const promise = require('promise');
 
 var db;
 
-function getPoolConnection(){
-    if( db !== undefined ){
+function getPoolConnection() {
+    if (db !== undefined) {
         return db;
     } else {
         db = MongoClient.connect(appConf.mongoDB, {
@@ -22,18 +22,19 @@ function getPoolConnection(){
 }
 
 function findWithProjector(filters, collection, projector, sort) {
-    return _find(filters, collection, projector, sort, 0 , 0);
+    return _find(filters, collection, projector, sort, 0, 0);
 }
 
-function findWithPaging(filters, collection, projector, sort, limit , skip){
-    return _find(filters, collection, {_id: 0, ...projector}, sort, limit, skip); 
+function findWithPaging(filters, collection, projector, sort, limit, skip) {
+    return _find(filters, collection, {
+        _id: 0,
+        ...projector
+    }, sort, limit, skip);
 }
 
 function find(filters, collection, sort) {
     return _find(filters, collection, {
-        projection: {
-            _id: 0
-        }
+        _id: 0
     }, sort, 0, 0);
 }
 
