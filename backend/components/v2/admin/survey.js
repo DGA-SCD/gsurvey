@@ -528,7 +528,63 @@ async function viewPassword(req, res) {
         }
     } catch (err) {
         logger.error(`viewpassword error: ${err}`);
-        http.error(res, 500, 5002, err);
+        http.error(res, 500, 50002, err);
+        return false;
+    }
+}
+
+async function duplicateSurvey(req, res) {
+
+    const surveyId = req.body.surveyid;
+    let version = req.body.version;
+    const userId = req.signedCookies['userid'];
+
+    if (surveyId === undefined) {
+        http.error(res, 400, 40000, "Not found surveyid");
+        return false;
+    }
+
+    if (version === undefined) {
+        version = '1';
+    }
+
+    if (userId === undefined) {
+        http.error(res, 401, 40100, "unauthorized user");
+        return false;
+    }
+
+    let response;
+    const filter = {
+        userid: userId,
+        surveyid: surveyId,
+        version: version,
+    }
+
+    try {
+        const old_survey = await surveyModel.findOne(filter, {_id: 0}, {});
+        if (old_survey.length > 0 && old_survey[0].surveyid !== undefined && old_survey[0].name !== undefined) {
+            old_survey[0].surveyid = uuidv4();
+            old_survey[0].name = old_survey[0].name + '_copy';
+            old_survey[0].created_at = new Date();
+            old_survey[0].modified_at = new Date();
+            console.log('oldsurvey: ', old_survey[0]);
+            const response = await surveyModel.insertOne(old_survey[0]);
+            if (response === true) {
+                http.success(res);
+                return true;
+            } else {
+                http.error(res, 500, 50000, 'duplicate survey is incomplete');
+                return false;
+            }
+
+        } else {
+            logger.error('not found survey');
+            http.error(res, 404, 40400, 'not found survey');
+            return false;
+        }
+    } catch (err) {
+        logger.error(`duplicate survey error: ${err}`);
+        http.error(res, 500, 50002, err);
         return false;
     }
 }
@@ -543,5 +599,6 @@ module.exports = {
     getAllResultsBySurveyId,
     getResultById,
     saveResult,
-    viewPassword
+    viewPassword,
+    duplicateSurvey
 }
