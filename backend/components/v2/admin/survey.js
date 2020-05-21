@@ -528,7 +528,7 @@ async function viewPassword(req, res) {
         }
     } catch (err) {
         logger.error(`viewpassword error: ${err}`);
-        http.error(res, 500, 50002, err);
+        http.error(res, 500, 50002, err.toString());
         return false;
     }
 }
@@ -561,7 +561,9 @@ async function duplicateSurvey(req, res) {
     }
 
     try {
-        const old_survey = await surveyModel.findOne(filter, {_id: 0}, {});
+        const old_survey = await surveyModel.findOne(filter, {
+            _id: 0
+        }, {});
         if (old_survey.length > 0 && old_survey[0].surveyid !== undefined && old_survey[0].name !== undefined) {
             old_survey[0].surveyid = uuidv4();
             old_survey[0].name = old_survey[0].name + '_copy';
@@ -584,7 +586,7 @@ async function duplicateSurvey(req, res) {
         }
     } catch (err) {
         logger.error(`duplicate survey error: ${err}`);
-        http.error(res, 500, 50002, err);
+        http.error(res, 500, 50002, err.toString());
         return false;
     }
 }

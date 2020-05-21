@@ -21,11 +21,12 @@
 // SOFTWARE.
 "use strict";
 
-const {loggerr} = require('../../../commons/logger');
+const {logger} = require('../../../commons/logger');
 const http = require('../..//../commons/http');
 const appConf = require('../../../config/production.conf');
 const uuidv4 = require('uuid/v4');
 const mongo = require('../../helpers/mongodb');
+const surveyModel = require('../../../model/v2/survey');
 
 
 function getSurveyById(req, res) {
@@ -114,8 +115,68 @@ function saveResult(req, res) {
         });
 }
 
+async function authSurvey(req, res) {
+
+    const surveyId = req.body.surveyid;
+    const password = req.body.password;
+    const userId = req.body.userid;
+    let version = req.body.version;
+
+    if (surveyId === undefined) {
+        http.error(res, 400, 40000, "Not found surveyid");
+        return false;
+    }
+
+    if (password === undefined) {
+        http.error(res, 400, 40000, "Not found password");
+        return false;
+    }
+
+    if (userId === undefined) {
+        http.error(res, 400, 40000, "Not found userId");
+        return false;
+    }
+
+    if (version === undefined) {
+        version = '1';
+    }
+
+    try {
+        const response = await surveyModel.findOne({
+            surveyid: surveyId,
+            userid: userId,
+            version: version
+        }, {}, {});
+
+        console.log('authen survey : ', response);
+
+        if (response.length < 1 ) {
+            http.error(res, 404, 40400, 'not found survey');
+            return false;
+        } 
+
+        if (response[0].password_enable === undefined || response[0].password_enable === false || response[0].password == undefined) {
+            http.error(res, 400, 40001, 'this survey no need to authen');
+            return false;
+        }
+
+        if (response[0].password === password) {
+            http.success(res);
+            return true;
+        } else {
+            http.error(res, 401, 40100, 'invalid password');
+            return false;
+        }
+    } catch (err) {
+        logger.error(`authen survey error: ${err}`);
+        http.error(res, 500, 50002, err.toString());
+        return false;
+    }
+
+}
 
 module.exports = {
     getSurveyById,
-    saveResult
+    saveResult,
+    authSurvey,
 };
