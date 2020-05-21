@@ -3,7 +3,7 @@ global.appRoot = path.resolve(__dirname);
 const appConf = require('../../../config/production.conf');
 const mock = require("../../mock");
 const surveyApi = require("../../..//components/v2/admin/survey");
-
+const userApi = require("../../..//components/v2/users/survey");
 
 describe("create survey", () => {
 
@@ -219,6 +219,27 @@ describe("duplicate survey", () => {
 })
 
 
+describe("survey authentication", () => {
+
+    test("should ok if password = '1234' for survey id = '1'", () => {
+        let req = mock.mockRequest({}, {});
+        req.body = {
+            userid: '24',
+            password: '1234',
+            surveyid: '1',
+            version: '1'
+        };
+        let res = mock.mockResponse();
+
+        return userApi.authSurvey(req, res).then(response => {
+            expect(response).toBe(true);
+            const data = res.json();
+            expect(data.success).toBe(true);
+            expect(data.code).toBe(20000);
+        });
+
+    })
+})
 
 
 

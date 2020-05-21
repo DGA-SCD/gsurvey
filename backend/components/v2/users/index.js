@@ -33,7 +33,7 @@ const uuidv4 = require('uuid/v4');
 const {register} = require('./register');
 const {getMinistries, getDepartments, getOrganizations, getPrefixes} = require('./organization');
 const {sendOTP, resetPassword} = require('../users/password');
-const {getSurveyById, saveResult} = require('./survey');
+const {getSurveyById, saveResult, authSurvey} = require('./survey');
 
 router.use(function (req, res, next) {
     logger.info('calling users api ' + req.path);
@@ -90,5 +90,8 @@ router.post('/password/reset', resetPassword);
 
 // /api/v2/users/prefixes
 router.get('/prefixes', getPrefixes);
+
+// /api/v2/users/survey/auth
+router.post('/survey/auth', authSurvey);
 
 module.exports = router;
