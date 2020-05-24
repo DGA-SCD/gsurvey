@@ -142,8 +142,19 @@ class Main extends Component {
               tooltip: "ดูแบบสำรวจที่สร้าง",
 
               onClick: (event, rowData) => {
+                // this.props.history.push({
+                //   pathname: "displayhandle",
+                //   search:
+                //     "?surveyid=" + rowData.surveyid + "&uid=" + rowData.userid,
+                //   state: {
+                //     surveyid: rowData.surveyid,
+                //     name: rowData.name,
+                //     version: rowData.version,
+                //     userid: rowData.userid
+                //   }
+                // });
                 window.open(
-                  "display?surveyid=" +
+                  "displayhandle?surveyid=" +
                     rowData.surveyid +
                     "&uid=" +
                     rowData.userid,

@@ -301,7 +301,7 @@ class Formcreate extends Component {
     t = t.substring(0, t.length - 1);
 
     var senddata = t + "," + data.substring(1);
-    console.log(senddata);
+
     try {
       fetch(config.BACKEND_GSURVEY + "/api/v2/admin/surveys", {
         method: "post",
