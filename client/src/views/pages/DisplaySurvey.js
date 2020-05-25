@@ -1,8 +1,6 @@
-import React, { useState, useEffect, Fragment } from "react";
+import React, { Fragment } from "react";
 import { Row, Col, Card, CardBody, CardTitle } from "reactstrap";
 import Cookies from "universal-cookie";
-import ReactDOM from "react-dom";
-import SurveyAuthen from "./surveyAuthen";
 import * as config from "../../services/AppConfig";
 import * as Survey from "survey-react";
 import "survey-react/survey.css";
@@ -48,7 +46,7 @@ widgets.bootstrapslider(Survey);
 
 export default function DisplaySurvey({ surveyid, userid, question, name }) {
   const windowSize = useWindowSize();
-  console.log(question);
+
   const toastrOptions = {
     timeOut: 3000, // by setting to 0 it will prevent the auto close
     position: "top-right",

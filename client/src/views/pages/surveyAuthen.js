@@ -20,9 +20,7 @@ const toastrOptions = {
 };
 
 export default function SurveyAuthen({ userid, surveyid, question, name }) {
-  console.log(question);
   const [isOpened, setIsOpened] = useState(false);
-  const setshow = () => setIsOpened(!isOpened);
   const {
     register,
     errors,
@@ -59,7 +57,11 @@ export default function SurveyAuthen({ userid, surveyid, question, name }) {
             //  const param = result.success;
             setchkauthen(true);
           } else {
-            toastr.error(result.desc, toastrOptions);
+            if (result.code === 40100) {
+              toastr.error("ขออภัยท่านใส่รหัสผ่านผิด", toastrOptions);
+            } else {
+              toastr.error(result.desc, toastrOptions);
+            }
           }
         });
     } catch (error) {
@@ -110,7 +112,7 @@ export default function SurveyAuthen({ userid, surveyid, question, name }) {
                       //  ref={register({ required: "กรุณากรอกรหัสผ่าน" })}
                       onChange={async e => {
                         const value = e.target.value;
-                        console.log(value);
+
                         await sleep(1000);
                       }}
                       // ref={register({ required: true })}

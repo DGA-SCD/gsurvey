@@ -1,10 +1,9 @@
 // import external modules
-import React, { useState, useEffect, Fragment } from "react";
+import React, { useState, useEffect } from "react";
 import * as config from "../../services/AppConfig";
 import DisplaySurvey from "./DisplaySurvey";
 import { toastr } from "react-redux-toastr";
 import SurveyAuthen from "./surveyAuthen";
-import { render } from "react-dom";
 export default function DisplayHandle() {
   const toastrOptions = {
     timeOut: 3000, // by setting to 0 it will prevent the auto close
@@ -18,7 +17,6 @@ export default function DisplayHandle() {
   const url = new URL(url_string);
   const surveyid = url.searchParams.get("surveyid");
   const uid = url.searchParams.get("uid");
-  const [name, setName] = useState();
   const [data, setData] = useState({
     question: {},
     password_enable: "",
@@ -65,32 +63,7 @@ export default function DisplayHandle() {
     }
 
     fetchData();
-
-    console.log(data);
   }, []);
-
-  const IsPass = ({ data }) => {
-    if (data.password_enable === true) {
-      return (
-        <SurveyAuthen
-          userid={uid}
-          surveyid={surveyid}
-          // authenPass={authenPass}
-          question={data.question}
-          name={data.name}
-        />
-      );
-    } else {
-      return (
-        <DisplaySurvey
-          surveyid={surveyid}
-          uid={uid}
-          question={data.question}
-          name={data.name}
-        />
-      );
-    }
-  };
 
   return isLoading ? (
     <div>Loading..</div>
