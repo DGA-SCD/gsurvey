@@ -7,7 +7,6 @@ import {
   Row,
   Col,
   Input,
-  Form,
   FormGroup,
   Button,
   Label,
@@ -44,6 +43,7 @@ function Register() {
   };
 
   function submit() {
+    // clearState();
     try {
       fetch(config.BACKEND_GSURVEY + "/api/v2/users/register", {
         method: "post",
@@ -64,7 +64,8 @@ function Register() {
             clearState();
             // window.location.replace("/pages/login");
           } else {
-            toastr.error(result.desc, toastrOptions);
+            if (result.code === 40300)
+              toastr.error("อีเมลนี้ได้ถูกใช้ลงทะเบียนไปแล้ว", toastrOptions);
           }
         });
     } catch (error) {
@@ -89,7 +90,6 @@ function Register() {
         config.BACKEND_GSURVEY + "/api/v2/users/ministries"
       );
       const body = await response.json();
-      console.log(body);
 
       setmin_id(
         body.data.map(({ min_name, min_id }) => ({
@@ -109,7 +109,7 @@ function Register() {
           account.min_id
       );
       const body = await response.json();
-      console.log(body);
+
       setdep_id(
         body.data.map(({ dep_name, dep_id }) => ({
           label: dep_name,
@@ -132,7 +132,7 @@ function Register() {
           account.dep_id
       );
       const body = await response.json();
-      console.log(body);
+
       setorg_id(
         body.data.map(({ org_name, org_id }) => ({
           label: org_name,
@@ -153,7 +153,7 @@ function Register() {
         {/* Debug{JSON.stringify(account)} */}
         {/* Debug{JSON.stringify(check)} */}
       </p>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} autoComplete="off">
         <Row className="full-height-vh">
           <Col
             xs="12"
@@ -166,282 +166,287 @@ function Register() {
               <CardBody>
                 {/* <img src={Logo} alt="logo" /> */}
                 <h2 className="white py-4">ลงทะเบียน</h2>
-                <Form>
-                  <FormGroup>
-                    <Row>
-                      <Col md="6">
-                        <Input
-                          type="text"
-                          className="form-control"
-                          name="firstname"
-                          value={account.firstname}
-                          placeholder="ชือ"
-                          onChange={handleChange}
-                        />
-                        {errors.firstname && (
-                          <p style={errorStyle}>{errors.firstname}</p>
-                        )}
-                      </Col>
 
-                      <Col md="6">
-                        <Input
-                          type="text"
-                          className="form-control"
-                          name="lastname"
-                          value={account.lastname}
-                          placeholder="สกุล"
-                          onChange={handleChange}
-                        />
-                        {errors.lastname && (
-                          <p style={errorStyle}>{errors.lastname}</p>
-                        )}
-                      </Col>
-                    </Row>
-                  </FormGroup>
-                  <FormGroup>
-                    <Row>
-                      <Col md="12">
-                        <Input
-                          type="email"
-                          className="form-control"
-                          name="email"
-                          value={account.email}
-                          placeholder="อีเมล"
-                          onChange={handleChange}
-                        />
-                        {errors.email && (
-                          <p style={errorStyle}>{errors.email}</p>
-                        )}
-                      </Col>
-                    </Row>
-                  </FormGroup>
+                <FormGroup>
+                  <Row>
+                    <Col md="6">
+                      <Input
+                        type="text"
+                        className="form-control"
+                        name="firstname"
+                        value={account.firstname}
+                        placeholder="ชือ"
+                        onChange={handleChange}
+                      />
+                      {errors.firstname && (
+                        <p style={errorStyle}>{errors.firstname}</p>
+                      )}
+                    </Col>
 
-                  <FormGroup>
-                    <Row>
-                      <Col md="12">
-                        <UncontrolledTooltip
-                          placement="top"
-                          target="passwordptooltip"
+                    <Col md="6">
+                      <Input
+                        type="text"
+                        className="form-control"
+                        name="lastname"
+                        value={account.lastname}
+                        placeholder="สกุล"
+                        onChange={handleChange}
+                      />
+                      {errors.lastname && (
+                        <p style={errorStyle}>{errors.lastname}</p>
+                      )}
+                    </Col>
+                  </Row>
+                </FormGroup>
+                <FormGroup>
+                  <Row>
+                    <Col md="12">
+                      <Input
+                        type="textbox"
+                        className="form-control"
+                        name="email"
+                        value={account.email}
+                        placeholder="อีเมล"
+                        autoComplete="off"
+                        onChange={handleChange}
+                      />
+                      {errors.email && <p style={errorStyle}>{errors.email}</p>}
+                    </Col>
+                  </Row>
+                </FormGroup>
+
+                <FormGroup>
+                  <Row>
+                    <Col md="12">
+                      <UncontrolledTooltip
+                        placement="top"
+                        target="passwordptooltip"
+                      >
+                        <ul
+                          style={{
+                            fontSize: "12px",
+                            textAlign: "left"
+                          }}
                         >
-                          <ul
-                            style={{
-                              fontSize: "12px",
-                              textAlign: "left"
-                            }}
-                          >
-                            <li style={{ lineHeight: "15px" }}>
-                              ต้องมีอย่างน้อย 8 ตัวอักษร
-                            </li>
-                            <li style={{ lineHeight: "15px" }}>
-                              ต้องมีตัวอักษรภาษาอังกฤษตัวใหญ่ อย่างน้อย 1 ตัว
-                            </li>
-                            <li style={{ lineHeight: "15px" }}>
-                              ต้องมีตัวเลขอย่างน้อย 1 ตัว
-                            </li>
-                            <li style={{ lineHeight: "15px" }}>
-                              มีแต่ภาษาอังกฤษและตัวเลขเท่านั้น
-                            </li>
-                          </ul>
-                        </UncontrolledTooltip>
-                        <Input
-                          type="password"
-                          className="form-control"
-                          name="password"
-                          value={account.password}
-                          placeholder="รหัสผ่าน"
-                          onChange={handleChange}
-                          id="passwordptooltip"
-                        />
-                        {errors.password && (
-                          <p style={errorStyle}>{errors.password}</p>
-                        )}
-                      </Col>
-                    </Row>
-                  </FormGroup>
-                  <FormGroup>
-                    <Row>
-                      <Col md="12">
-                        <Input
-                          type="number"
-                          className="form-control"
-                          name="mobile"
-                          value={account.mobile}
-                          placeholder="เบอร์โทรศัพท์"
-                          onChange={handleChange}
-                        />
-                        {errors.mobile && (
-                          <p style={errorStyle}>{errors.mobile}</p>
-                        )}
-                      </Col>
-                    </Row>
-                  </FormGroup>
-                  <FormGroup>
-                    <Row>
-                      <Col md="12">
-                        <Input
-                          type="select"
-                          id="min_id"
-                          name="min_id"
-                          onChange={handleChange}
-                        >
-                          <option value="">--เลือกกระทรวง--</option>
-                          {min_id.map(({ label, value }) => (
+                          <li style={{ lineHeight: "15px" }}>
+                            ต้องมีอย่างน้อย 8 ตัวอักษร
+                          </li>
+                          <li style={{ lineHeight: "15px" }}>
+                            ต้องมีตัวอักษรภาษาอังกฤษตัวใหญ่ อย่างน้อย 1 ตัว
+                          </li>
+                          <li style={{ lineHeight: "15px" }}>
+                            ต้องมีตัวเลขอย่างน้อย 1 ตัว
+                          </li>
+                          <li style={{ lineHeight: "15px" }}>
+                            มีแต่ภาษาอังกฤษและตัวเลขเท่านั้น
+                          </li>
+                        </ul>
+                      </UncontrolledTooltip>
+                      <Input
+                        type="password"
+                        className="form-control"
+                        name="password"
+                        value={account.password}
+                        placeholder="รหัสผ่าน"
+                        onChange={handleChange}
+                        id="passwordptooltip"
+                        autoComplete="new-password"
+                      />
+                      {errors.password && (
+                        <p style={errorStyle}>{errors.password}</p>
+                      )}
+                    </Col>
+                  </Row>
+                </FormGroup>
+                <FormGroup>
+                  <Row>
+                    <Col md="12">
+                      <Input
+                        type="number"
+                        className="form-control"
+                        name="mobile"
+                        value={account.mobile}
+                        placeholder="เบอร์โทรศัพท์"
+                        onChange={handleChange}
+                      />
+                      {errors.mobile && (
+                        <p style={errorStyle}>{errors.mobile}</p>
+                      )}
+                    </Col>
+                  </Row>
+                </FormGroup>
+                <FormGroup>
+                  <Row>
+                    <Col md="12">
+                      <Input
+                        type="select"
+                        id="min_id"
+                        name="min_id"
+                        value={account.min_id}
+                        onChange={handleChange}
+                        autoComplete="off"
+                      >
+                        <option value="">--เลือกกระทรวง--</option>
+                        {min_id.map(({ label, value }) => (
+                          <option key={value} value={value}>
+                            {label}
+                          </option>
+                        ))}
+                      </Input>
+                      {errors.min_id && (
+                        <p style={errorStyle}>{errors.min_id}</p>
+                      )}
+                    </Col>
+                  </Row>
+                </FormGroup>
+                <FormGroup>
+                  <Row>
+                    <Col md="12">
+                      <Input
+                        type="select"
+                        id="dep_id"
+                        name="dep_id"
+                        value={account.dep_id}
+                        onChange={handleChange}
+                      >
+                        <option value="">--เลือกกรม--</option>
+                        {account.min_id &&
+                          dep_id.map(({ label, value }) => (
                             <option key={value} value={value}>
                               {label}
                             </option>
                           ))}
-                        </Input>
-                        {errors.min_id && (
-                          <p style={errorStyle}>{errors.min_id}</p>
-                        )}
-                      </Col>
-                    </Row>
-                  </FormGroup>
-                  <FormGroup>
-                    <Row>
-                      <Col md="12">
-                        <Input
-                          type="select"
-                          id="dep_id"
-                          name="dep_id"
-                          value={account.dep_id}
-                          onChange={handleChange}
-                        >
-                          <option value="">--เลือกกรม--</option>
-                          {account.min_id &&
-                            dep_id.map(({ label, value }) => (
-                              <option key={value} value={value}>
-                                {label}
-                              </option>
-                            ))}
-                        </Input>
-                        {errors.dep_id && (
-                          <p style={errorStyle}>{errors.dep_id}</p>
-                        )}
-                      </Col>
-                    </Row>
-                  </FormGroup>
-                  <FormGroup>
-                    <Row>
-                      <Col md="12">
-                        <Input
-                          type="select"
-                          name="org_id"
-                          value={account.org_id}
-                          onChange={handleChange}
-                        >
-                          <option value="">--เลือกหน่วยงาน--</option>
-                          {account.dep_id &&
-                            account.min_id &&
-                            org_id.map(({ label, value }) => (
-                              <option key={value} value={value}>
-                                {label}
-                              </option>
-                            ))}
-                        </Input>
-                        {errors.org_id && (
-                          <p style={errorStyle}>{errors.org_id}</p>
-                        )}
-                      </Col>
-                    </Row>
-                  </FormGroup>
-                  <FormGroup>
-                    <Row>
-                      <Col md="12">
-                        <div className="custom-control custom-checkbox mb-2 mr-sm-2 mb-sm-0 ml-3">
-                          <Input
-                            type="checkbox"
-                            className="custom-control-input"
-                            // value={account.ischeck}
-                            name={account.ischeck}
-                            id="acception"
-                            // isChecked={() =>
-                            //   setaccount({
-                            //     ...account,
-                            //     ischeck: "true"
-                            //   })
-                            // }
-                            onClick={handleChecked}
-                            // onChange={handleChange}
-                          />
-                          <Label
-                            className="custom-control-label float-left white"
-                            for="acception"
-                          ></Label>
-                          <a onClick={toggle} className="white float-left ">
-                            ฉันยอมรับเงื่อนไขและข้อตกลง
-                          </a>
-                          <Modal isOpen={modal} toggle={toggle}>
-                            <ModalHeader
-                              toggle={toggle}
-                              className="gradient-indigo-purple text-white"
-                            >
-                              หนังสือให้ความยินยอมให้ข้อมูลส่วนบุคคล
-                            </ModalHeader>
-                            <ModalBody>
-                              &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;ข้าพเจ้า
-                              ให้ความยินยอมให้ข้อมูลส่วนบุคคลแก่สำนักงานพัฒนารัฐบาลดิจิทัล
-                              (องค์การมหาชน) (ต่อไปนี้เรียกว่า “สำนักงาน”)
-                              ในการเก็บรวบรวม ใช้
-                              หรือเปิดเผยข้อมูลส่วนบุคคลของข้าพเจ้า
-                              เพื่อการเข้าถึงและใช้บริการของสำนักงาน
-                              การติดต่อสื่อสาร การประชาสัมพันธ์
-                              การแจ้งข้อมูลข่าวสาร หรือการนำเสนอบริการต่างๆ
-                              ที่เกี่ยวข้องกับสำนักงาน
-                              รวมถึงการให้ข้อมูลส่วนบุคคลเพื่อดำเนินกิจการหรือกิจกรรมภายใต้วัตถุประสงค์ในการดำเนินงานของสำนักงาน
-                              หรือตามที่กฎหมายกำหนด ตลอดจนเพื่อวัตถุประสงค์ต่างๆ
-                              ตามที่สำนักงานกำหนดในนโยบายการคุ้มครองข้อมูลส่วนบุคคล
-                              (Personal Data Protection Policy)<br></br> &nbsp;
-                              &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-                              ข้าพเจ้าขอยืนยันว่าได้อ่านและเข้าใจนโยบายการคุ้มครองข้อมูลส่วนบุคคล
-                              (Personal Data Protection Policy) และข้อตกลงต่างๆ
-                              ที่เกี่ยวข้อง (ถ้ามี) ของสำนักงานตามช่องทางต่างๆ
-                              ที่สำนักงานได้ประกาศให้ทราบแล้ว
-                              ข้าพเจ้าจึงได้ลงนามในหนังสือให้ความยินยอมในข้อมูลส่วนบุคคลนี้
-                              ข้าพเจ้าตระหนักและได้รับทราบแล้วว่าข้าพเจ้าสามารถแจ้งความจำนงเพิกถอนความยินยอมนี้เมื่อใดก็ได้
-                              รวมถึงทราบถึงสิทธิของเจ้าของข้อมูลส่วนบุคคลแล้วตามที่กำหนดในนโยบายการคุ้มครองข้อมูลส่วนบุคคล
-                              (Personal Data Protection Policy)
-                            </ModalBody>
-                            <ModalFooter>
-                              <Button color="primary" onClick={toggle}>
-                                ปิดหน้าต่าง
-                              </Button>
-                            </ModalFooter>
-                          </Modal>
-                        </div>
-                        {errors.check && (
-                          <p style={errorStyle}>{errors.check}</p>
-                        )}
-                      </Col>
-                    </Row>
-                  </FormGroup>
-                  <FormGroup>
-                    <Col md="12">
-                      <Button
-                        type="submit"
-                        value="Submit"
-                        color="danger"
-                        block
-                        className="btn-pink btn-raised"
-                      >
-                        Submit
-                      </Button>
+                      </Input>
+                      {errors.dep_id && (
+                        <p style={errorStyle}>{errors.dep_id}</p>
+                      )}
                     </Col>
-                  </FormGroup>
-                  <FormGroup>
-                    <Row>
-                      <Col md="12">
-                        <Label>
-                          เป็นสมาชิกอยู่แล้วคลิก
-                          <NavLink to="/pages/login" className="white">
-                            &nbsp; ที่นี่ &nbsp;
-                          </NavLink>
-                          เพื่อเข้าสู่ระบบ
-                        </Label>
-                      </Col>
-                    </Row>
-                  </FormGroup>
-                </Form>
+                  </Row>
+                </FormGroup>
+                <FormGroup>
+                  <Row>
+                    <Col md="12">
+                      <Input
+                        type="select"
+                        name="org_id"
+                        value={account.org_id}
+                        onChange={handleChange}
+                      >
+                        <option value="">--เลือกหน่วยงาน--</option>
+                        {account.dep_id &&
+                          account.min_id &&
+                          org_id.map(({ label, value }) => (
+                            <option key={value} value={value}>
+                              {label}
+                            </option>
+                          ))}
+                      </Input>
+                      {errors.org_id && (
+                        <p style={errorStyle}>{errors.org_id}</p>
+                      )}
+                    </Col>
+                  </Row>
+                </FormGroup>
+                <FormGroup>
+                  <Row>
+                    <Col md="12">
+                      <div className="custom-control custom-checkbox mb-2 mr-sm-2 mb-sm-0 ml-3">
+                        <Input
+                          type="checkbox"
+                          className="custom-control-input"
+                          defaultChecked={account.check}
+                          // checked={account.ischeck}
+                          // name={account.ischeck}
+                          id="acception"
+                          // isChecked={() =>
+                          //   setaccount({
+                          //     ...account,
+                          //     ischeck: "true"
+                          //   })
+                          // }
+                          onClick={handleChecked}
+                          autoComplete="off"
+                          // onChange={handleChange}
+                        />
+                        <Label
+                          className="custom-control-label float-left white"
+                          for="acception"
+                        ></Label>
+                        <a
+                          onClick={toggle}
+                          className="white float-left "
+                          style={{ textDecoration: "underline" }}
+                        >
+                          ฉันยอมรับเงื่อนไขและข้อตกลง
+                        </a>
+                        <Modal isOpen={modal} toggle={toggle}>
+                          <ModalHeader
+                            toggle={toggle}
+                            className="gradient-indigo-purple text-white"
+                          >
+                            หนังสือให้ความยินยอมให้ข้อมูลส่วนบุคคล
+                          </ModalHeader>
+                          <ModalBody>
+                            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;ข้าพเจ้า
+                            ให้ความยินยอมให้ข้อมูลส่วนบุคคลแก่สำนักงานพัฒนารัฐบาลดิจิทัล
+                            (องค์การมหาชน) (ต่อไปนี้เรียกว่า “สำนักงาน”)
+                            ในการเก็บรวบรวม ใช้
+                            หรือเปิดเผยข้อมูลส่วนบุคคลของข้าพเจ้า
+                            เพื่อการเข้าถึงและใช้บริการของสำนักงาน
+                            การติดต่อสื่อสาร การประชาสัมพันธ์
+                            การแจ้งข้อมูลข่าวสาร หรือการนำเสนอบริการต่างๆ
+                            ที่เกี่ยวข้องกับสำนักงาน
+                            รวมถึงการให้ข้อมูลส่วนบุคคลเพื่อดำเนินกิจการหรือกิจกรรมภายใต้วัตถุประสงค์ในการดำเนินงานของสำนักงาน
+                            หรือตามที่กฎหมายกำหนด ตลอดจนเพื่อวัตถุประสงค์ต่างๆ
+                            ตามที่สำนักงานกำหนดในนโยบายการคุ้มครองข้อมูลส่วนบุคคล
+                            (Personal Data Protection Policy)<br></br> &nbsp;
+                            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                            ข้าพเจ้าขอยืนยันว่าได้อ่านและเข้าใจนโยบายการคุ้มครองข้อมูลส่วนบุคคล
+                            (Personal Data Protection Policy) และข้อตกลงต่างๆ
+                            ที่เกี่ยวข้อง (ถ้ามี) ของสำนักงานตามช่องทางต่างๆ
+                            ที่สำนักงานได้ประกาศให้ทราบแล้ว
+                            ข้าพเจ้าจึงได้ลงนามในหนังสือให้ความยินยอมในข้อมูลส่วนบุคคลนี้
+                            ข้าพเจ้าตระหนักและได้รับทราบแล้วว่าข้าพเจ้าสามารถแจ้งความจำนงเพิกถอนความยินยอมนี้เมื่อใดก็ได้
+                            รวมถึงทราบถึงสิทธิของเจ้าของข้อมูลส่วนบุคคลแล้วตามที่กำหนดในนโยบายการคุ้มครองข้อมูลส่วนบุคคล
+                            (Personal Data Protection Policy)
+                          </ModalBody>
+                          <ModalFooter>
+                            <Button color="primary" onClick={toggle}>
+                              ปิดหน้าต่าง
+                            </Button>
+                          </ModalFooter>
+                        </Modal>
+                      </div>
+                      {errors.check && <p style={errorStyle}>{errors.check}</p>}
+                    </Col>
+                  </Row>
+                </FormGroup>
+                <FormGroup>
+                  <Col md="12">
+                    <Button
+                      type="submit"
+                      value="Submit"
+                      color="danger"
+                      block
+                      className="btn-pink btn-raised"
+                    >
+                      ยืนยันข้อมูลเพื่อลงทะเบียนผู้ใช้งาน
+                    </Button>
+                  </Col>
+                </FormGroup>
+                <FormGroup>
+                  <Row>
+                    <Col md="12">
+                      <Label style={{ color: "#f5b115" }}>
+                        เป็นสมาชิกอยู่แล้วคลิก
+                        <NavLink to="/pages/login" className="white">
+                          &nbsp; ที่นี่ &nbsp;
+                        </NavLink>
+                        เพื่อเข้าสู่ระบบ
+                      </Label>
+                    </Col>
+                  </Row>
+                </FormGroup>
               </CardBody>
 
               {/* <Ministry /> */}

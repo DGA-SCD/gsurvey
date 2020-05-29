@@ -4,6 +4,7 @@ const useForm = (callback, validateRegister) => {
     firstname: "",
     lastname: "",
     email: "",
+    password: "",
     mobile: "",
     min_id: "",
     dep_id: "",
@@ -19,7 +20,7 @@ const useForm = (callback, validateRegister) => {
   // Used to handle every changes in every input
   const handleChange = e => {
     const { name, value } = e.target;
-    console.log(name);
+
     if (name === "min_id") {
       setaccount({
         ...account,
@@ -53,7 +54,7 @@ const useForm = (callback, validateRegister) => {
 
   const handleSubmit = e => {
     e.preventDefault();
-    console.log("handleSubmit");
+
     seterrors(validateRegister(account));
     setissubmit(true);
   };
