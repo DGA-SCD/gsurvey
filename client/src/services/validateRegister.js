@@ -4,11 +4,14 @@ export default function validateRegister(account) {
   let errors = {};
   if (!account.email) {
     errors.email = "กรุณาระบุอีเมล";
-  } else if (!/\S+@\S+\.\S+/.test(account.email)) {
-    account.email = "กรุณาใส่อีเมล์ให้ถูกต้อง";
+  } else if (
+    // !/^[A-Za-z0-9]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
+    !/^[a-z0-9][-a-z0-9._]+@([-a-z0-9]+[.])+[a-z]{2,5}$/.test(account.email)
+  ) {
+    errors.email = "กรุณาใส่อีเมล์ให้ถูกต้อง";
   }
   if (!account.firstname) {
-    errors.firstname = "กรุณากรอกชื่อด้วยค่ะ";
+    errors.firstname = "กรุณากรอกชื่อด้วย";
   }
   if (!account.password) {
     errors.password = "กรุณากรอกรหัสผ่าน";
@@ -29,7 +32,10 @@ export default function validateRegister(account) {
     errors.mobile = "กรุณาใส่เบอร์โทรศัพท์";
   } else if (!/^[0-9\b]+$/.test(account.mobile)) {
     errors.mobile = "กรุณาใส่เบอร์โทรศัพท์ให้ถูกต้อง";
+  } else if (account.mobile.length < 8) {
+    errors.mobile = "กรุณาใส่เบอร์โทรศัพท์ให้ถูกต้อง";
   }
+
   if (!account.min_id) {
     errors.min_id = "กรุณาเลือกกระทรวง";
   }
