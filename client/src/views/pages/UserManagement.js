@@ -42,7 +42,6 @@ const toastrOptions = {
   progressBar: false
 };
 
-
 export default class UserManagement extends Component {
   constructor(props) {
     super(props);
@@ -81,7 +80,6 @@ export default class UserManagement extends Component {
       );
       if (response.ok) {
         const json = await response.json();
-        console.log("callallsurvey" + JSON.stringify(json));
 
         this.setState({
           data: json.data,
@@ -110,23 +108,19 @@ export default class UserManagement extends Component {
               title: "สถานะ",
               field: "approval_status",
               lookup: {
-                approve: "approve",
-                waiting: "waiting",
-                reject: "reject"
+                approve: "อนุมัติ",
+                waiting: "รออนุมัติ",
+                reject: "ปฏิเสธ"
               },
               render: rowData => {
                 return rowData.approval_status === "waiting" ? (
                   <p style={{ color: "#E87722", fontWeight: "400" }}>
-                    {rowData.approval_status}
+                    รออนุมัติ
                   </p>
                 ) : rowData.approval_status === "approve" ? (
-                  <p style={{ color: "#008240", fontWeight: "400" }}>
-                    {rowData.approval_status}
-                  </p>
+                  <p style={{ color: "#008240", fontWeight: "400" }}>อนุมัติ</p>
                 ) : (
-                  <p style={{ color: "#FF0000", fontWeight: "400" }}>
-                    {rowData.approval_status}
-                  </p>
+                  <p style={{ color: "#FF0000", fontWeight: "400" }}>ปฏิเสธ</p>
                 );
               }
             }
@@ -295,167 +289,171 @@ export default class UserManagement extends Component {
   }
   render() {
     return (
-      <div>
-        <MaterialTable
-          icons={tableIcons}
-          title="จัดการผู้ใช้งาน"
-          columns={this.state.columns}
-          data={this.state.data}
-          detailPanel={[
-            {
-              tooltip: "Show Name",
-              render: rowData => {
-                return (
-                  <div
-                    style={{
-                      fontSize: 16,
-                      alignItems: "center",
-                      textAlign: "left",
+      <>
+        <div>
+          <MaterialTable
+            icons={tableIcons}
+            title="จัดการผู้ใช้งาน"
+            columns={this.state.columns}
+            data={this.state.data}
+            detailPanel={[
+              {
+                tooltip: "โชว์รายละเอียด",
+                render: rowData => {
+                  return (
+                    <div
+                      style={{
+                        fontSize: 16,
+                        alignItems: "center",
+                        textAlign: "left",
 
-                      backgroundColor: "aliceblue",
-                      height: 200,
-                      paddingTop: 30,
-                      paddingBottom: 10,
-                      paddingLeft: 50
-                    }}
-                  >
-                    <p style={{}}>
-                      <b>สังกัดกระทรวง :</b> {rowData.min_name}
-                    </p>
-                    <p style={{}}>
-                      <b>สังกัดกรม : </b> {rowData.min_name}{" "}
-                    </p>
-                    <p style={{}}>
-                      <b>สังกัดหน่วยงาน : </b>
-                      {rowData.org_name}{" "}
-                    </p>
-                  </div>
-                );
+                        backgroundColor: "aliceblue",
+                        height: 200,
+                        paddingTop: 30,
+                        paddingBottom: 10,
+                        paddingLeft: 50
+                      }}
+                    >
+                      <p style={{}}>
+                        <b>สังกัดกระทรวง :</b> {rowData.min_name}
+                      </p>
+                      <p style={{}}>
+                        <b>สังกัดกรม : </b> {rowData.dep_name}
+                      </p>
+                      <p style={{}}>
+                        <b>สังกัดหน่วยงาน : </b>
+                        {rowData.org_name}
+                      </p>
+                    </div>
+                  );
+                }
               }
-            }
-          ]}
-          editable={{
-            onRowUpdate: (newData, oldData) =>
-              new Promise((resolve, reject) => {
-                setTimeout(() => {
-                  {
-                    const data = this.state.data;
-                    const index = data.indexOf(oldData);
-                    data[index] = newData;
-                    const rowData = data[index];
+            ]}
+            editable={{
+              onRowUpdate: (newData, oldData) =>
+                new Promise((resolve, reject) => {
+                  setTimeout(() => {
+                    {
+                      const data = this.state.data;
+                      const index = data.indexOf(oldData);
+                      data[index] = newData;
+                      const rowData = data[index];
 
-                    if (data[index].approval_status === "reject") {
-                      this.replaceModalItem({ rowData });
-                    } else {
-                      this.upDateapproval(rowData);
+                      if (data[index].approval_status === "reject") {
+                        this.replaceModalItem({ rowData });
+                      } else {
+                        this.upDateapproval(rowData);
+                      }
                     }
-                  }
-                  resolve();
-                }, 1000);
-              }),
-            onRowDelete: oldData =>
-              new Promise((resolve, reject) => {
-                setTimeout(() => {
-                  {
-                    let data = this.state.data;
-                    const index = data.indexOf(oldData);
-                    data.splice(index, 1);
-                    // console.log(data[index].user_id);
-                    this.setState({ data }, () => {
-                      console.log(data[index].user_id);
-                      fetch(
-                        config.BACKEND_GSURVEY +
-                          "/api/v2/admin/members/" +
-                          data[index].user_id,
-                        {
-                          method: "DELETE",
-                          headers: {
-                            "Content-Type": "application/json"
-                          },
-                          credentials: "include"
+                    resolve();
+                  }, 1000);
+                }),
+              onRowDelete: oldData =>
+                new Promise((resolve, reject) => {
+                  setTimeout(() => {
+                    const dataDelete = [...this.state.data];
+                    const index = oldData.tableData.id;
+                    const deldata = dataDelete.splice(index, 1);
+
+                    //  setTimeout(() => {
+                    fetch(
+                      config.BACKEND_GSURVEY +
+                        "/api/v2/admin/members/" +
+                        deldata[0].user_id,
+                      {
+                        method: "DELETE",
+                        headers: {
+                          "Content-Type": "application/json"
+                        },
+                        credentials: "include"
+                      }
+                    )
+                      .then(res => res.json())
+                      .then(result => {
+                        if (result.success) {
+                          toastr.success(
+                            "ลบข้อมูลผู้ใช้งานเรียบร้อยแล้ว",
+                            toastrOptions
+                          );
+                          this.fecthdata();
+                        } else {
+                          toastr.error(result.desc, toastrOptions);
                         }
-                      )
-                        .then(res => res.json())
-                        .then(result => {
-                          if (result.success) {
-                            toastr.success(
-                              "ลบข้อมูลผู้ใช้งานเรียบร้อยแล้ว",
-                              toastrOptions
-                            );
+                      });
+                    //  resolve();
+                    // });
 
-                            this.fecthdata();
-                          } else {
-                            toastr.error(result.desc, toastrOptions);
-                          }
-                        });
-                      resolve();
-                    });
-                  }
-                  resolve();
-                }, 1000);
+                    resolve();
+                  }, 1000);
+                })
+            }}
+            actions={[
+              rowData => ({
+                //icon: rowData => if(rowData.suspension_status === "enable"){ <AddBox />,
+                //  icon: props => <p>Manage</p>,
+                icon:
+                  rowData.suspension_status === "enable" //0enable,1disable
+                    ? "toggle_on"
+                    : "toggle_off",
+                iconProps:
+                  rowData.suspension_status === "enable"
+                    ? { style: { color: "green" } }
+                    : { style: { color: "#cccccc" } },
+                tooltip:
+                  rowData.suspension_status === "enable" //disable ยกเลิกการใช้งาน , reject ระงับการใช้งาน
+                    ? "กดเพื่อยกเลิกการใช้งาน"
+                    : "กดเพื่ออนุมัติการใช้งาน",
+                onClick: (event, rowData) => {
+                  // console.log(rowData);
+
+                  this.supspenModal({ rowData });
+                }
               })
-          }}
-          actions={[
-            rowData => ({
-              //icon: rowData => if(rowData.suspension_status === "enable"){ <AddBox />,
-              //  icon: props => <p>Manage</p>,
-              icon:
-                rowData.suspension_status === "enable" //0enable,1disable
-                  ? "toggle_on"
-                  : "toggle_off",
-              iconProps:
-                rowData.suspension_status === "enable"
-                  ? { style: { color: "green" } }
-                  : { style: { color: "#cccccc" } },
-              tooltip:
-                rowData.suspension_status === "enable" //disable ยกเลิกการใช้งาน , reject ระงับการใช้งาน
-                  ? "กดเพื่อยกเลิกการใช้งาน"
-                  : "กดเพื่ออนุมัติการใช้งาน",
-              onClick: (event, rowData) => {
-                // console.log(rowData);
-
-                this.supspenModal({ rowData });
+            ]}
+            options={{
+              actionsColumnIndex: -1,
+              pageSize: 10,
+              exportButton: true,
+              exportAllData: true,
+              headerStyle: {
+                backgroundColor: "#ff4758",
+                color: "#FFF",
+                zIndex: 0,
+                font: "Athiti"
               }
-            })
-          ]}
-          options={{
-            actionsColumnIndex: -1,
-            pageSize: 10,
-            exportButton: true,
-            exportAllData: true
-          }}
-          localization={{
-            body: {
-              editRow: {
-                deleteText: "คุณต้องการลบผู้ใช้งานนี้ ?",
-                cancelTooltip: "ยกเลิก",
-                saveTooltip: "ยืนยัน"
+            }}
+            localization={{
+              body: {
+                editRow: {
+                  deleteText: "คุณต้องการลบผู้ใช้งานนี้ ?",
+                  cancelTooltip: "ยกเลิก",
+                  saveTooltip: "ยืนยัน"
+                },
+                deleteTooltip: "ลบผู้ใช้งาน",
+                editTooltip: "แก้ไขผู้ใช้งาน",
+                emptyDataSourceMessage: "ยังไม่มีข้อมูล ณ ขณะนี้"
               },
-              deleteTooltip: "ลบผู้ใช้งาน",
-
-              emptyDataSourceMessage: "ยังไม่มีข้อมูล ณ ขณะนี้"
-            },
-            header: {
-              actions: ""
-            },
-            toolbar: {
-              searchPlaceholder: "ค้นหาผู้ใช้งาน",
-              exportName: "ดึงข้อมูลเป็น csv",
-              exportAriaLabel: "นำข้อมูลออก",
-              exportTitle: "นำข้อมุลออก"
-            },
-            pagination: {
-              nextTooltip: "หน้าถัดไป",
-              previousTooltip: "หน้าก่อนหน้า",
-              lastTooltip: "หน้าสุดท้าย",
-              firstTooltip: "หน้าแรก",
-              labelRowsSelect: "แถว",
-              labelDisplayedRows: "{from}-{to} จาก {count}"
-            }
-          }}
-          components={{}}
-        />
-
+              header: {
+                actions: ""
+              },
+              toolbar: {
+                searchPlaceholder: "ค้นหาผู้ใช้งาน",
+                exportName: "ดึงข้อมูลเป็น csv",
+                exportAriaLabel: "นำข้อมูลออก",
+                exportTitle: "นำข้อมุลออก"
+              },
+              pagination: {
+                nextTooltip: "หน้าถัดไป",
+                previousTooltip: "หน้าก่อนหน้า",
+                lastTooltip: "หน้าสุดท้าย",
+                firstTooltip: "หน้าแรก",
+                labelRowsSelect: "แถว",
+                labelDisplayedRows: "{from}-{to} จาก {count}"
+              }
+            }}
+            components={{}}
+          />
+        </div>
         <Dialog
           open={this.state.supspenModalOpen}
           aria-labelledby="draggable-dialog-title"
@@ -516,7 +514,7 @@ export default class UserManagement extends Component {
             </form>
           </DialogContent>
         </Dialog>
-      </div>
+      </>
     );
   }
 }
