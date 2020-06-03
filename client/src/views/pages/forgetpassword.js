@@ -1,16 +1,14 @@
 import React, { useState } from "react";
+import { useForm } from "react-hook-form";
 import * as config from "../../services/AppConfig";
 import {
   Button,
   Modal,
   ModalHeader,
   ModalBody,
-
-  Input,
-
+  input,
   Col,
-  FormGroup,
- 
+  FormGroup
 } from "reactstrap";
 
 import { toastr } from "react-redux-toastr";
@@ -20,9 +18,7 @@ export default function ForgetPassword() {
     email: "",
     return_url: "/pages/resetPassword",
     //return_url: "http://client.open4u.io:3002/pages/resetPassword",
-    ref_code: Math.random()
-      .toString(36)
-      .substring(7)
+    ref_code: Math.random().toString(36).substring(7)
   };
   const toastrOptions = {
     timeOut: 0, // by setting to 0 it will prevent the auto close
@@ -31,14 +27,14 @@ export default function ForgetPassword() {
     // closeOnToastrClick: true, // false by default, this will close the toastr when user clicks on it
     progressBar: true
   };
+  const { register, handleSubmit, errors } = useForm();
   const [modal, setModal] = useState(false);
   const [detail, setdetail] = useState(initalstate);
   const [isOpened, setIsOpened] = useState(false);
   const setshow = () => setIsOpened(!isOpened);
   const toggle = () => setModal(!modal);
-  const handleSubmit = e => {
-    e.preventDefault();
-    //alert(JSON.stringify(detail));
+  const onSubmit = detail => {
+    //  e.preventDefault();
 
     try {
       fetch(config.BACKEND_GSURVEY + "/api/v2/users/otp", {
@@ -57,13 +53,15 @@ export default function ForgetPassword() {
             setshow();
             setdetail(initalstate);
 
-            setTimeout(function() {
+            setTimeout(function () {
               setIsOpened(false);
 
               setModal(false);
             }, 4000);
           } else {
-            toastr.error(result.desc, toastrOptions);
+            if (result.code === 40400) {
+              toastr.error("ไม่พบอีเมลนี้ในระบบ", toastrOptions);
+            } else toastr.error(result.desc, toastrOptions);
           }
         });
     } catch (error) {
@@ -75,7 +73,7 @@ export default function ForgetPassword() {
       <a onClick={toggle}> ลืมรหัสผ่าน</a>
 
       <Modal isOpen={modal} toggle={toggle}>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <ModalHeader
             toggle={toggle}
             className="gradient-indigo-purple text-white"
@@ -94,8 +92,8 @@ export default function ForgetPassword() {
                           <i className="fa fa-at prefix"></i>
                         </span>
                       </div>
-                      <Input
-                        type="email"
+                      <input
+                        type="ะำ"
                         className="form-control"
                         name="email"
                         placeholder="กรอกอีเมล์ของท่าน"
@@ -105,15 +103,36 @@ export default function ForgetPassword() {
                             email: e.target.value
                           });
                         }}
-                        required
+                        ref={register({
+                          required: "กรุณากรอกอีเมล",
+                          pattern: {
+                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                            message: "กรุณากรอกอีเมลให้ถูกต้อง"
+                          }
+                        })}
+                      />
+                      <input
+                        name="return_url"
+                        value="/pages/resetPassword"
+                        type="hidden"
+                        ref={register}
+                      />
+                      <input
+                        name="ref_code"
+                        value={Math.random().toString(36).substring(7)}
+                        type="hidden"
+                        ref={register}
                       />
                     </div>
+                    <span style={{ color: "red" }}>
+                      {errors.email && errors.email.message}
+                    </span>
                   </Col>
                 </FormGroup>
                 <FormGroup>
                   <div className="float-right white">
                     <Button color="primary" type="submit">
-                      รีเซ็ตรหัสผ่าน
+                      ตั้งค่ารหัสผ่านใหม่
                     </Button>
                   </div>
                 </FormGroup>
@@ -124,7 +143,7 @@ export default function ForgetPassword() {
                 className="teal"
                 style={{ textAlign: "center", fontWeight: 400 }}
               >
-                กรุณาเช็คอีเมล์ของท่าน
+                กรุณาตรวจสอบอีเมลของท่าน
               </div>
             )}
           </ModalBody>

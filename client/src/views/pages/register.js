@@ -175,7 +175,7 @@ function Register() {
                         className="form-control"
                         name="firstname"
                         value={account.firstname}
-                        placeholder="ชือ"
+                        placeholder="ชื่อ"
                         onChange={handleChange}
                       />
                       {errors.firstname && (
@@ -238,7 +238,7 @@ function Register() {
                             ต้องมีตัวเลขอย่างน้อย 1 ตัว
                           </li>
                           <li style={{ lineHeight: "15px" }}>
-                            มีแต่ภาษาอังกฤษและตัวเลขเท่านั้น
+                            ต้องเป็นภาษาอังกฤษและตัวเลขเท่านั้น
                           </li>
                         </ul>
                       </UncontrolledTooltip>
