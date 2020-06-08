@@ -11,7 +11,7 @@ export default function validateRegister(account) {
     errors.email = "กรุณาใส่อีเมล์ให้ถูกต้อง";
   }
   if (!account.firstname) {
-    errors.firstname = "กรุณากรอกชื่อด้วย";
+    errors.firstname = "กรุณากรอกชื่อ";
   }
   if (!account.password) {
     errors.password = "กรุณากรอกรหัสผ่าน";

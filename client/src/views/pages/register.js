@@ -262,7 +262,7 @@ function Register() {
                   <Row>
                     <Col md="12">
                       <Input
-                        type="number"
+                        type="text"
                         className="form-control"
                         name="mobile"
                         value={account.mobile}
