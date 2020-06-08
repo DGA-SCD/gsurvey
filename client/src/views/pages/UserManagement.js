@@ -298,7 +298,7 @@ export default class UserManagement extends Component {
             data={this.state.data}
             detailPanel={[
               {
-                tooltip: "โชว์รายละเอียด",
+                tooltip: "แสดงรายละเอียด",
                 render: rowData => {
                   return (
                     <div
